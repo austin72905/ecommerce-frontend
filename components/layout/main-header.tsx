@@ -44,7 +44,7 @@ export default function MainHeader() {
         <header>
             <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="fixed" >
-                    <Container maxWidth={false}>
+                    <Container sx={{px:0}}>
                         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
                             <IconButton
                                 size="large"

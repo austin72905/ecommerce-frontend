@@ -24,7 +24,7 @@ export default function SignUp() {
     }
     return (
 
-        <Stack justifyContent={"center"} direction={"row"} sx={{ width:"100%",border: "0px solid #9f9f9f", mt: 4, borderRadius: "4px" }}>
+        <Stack justifyContent={"center"} direction={"row"} sx={{ width:"100%",border: "0px solid #9f9f9f", mt:{ sm:4,xs:0 }, px:2,borderRadius: "4px" }}>
 
             <Stack 
                 spacing={2.5} 

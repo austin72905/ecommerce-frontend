@@ -29,8 +29,12 @@ export default function Layout({ children }: LayoutProps) {
         <ThemeProvider theme={customTheme}>
             <MainHeader />
             <Toolbar />
-            <Box sx={{minHeight:"80vh"}}>
-                <Container>
+            <Box sx={{ minHeight: "80vh"}}>
+                <Container sx={{px:{
+                    md:5,
+                    sm:0,
+                    xs:0
+                }}}>
                     {children}
                 </Container>
             </Box>
