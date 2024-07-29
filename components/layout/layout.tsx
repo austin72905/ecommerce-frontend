@@ -4,6 +4,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { orange } from '@mui/material/colors';
+import Footer from "./footer";
+import { Box } from "@mui/material";
 
 interface LayoutProps {
     children: ReactNode
@@ -27,10 +29,13 @@ export default function Layout({ children }: LayoutProps) {
         <ThemeProvider theme={customTheme}>
             <MainHeader />
             <Toolbar />
-            <Container>
-                {children}
-            </Container>
+            <Box sx={{minHeight:"80vh"}}>
+                <Container>
+                    {children}
+                </Container>
+            </Box>
 
+            <Footer />
         </ThemeProvider>
 
     )
