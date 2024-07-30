@@ -14,9 +14,9 @@ import ProductImage1 from '/public/images/輪播圖1.jpg'
 import ProductImage2 from '/public/images/輪播圖2.jpg'
 import ProductImage3 from '/public/images/輪播圖3.jpg'
 import Image from "next/image";
-import { Box, Button, List, ListItem, Stack, TextField, Typography } from "@mui/material";
+import { AppBar, Box, Button, Container, List, ListItem, ListItemButton, ListItemText, Stack, Tabs, TextField, Toolbar, Typography } from "@mui/material";
 import Grid from '@mui/material/Grid';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 export default function ProductDetailPage() {
@@ -94,18 +94,49 @@ export default function ProductDetailPage() {
         }
     }
 
-    const handleLinkClick=(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, id: string)=>{
+    const handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, id: string) => {
         event.preventDefault()
         const element = document.getElementById(id);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+            element.scrollIntoView({ behavior: 'smooth' });
         }
+ 
 
     }
 
+
+    const [showNavBar, setShowNavBar] = useState(false);
+    const scrollPosition = useRef(0);
+
+    const handleScroll = () => {
+        const currentScrollPos = window.scrollY;
+
+
+        if (currentScrollPos > 100) { // 设置滚动距离阈值
+            setShowNavBar(true);
+        } else {
+            setShowNavBar(false);
+        }
+        scrollPosition.current = currentScrollPos;
+    };
+
+    // 監聽scroll，離開頁面時再將監聽去掉
+    useEffect(() => {
+
+
+        const onScroll = () => {
+            handleScroll();
+        };
+        window.addEventListener('scroll', onScroll);
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+        };
+    }, []);
+
+
     return (
         <Box sx={{ px: 2 }}>
-            <ul style={{position:"absolute"}}>
+            {/* <ul style={{position:"absolute"}}>
                 <li>
                     <Link href="#" onClick={(e) => handleLinkClick(e, '#intro')}>intro</Link>
                 </li>
@@ -115,7 +146,43 @@ export default function ProductDetailPage() {
                 <li>
                     <Link href="#" onClick={(e) => handleLinkClick(e, '#notice')}>notice</Link>
                 </li>
-            </ul>
+            </ul> */}
+
+            <AppBar
+                position="fixed"
+                sx={{
+                    top: showNavBar ? { sm: "64px", xs: "56px" } : '-50px',
+                    height: "50px",
+                    opacity: "0.9",
+                    transition: 'top 0.3s',
+                    zIndex: "1"
+                }}>
+                <Container sx={{ px: 0 }}>
+                    <Toolbar sx={{ height: "50px", minHeight: "50px !important", display: 'flex', justifyContent: 'center' }}>
+                        <nav>
+                            <List sx={{ display: "flex", flexDirection: "row" }}>
+                                <Link href="#" style={{ color: 'inherit', textDecoration: "none" }} onClick={(e) => handleLinkClick(e, '#intro')}>
+                                    <ListItemButton disableRipple >
+                                        <ListItemText sx={{ color: "grey" }} primary="商品介紹" />
+                                    </ListItemButton>
+                                </Link>
+                                <Link href="#" style={{ color: 'inherit', textDecoration: "none" }} onClick={(e) => handleLinkClick(e, '#spec')}>
+                                    <ListItemButton disableRipple >
+                                        <ListItemText sx={{ color: "grey" }} primary="產品規格" />
+                                    </ListItemButton>
+                                </Link>
+                                <Link href="#" style={{ color: 'inherit', textDecoration: "none" }} onClick={(e) => handleLinkClick(e, '#notice')}>
+                                    <ListItemButton disableRipple >
+                                        <ListItemText sx={{ color: "grey" }} primary="注意事項" />
+                                    </ListItemButton>
+                                </Link>
+                            </List>
+
+                        </nav>
+                    </Toolbar>
+                </Container>
+
+            </AppBar>
             <Grid container columns={8} spacing={3} >
                 <Grid item lg={4} md={4} sm={4} xs={8}>
                     <Stack direction={"column"} alignItems={"center"} sx={{ border: "0px solid" }}>
@@ -233,7 +300,7 @@ export default function ProductDetailPage() {
                 </Grid>
                 <Grid item md={8}>
                     {/*tabs 等產品規格 */}
-                    <Stack direction={"column"} alignItems={"center"} sx={{ width: '100%',minHeight:"400px",mt:5 }}>
+                    <Stack direction={"column"} alignItems={"center"} sx={{ width: '100%', minHeight: "400px", mt: 5 }}>
                         <TabContext value={viewValue}>
                             <TabList onChange={handleView} >
 
@@ -246,8 +313,8 @@ export default function ProductDetailPage() {
 
 
                             <TabPanel value="商品介紹" >
-                                <Stack spacing={3} direction={"column"} sx={{width:"100%"}}>
-                                    
+                                <Stack spacing={3} direction={"column"} sx={{ width: "100%" }}>
+
                                     <Typography >超質感暖男衛生紙，無論上廁所要擦屁股、感冒擤鼻涕、還是室友的鳥拉屎在地板上，只要你需要的時候，我都在。</Typography>
                                 </Stack>
                             </TabPanel>
@@ -255,32 +322,32 @@ export default function ProductDetailPage() {
 
                             <TabPanel value="產品規格" >
                                 <Stack spacing={3} direction={"column"}>
-                                    
+
                                     <Typography >
                                         購買後5天內須要付款，未付款視為取消訂單，付款後會儘快出貨，商品物流情況詳情請在訂單查詢頁面追蹤
                                     </Typography>
-                                    <List sx={{p:0,m:0}}>
-                                        <ListItem sx={{p:0,m:0}}>
+                                    <List sx={{ p: 0, m: 0 }}>
+                                        <ListItem sx={{ p: 0, m: 0 }}>
                                             <Typography>好男友暖男衛生紙10包</Typography>
                                         </ListItem>
-                                        <ListItem  sx={{p:0,m:0}}>
+                                        <ListItem sx={{ p: 0, m: 0 }}>
                                             <Typography>每包有若干衛生紙</Typography>
                                         </ListItem>
-                                        <ListItem  sx={{p:0,m:0}}>
+                                        <ListItem sx={{ p: 0, m: 0 }}>
                                             <Typography>封口處易脫落，使用請小心</Typography>
                                         </ListItem>
-                                        <ListItem  sx={{p:0,m:0}}>
+                                        <ListItem sx={{ p: 0, m: 0 }}>
                                             <Typography>產品背面印有粉絲專頁instgram</Typography>
                                         </ListItem>
                                     </List>
-                                    
-                                    
+
+
                                 </Stack>
                             </TabPanel>
 
                             <TabPanel value="注意事項" >
                                 <Stack spacing={3} >
-                                    
+
                                     <Typography >
                                         購買後5天內須要付款，未付款視為取消訂單，付款後會儘快出貨，商品物流情況詳情請在訂單查詢頁面追蹤
                                     </Typography>
@@ -293,14 +360,14 @@ export default function ProductDetailPage() {
 
                 </Grid>
                 <Grid item xs={8}>
-                    
-                    <Box id="#intro" sx={{height:"500px"}}>商品介紹</Box>
-                    </Grid>
+
+                    <Box id="#intro" sx={{ height: "500px" }}>商品介紹</Box>
+                </Grid>
                 <Grid item xs={8}>
-                    <Box id="#spec" sx={{height:"500px"}}>產品規格</Box>
-                    </Grid>
+                    <Box id="#spec" sx={{ height: "500px" }}>產品規格</Box>
+                </Grid>
                 <Grid item xs={8}>
-                    <Box id="#notice" sx={{height:"500px"}}>注意事項</Box>
+                    <Box id="#notice" sx={{ height: "500px" }}>注意事項</Box>
                 </Grid>
 
             </Grid>
