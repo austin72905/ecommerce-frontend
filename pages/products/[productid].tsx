@@ -14,22 +14,31 @@ import ProductImage1 from '/public/images/輪播圖1.jpg'
 import ProductImage2 from '/public/images/輪播圖2.jpg'
 import ProductImage3 from '/public/images/輪播圖3.jpg'
 import Image from "next/image";
-import { AppBar, Box, Button, Container, List, ListItem, ListItemButton, ListItemText, Stack, Tabs, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Card, CardContent, CardHeader, Container, Divider, List, ListItem, ListItemButton, ListItemText, Stack, Tabs, TextField, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Grid from '@mui/material/Grid';
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
+
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+
+
 export default function ProductDetailPage() {
 
     const [activeSlide, setActiveSlide] = useState(0)
-
+    
+    const theme =useTheme()
+    const isSmallScreen:boolean=useMediaQuery(theme.breakpoints.down('sm'))
     const settings = {
         dots: true,
         infinite: true,
         slidesToShow: 1,
         slidesToScroll: 1,
-        nextArrow: <SampleNextArrow />,
-        prevArrow: <SamplePrevArrow />,
+        nextArrow: <SampleNextArrow isSmallScreen={isSmallScreen}/>,
+        prevArrow: <SamplePrevArrow isSmallScreen={isSmallScreen}/>,
         appendDots: (dots: any) => (
             <div
                 style={{
@@ -100,7 +109,7 @@ export default function ProductDetailPage() {
         if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
         }
- 
+
 
     }
 
@@ -135,18 +144,7 @@ export default function ProductDetailPage() {
 
 
     return (
-        <Box sx={{ px: 2 }}>
-            {/* <ul style={{position:"absolute"}}>
-                <li>
-                    <Link href="#" onClick={(e) => handleLinkClick(e, '#intro')}>intro</Link>
-                </li>
-                <li>
-                    <Link href="#" onClick={(e) => handleLinkClick(e, '#spec')}>spec</Link>
-                </li>
-                <li>
-                    <Link href="#" onClick={(e) => handleLinkClick(e, '#notice')}>notice</Link>
-                </li>
-            </ul> */}
+        <Box sx={{ px: 0 }}>
 
             <AppBar
                 position="fixed"
@@ -184,11 +182,11 @@ export default function ProductDetailPage() {
 
             </AppBar>
             <Grid container columns={8} spacing={3} >
-                <Grid item lg={4} md={4} sm={4} xs={8}>
+                <Grid item lg={4} md={4} sm={4} xs={8}  >
                     <Stack direction={"column"} alignItems={"center"} sx={{ border: "0px solid" }}>
 
                         {/*輪播圖 */}
-                        <Box sx={{ p: 2, m: 2, mb: 1, maxWidth: "400px", maxHeight: "400px", width: '100%', height: 'auto' }}>
+                        <Box sx={{ p: 0, m: 2, mb: 1, maxWidth: "400px", maxHeight: "400px", width: '100%', height: 'auto' }}>
 
                             <Slider {...settings} ref={sliderRef} >
                                 <Box sx={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
@@ -229,7 +227,7 @@ export default function ProductDetailPage() {
 
 
                 </Grid>
-                <Grid item lg={4} md={4} sm={4} xs={8}>
+                <Grid item lg={4} md={4} sm={4} xs={8} >
                     <Stack direction={"column"} alignItems={"center"} sx={{ width: '100%' }}>
                         <Stack sx={{ maxWidth: "400px", width: '100%', border: "0px solid" }} >
                             <Stack>
@@ -298,76 +296,83 @@ export default function ProductDetailPage() {
 
 
                 </Grid>
-                <Grid item md={8}>
-                    {/*tabs 等產品規格 */}
-                    <Stack direction={"column"} alignItems={"center"} sx={{ width: '100%', minHeight: "400px", mt: 5 }}>
-                        <TabContext value={viewValue}>
-                            <TabList onChange={handleView} >
 
-                                <Tab value="商品介紹" label="商品介紹" sx={{ border: "1px solid #AFAFAF", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }}></Tab>
-                                <Tab value="產品規格" label="產品規格" sx={{ border: "1px solid #AFAFAF" }}></Tab>
-                                <Tab value="注意事項" label="注意事項" sx={{ border: "1px solid #AFAFAF", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }}></Tab>
+                <Grid item xs={8} sx={{ mt: 6 }}>
+                    <Divider />
+                    <Box id="#intro" sx={{ height: "auto", mt: 1 }} >
 
-
-                            </TabList>
-
-
-                            <TabPanel value="商品介紹" >
-                                <Stack spacing={3} direction={"column"} sx={{ width: "100%" }}>
-
-                                    <Typography >超質感暖男衛生紙，無論上廁所要擦屁股、感冒擤鼻涕、還是室友的鳥拉屎在地板上，只要你需要的時候，我都在。</Typography>
-                                </Stack>
-                            </TabPanel>
-
-
-                            <TabPanel value="產品規格" >
-                                <Stack spacing={3} direction={"column"}>
-
-                                    <Typography >
-                                        購買後5天內須要付款，未付款視為取消訂單，付款後會儘快出貨，商品物流情況詳情請在訂單查詢頁面追蹤
-                                    </Typography>
-                                    <List sx={{ p: 0, m: 0 }}>
-                                        <ListItem sx={{ p: 0, m: 0 }}>
-                                            <Typography>好男友暖男衛生紙10包</Typography>
-                                        </ListItem>
-                                        <ListItem sx={{ p: 0, m: 0 }}>
-                                            <Typography>每包有若干衛生紙</Typography>
-                                        </ListItem>
-                                        <ListItem sx={{ p: 0, m: 0 }}>
-                                            <Typography>封口處易脫落，使用請小心</Typography>
-                                        </ListItem>
-                                        <ListItem sx={{ p: 0, m: 0 }}>
-                                            <Typography>產品背面印有粉絲專頁instgram</Typography>
-                                        </ListItem>
-                                    </List>
+                        <Accordion id="#intro" sx={{ boxShadow: "none" }}>
+                            <AccordionSummary
+                                expandIcon={<ArrowDropDownIcon />}
+                                aria-controls="panel1-content"
+                            >
+                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                    商品介紹
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ height: "400px" }}>
+                                <Typography component="p" sx={{ my: 3 }}>
+                                    超質感暖男衛生紙，無論上廁所要擦屁股、感冒擤鼻涕、還是室友的鳥拉屎在地板上，只要你需要的時候，我都在。
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
 
 
-                                </Stack>
-                            </TabPanel>
 
-                            <TabPanel value="注意事項" >
-                                <Stack spacing={3} >
 
-                                    <Typography >
-                                        購買後5天內須要付款，未付款視為取消訂單，付款後會儘快出貨，商品物流情況詳情請在訂單查詢頁面追蹤
-                                    </Typography>
-                                    <Link href="#section1">aaa</Link>
-                                </Stack>
-                            </TabPanel>
-                        </TabContext>
-                    </Stack>
+                    </Box>
+                </Grid>
+                <Grid item xs={8}>
+                    <Divider />
+                    <Box id="#spec" sx={{ height: "auto", mt: 1  }} >
 
+                        <Accordion sx={{ boxShadow: "none" }}>
+                            <AccordionSummary
+                                expandIcon={<ArrowDropDownIcon />}
+                                aria-controls="panel2-content"
+                            >
+                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                    產品規格
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ height: "400px" }}>
+                                <Typography component="p" sx={{ my: 3 }}>
+                                    購買後5天內須要付款，未付款視為取消訂單，付款後會儘快出貨，商品物流情況詳情請在訂單查詢頁面追蹤
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+
+
+
+
+                    </Box>
 
                 </Grid>
                 <Grid item xs={8}>
+                    <Divider />
+                    <Box id="#notice" sx={{ height: "auto", mt: 1 }} >
 
-                    <Box id="#intro" sx={{ height: "500px" }}>商品介紹</Box>
-                </Grid>
-                <Grid item xs={8}>
-                    <Box id="#spec" sx={{ height: "500px" }}>產品規格</Box>
-                </Grid>
-                <Grid item xs={8}>
-                    <Box id="#notice" sx={{ height: "500px" }}>注意事項</Box>
+                        <Accordion sx={{ boxShadow: "none" }}>
+                            <AccordionSummary
+                                expandIcon={<ArrowDropDownIcon />}
+                                aria-controls="panel3-content"
+                            >
+                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                    注意事項
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ height: "400px" }}>
+                                <Typography component="p" sx={{ my: 3 }}>
+                                    購買後5天內須要付款，未付款視為取消訂單，付款後會儘快出貨，商品物流情況詳情請在訂單查詢頁面追蹤
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+
+
+
+
+                    </Box>
+
                 </Grid>
 
             </Grid>
@@ -381,11 +386,11 @@ export default function ProductDetailPage() {
 
 
 function SampleNextArrow(props: any) {
-    const { className, style, onClick } = props;
+    const { className, style, onClick,isSmallScreen } = props;
     return (
         <div
             className={className}
-            style={{ ...style, display: "block", right: "10px" }}
+            style={{ ...style, display: isSmallScreen?"none":"block", right: "10px" }}
             onClick={onClick}
         />
     );
@@ -394,11 +399,11 @@ function SampleNextArrow(props: any) {
 
 
 function SamplePrevArrow(props: any) {
-    const { className, style, onClick } = props;
+    const { className, style, onClick,isSmallScreen } = props;
     return (
         <div
             className={className}
-            style={{ ...style, display: "block", left: 10, zIndex: 1 }}
+            style={{ ...style, display: isSmallScreen?"none":"block", left: 10, zIndex: 1 }}
             onClick={onClick}
         />
     );
