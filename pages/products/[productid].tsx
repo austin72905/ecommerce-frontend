@@ -13,8 +13,9 @@ import ProductImage from '/public/images/朋朋衛生紙商品圖.jpg'
 import ProductImage1 from '/public/images/輪播圖1.jpg'
 import ProductImage2 from '/public/images/輪播圖2.jpg'
 import ProductImage3 from '/public/images/輪播圖3.jpg'
+import ProductImage4 from '/public/images/coat1.jpg'
 import Image from "next/image";
-import { AppBar, Box, Button, Card, CardContent, CardHeader, Container, Divider, List, ListItem, ListItemButton, ListItemText, Stack, Tabs, TextField, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { AppBar, Box, Button, Card, CardContent, CardHeader, Container, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, SpeedDial, SpeedDialIcon, Stack, Tabs, TextField, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Grid from '@mui/material/Grid';
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -24,34 +25,22 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 export default function ProductDetailPage() {
 
     const [activeSlide, setActiveSlide] = useState(0)
-    
-    const theme =useTheme()
-    const isSmallScreen:boolean=useMediaQuery(theme.breakpoints.down('sm'))
+
+    const theme = useTheme()
+    const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
     const settings = {
         dots: true,
         infinite: true,
         slidesToShow: 1,
         slidesToScroll: 1,
-        nextArrow: <SampleNextArrow isSmallScreen={isSmallScreen}/>,
-        prevArrow: <SamplePrevArrow isSmallScreen={isSmallScreen}/>,
-        appendDots: (dots: any) => (
-            <div
-                style={{
-                    position: 'absolute',
-                    bottom: '15px',
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center'
-                }}
-            >
-                <ul style={{ margin: '0px' }}>{dots}</ul>
-            </div>
-        ),
+        nextArrow: <SampleNextArrow isSmallScreen={isSmallScreen} />,
+        prevArrow: <SamplePrevArrow isSmallScreen={isSmallScreen} />,
+
         beforeChange: (current: any, next: any) => setActiveSlide(next)
 
 
@@ -92,7 +81,9 @@ export default function ProductDetailPage() {
         ProductImage,
         ProductImage1,
         ProductImage2,
-        ProductImage3,]
+        ProductImage3,
+        ProductImage4
+    ]
 
 
     let sliderRef = useRef<Slider | null>(null)
@@ -129,6 +120,8 @@ export default function ProductDetailPage() {
         scrollPosition.current = currentScrollPos;
     };
 
+
+
     // 監聽scroll，離開頁面時再將監聽去掉
     useEffect(() => {
 
@@ -143,8 +136,40 @@ export default function ProductDetailPage() {
     }, []);
 
 
+    const handleScrollTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+    }
+
+
     return (
         <Box sx={{ px: 0 }}>
+
+            <SpeedDial
+                ariaLabel="SpeedDial basic example"
+                sx={{
+                    position: "fixed",
+                    bottom: "150px",
+                    right: "30px",
+                    '& .MuiFab-primary': {
+                        width: 45,
+                        height: 45,
+                        bgcolor: "white",
+                        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+                        border: "0px solid grey",
+                        opacity: "0.8"
+
+                    }
+                }}
+                open={false}
+                icon={<KeyboardArrowUpIcon sx={{ color: "grey" }} />}
+                onClick={handleScrollTop}
+
+            >
+
+            </SpeedDial>
 
             <AppBar
                 position="fixed"
@@ -181,6 +206,38 @@ export default function ProductDetailPage() {
                 </Container>
 
             </AppBar>
+
+
+            <AppBar
+                position="fixed"
+                sx={{
+                    top: "auto",
+                    bottom: {
+                        lg:"-50px",
+
+                        xs:"0px"
+                    },
+                    transition:"bottom 0.3s",
+                    height: "50px",
+                    opacity: "0.9",
+                    zIndex: "999",
+                    border: "solid 0px black"
+                }}>
+                <Container sx={{ px: 0 }}>
+                    <Toolbar sx={{ height: "50px", minHeight: "50px !important", display: 'flex' }}>
+                        <Stack direction={"row"} alignItems={"center"} sx={{ width: "100%" }} spacing={2}>
+                            <Typography>NT100</Typography>
+                            <Stack  direction={"row"} justifyContent={"flex-end"} sx={{flexGrow:1,gap:1,justifyContent:"flex-end",border:"0px solid black"}}>
+                                <Button variant="outlined" sx={{ border: "1px solid black",flexGrow:1,color:"black" }}>加入購物車</Button>
+                                <Button variant="contained" sx={{flexGrow:1 }}>直接購買</Button>
+                            </Stack>
+
+                        </Stack>
+                    </Toolbar>
+                </Container>
+
+            </AppBar>
+
             <Grid container columns={8} spacing={3} >
                 <Grid item lg={4} md={4} sm={4} xs={8}  >
                     <Stack direction={"column"} alignItems={"center"} sx={{ border: "0px solid" }}>
@@ -189,18 +246,22 @@ export default function ProductDetailPage() {
                         <Box sx={{ p: 0, m: 2, mb: 1, maxWidth: "400px", maxHeight: "400px", width: '100%', height: 'auto' }}>
 
                             <Slider {...settings} ref={sliderRef} >
-                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
+                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
                                     <Image src={ProductImage} alt="ProductImage" fill style={{ objectFit: "cover" }} />
                                 </Box>
-                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
+                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
                                     <Image src={ProductImage1} alt="ProductImage1" fill style={{ objectFit: "cover" }} />
                                 </Box>
-                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
+                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
                                     <Image src={ProductImage2} alt="ProductImage2" fill style={{ objectFit: "cover" }} />
                                 </Box>
-                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
+                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
                                     <Image src={ProductImage3} alt="ProductImage3" fill style={{ objectFit: "cover" }} />
                                 </Box>
+                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
+                                    <Image src={ProductImage4} alt="ProductImage4" fill style={{ objectFit: "cover" }} />
+                                </Box>
+
 
 
 
@@ -208,19 +269,7 @@ export default function ProductDetailPage() {
 
                         </Box>
 
-                        <Box >
-                            <List sx={{ border: "0px solid", width: "300px", height: "52px", padding: 0, margin: 0, justifyContent: "center", alignItems: "center", display: "flex", flexDirection: "row" }}>
 
-                                {imgList.map((item, index) => (
-                                    <ListItem key={index} sx={{ px: 0 }} onClick={() => { handleSlider(index) }}>
-                                        <Box sx={{ width: "50px", height: "50px", border: activeSlide === index ? "1px orange solid" : "none" }}>
-                                            <Image src={item} alt="ProductImage" width={50} height={50} />
-                                        </Box>
-                                    </ListItem>
-                                ))}
-
-                            </List>
-                        </Box>
 
                     </Stack>
 
@@ -324,7 +373,7 @@ export default function ProductDetailPage() {
                 </Grid>
                 <Grid item xs={8}>
                     <Divider />
-                    <Box id="#spec" sx={{ height: "auto", mt: 1  }} >
+                    <Box id="#spec" sx={{ height: "auto", mt: 1 }} >
 
                         <Accordion sx={{ boxShadow: "none" }}>
                             <AccordionSummary
@@ -386,11 +435,11 @@ export default function ProductDetailPage() {
 
 
 function SampleNextArrow(props: any) {
-    const { className, style, onClick,isSmallScreen } = props;
+    const { className, style, onClick, isSmallScreen } = props;
     return (
         <div
             className={className}
-            style={{ ...style, display: isSmallScreen?"none":"block", right: "10px" }}
+            style={{ ...style, display: isSmallScreen ? "none" : "block", right: "10px" }}
             onClick={onClick}
         />
     );
@@ -399,11 +448,11 @@ function SampleNextArrow(props: any) {
 
 
 function SamplePrevArrow(props: any) {
-    const { className, style, onClick,isSmallScreen } = props;
+    const { className, style, onClick, isSmallScreen } = props;
     return (
         <div
             className={className}
-            style={{ ...style, display: isSmallScreen?"none":"block", left: 10, zIndex: 1 }}
+            style={{ ...style, display: isSmallScreen ? "none" : "block", left: 10, zIndex: 1 }}
             onClick={onClick}
         />
     );
