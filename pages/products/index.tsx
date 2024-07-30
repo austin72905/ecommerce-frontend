@@ -13,7 +13,9 @@ export default function ProductsPage() {
 
     const router = useRouter()
 
-    //console.log(router.query)
+    const goToProductDetail=()=>{
+        router.push("/products/7aa1aas61cx1vs6d54fa96")
+    }
 
     const products = [1, 2, 3, 4, 5]
 
@@ -28,7 +30,7 @@ export default function ProductsPage() {
                 {products.map((product) => (
                     <Grid item lg={2} md={2} sm={4} xs={4} key={product}>
                         <Card sx={{ boxShadow: "none" }}>
-                            <CardMedia >
+                            <CardMedia onClick={goToProductDetail} sx={{'&:hover': { cursor: "pointer" }}}>
 
                                 <Box
                                     sx={{
@@ -42,8 +44,8 @@ export default function ProductsPage() {
                                     <Image
                                         src={ProductImage}
                                         alt="product information"
-                                        layout="fill"
-                                        objectFit="cover"
+                                        fill
+                                        style={{objectFit:"cover"}}
                                     />
                                 </Box>
 
@@ -52,7 +54,7 @@ export default function ProductsPage() {
                                 maxHeight: "250px"
                             }}>
                                 <Stack spacing={"15px"}>
-                                    <Typography sx={{ fontWeight: "bold", '&:hover': { cursor: "pointer" } }} >好男人需要時我都在衛生紙(10入)</Typography>
+                                    <Typography sx={{ fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={goToProductDetail}>好男人需要時我都在衛生紙(10入)</Typography>
                                     <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT$1000</Typography>
                                     <Typography>NT$100</Typography>
 
