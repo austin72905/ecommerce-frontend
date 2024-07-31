@@ -11,11 +11,12 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import styled from '@mui/system/styled'
 import ProductImage from '/public/images/朋朋衛生紙商品圖.jpg'
 import ProductImage1 from '/public/images/輪播圖1.jpg'
-import ProductImage2 from '/public/images/輪播圖2.jpg'
-import ProductImage3 from '/public/images/輪播圖3.jpg'
+import ProductImage2 from '/public/images/coat4.jpg'
+import ProductImage3 from '/public/images/coat3.jpg'
 import ProductImage4 from '/public/images/coat1.jpg'
+import ProductImage5 from '/public/images/coat2.jpg'
 import Image from "next/image";
-import { AppBar, Box, Button, Card, CardContent, CardHeader, Container, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, SpeedDial, SpeedDialIcon, Stack, Tabs, TextField, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { AppBar, Box, Button, Card, CardContent, CardHeader, CardMedia, Container, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, SpeedDial, SpeedDialIcon, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Grid from '@mui/material/Grid';
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -42,6 +43,17 @@ export default function ProductDetailPage() {
         prevArrow: <SamplePrevArrow isSmallScreen={isSmallScreen} />,
 
         beforeChange: (current: any, next: any) => setActiveSlide(next)
+
+
+    }
+
+
+    const settingsYouMayInterested = {
+        infinite: true,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        nextArrow: <SampleNextArrow isSmallScreen={isSmallScreen} />,
+        prevArrow: <SamplePrevArrow isSmallScreen={isSmallScreen} />,
 
 
     }
@@ -83,6 +95,14 @@ export default function ProductDetailPage() {
         ProductImage2,
         ProductImage3,
         ProductImage4
+    ]
+
+    const products = [
+        { id: 1, pic: ProductImage, title: "好朋友衛生紙" },
+        { id: 2, pic: ProductImage2, title: "好朋友衛生紙" },
+        { id: 3, pic: ProductImage3, title: "好朋友衛生紙" },
+        { id: 4, pic: ProductImage4, title: "好朋友衛生紙" },
+        { id: 5, pic: ProductImage5, title: "好朋友衛生紙" }
     ]
 
 
@@ -213,11 +233,11 @@ export default function ProductDetailPage() {
                 sx={{
                     top: "auto",
                     bottom: {
-                        lg:"-50px",
+                        lg: "-50px",
 
-                        xs:"0px"
+                        xs: "0px"
                     },
-                    transition:"bottom 0.3s",
+                    transition: "bottom 0.3s",
                     height: "50px",
                     opacity: "0.9",
                     zIndex: "999",
@@ -227,9 +247,9 @@ export default function ProductDetailPage() {
                     <Toolbar sx={{ height: "50px", minHeight: "50px !important", display: 'flex' }}>
                         <Stack direction={"row"} alignItems={"center"} sx={{ width: "100%" }} spacing={2}>
                             <Typography>NT100</Typography>
-                            <Stack  direction={"row"} justifyContent={"flex-end"} sx={{flexGrow:1,gap:1,justifyContent:"flex-end",border:"0px solid black"}}>
-                                <Button variant="outlined" sx={{ border: "1px solid black",flexGrow:1,color:"black" }}>加入購物車</Button>
-                                <Button variant="contained" sx={{flexGrow:1 }}>直接購買</Button>
+                            <Stack direction={"row"} justifyContent={"flex-end"} sx={{ flexGrow: 1, gap: 1, justifyContent: "flex-end", border: "0px solid black" }}>
+                                <Button variant="outlined" sx={{ border: "1px solid black", flexGrow: 1, color: "black" }}>加入購物車</Button>
+                                <Button variant="contained" sx={{ flexGrow: 1 }}>直接購買</Button>
                             </Stack>
 
                         </Stack>
@@ -247,7 +267,7 @@ export default function ProductDetailPage() {
 
                             <Slider {...settings} ref={sliderRef} >
                                 <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
-                                    <Image src={ProductImage} alt="ProductImage" fill style={{ objectFit: "cover" }} />
+                                    <Image src={ProductImage4} alt="ProductImage4" fill style={{ objectFit: "cover" }} />
                                 </Box>
                                 <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
                                     <Image src={ProductImage1} alt="ProductImage1" fill style={{ objectFit: "cover" }} />
@@ -259,7 +279,7 @@ export default function ProductDetailPage() {
                                     <Image src={ProductImage3} alt="ProductImage3" fill style={{ objectFit: "cover" }} />
                                 </Box>
                                 <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
-                                    <Image src={ProductImage4} alt="ProductImage4" fill style={{ objectFit: "cover" }} />
+                                    <Image src={ProductImage} alt="ProductImage" fill style={{ objectFit: "cover" }} />
                                 </Box>
 
 
@@ -345,88 +365,242 @@ export default function ProductDetailPage() {
 
 
                 </Grid>
+                {/*大圖區 */}
+                <Grid item xs={8} sx={{ mt: 6 }} >
+                    <Grid container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
+                        <Grid item xs={8} sx={{ mb: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                商品圖
+                            </Typography>
 
-                <Grid item xs={8} sx={{ mt: 6 }}>
-                    <Divider />
-                    <Box id="#intro" sx={{ height: "auto", mt: 1 }} >
-
-                        <Accordion id="#intro" sx={{ boxShadow: "none" }}>
-                            <AccordionSummary
-                                expandIcon={<ArrowDropDownIcon />}
-                                aria-controls="panel1-content"
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Divider />
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Box
+                                sx={{
+                                    position: 'relative',
+                                    width: '100%',
+                                    height: 0,
+                                    paddingBottom: '120%', // 这是根据宽高比计算的
+                                    overflow: 'hidden',
+                                }}
                             >
-                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                    商品介紹
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails sx={{ height: "400px" }}>
-                                <Typography component="p" sx={{ my: 3 }}>
-                                    超質感暖男衛生紙，無論上廁所要擦屁股、感冒擤鼻涕、還是室友的鳥拉屎在地板上，只要你需要的時候，我都在。
-                                </Typography>
-                            </AccordionDetails>
-                        </Accordion>
+                                <Image
+                                    src={ProductImage5}
+                                    alt="product information5"
+                                    fill
+                                    style={{ objectFit: "cover" }}
+                                />
+                            </Box>
+                            <Box
+                                sx={{
+                                    position: 'relative',
+                                    width: '100%',
+                                    height: 0,
+                                    paddingBottom: '120%', // 这是根据宽高比计算的
+                                    overflow: 'hidden',
+                                }}
+                            >
+                                <Image
+                                    src={ProductImage4}
+                                    alt="product information4"
+                                    fill
+                                    style={{ objectFit: "cover" }}
+                                />
+                            </Box>
 
-
-
-
-                    </Box>
+                        </Grid>
+                    </Grid>
                 </Grid>
-                <Grid item xs={8}>
-                    <Divider />
-                    <Box id="#spec" sx={{ height: "auto", mt: 1 }} >
-
-                        <Accordion sx={{ boxShadow: "none" }}>
-                            <AccordionSummary
-                                expandIcon={<ArrowDropDownIcon />}
-                                aria-controls="panel2-content"
-                            >
-                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                    產品規格
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails sx={{ height: "400px" }}>
-                                <Typography component="p" sx={{ my: 3 }}>
-                                    購買後5天內須要付款，未付款視為取消訂單，付款後會儘快出貨，商品物流情況詳情請在訂單查詢頁面追蹤
-                                </Typography>
-                            </AccordionDetails>
-                        </Accordion>
+                <Grid item xs={8} sx={{ mt: 6 }} >
 
 
 
+                    <Grid id="#intro" container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
+                        <Grid item xs={8} sx={{ mb: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                商品介紹
+                            </Typography>
 
-                    </Box>
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Divider />
+                        </Grid>
+                        <Grid item xs={2.5} md={1}>
+                            <Typography variant="subtitle1">
+                                顏色
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={5.5} md={7}>
+                            <Typography variant="subtitle1">
+                                黑色, 白色, 深藍色, 灰色, 深灰色, 紅色
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={2.5} md={1}>
+                            <Typography variant="subtitle1">
+                                尺寸
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={5.5} md={7}>
+                            <Typography variant="subtitle1">
+                                S, M, L, XL, 2XL, 3XL
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={2.5} md={1}>
+                            <Typography variant="subtitle1">
+                                商品材質
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={5.5} md={7}>
+                            <Typography variant="subtitle1">
+                                聚酯纖維, 聚氨酯纖維
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={2.5} md={1}>
+                            <Typography variant="subtitle1">
+                                商品編號
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={5.5} md={7}>
+                            <Typography variant="subtitle1">
+                                26790367
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={2.5} md={1}>
+                            <Typography variant="subtitle1">
+                                洗滌方式
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={5.5} md={7}>
+                            <Typography variant="subtitle1">
+                                洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={2.5} md={1}>
+                            <Typography variant="subtitle1">
+                                商品特色
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={5.5} md={7}>
+                            <Typography variant="subtitle1">
+                                其實我也不知道要說什麼...a 其實我也不知道要說什麼...a
+                                其實我也不知道要說什麼...a
+                            </Typography>
+                        </Grid>
+                    </Grid>
 
                 </Grid>
-                <Grid item xs={8}>
-                    <Divider />
-                    <Box id="#notice" sx={{ height: "auto", mt: 1 }} >
+                <Grid item xs={8} sx={{ mt: 6 }} >
+                    <Grid id="#spec" container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
+                        <Grid item xs={8} sx={{ mb: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                尺寸參考
+                            </Typography>
 
-                        <Accordion sx={{ boxShadow: "none" }}>
-                            <AccordionSummary
-                                expandIcon={<ArrowDropDownIcon />}
-                                aria-controls="panel3-content"
-                            >
-                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                    注意事項
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails sx={{ height: "400px" }}>
-                                <Typography component="p" sx={{ my: 3 }}>
-                                    購買後5天內須要付款，未付款視為取消訂單，付款後會儘快出貨，商品物流情況詳情請在訂單查詢頁面追蹤
-                                </Typography>
-                            </AccordionDetails>
-                        </Accordion>
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Divider />
+                        </Grid>
+                        <Grid item xs={8}>
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell></TableCell>
+                                            <TableCell>XS</TableCell>
+                                            <TableCell>S</TableCell>
+                                            <TableCell>M</TableCell>
+                                            <TableCell>L</TableCell>
+                                            <TableCell>XL</TableCell>
+                                            <TableCell>XXL</TableCell>
+                                            <TableCell>3L</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>身長</TableCell>
+                                            <TableCell>X</TableCell>
+                                            <TableCell>66</TableCell>
+                                            <TableCell>67</TableCell>
+                                            <TableCell>68</TableCell>
+                                            <TableCell>66</TableCell>
+                                            <TableCell>67</TableCell>
+                                            <TableCell>68</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>胸寬</TableCell>
+                                            <TableCell>X</TableCell>
+                                            <TableCell>53</TableCell>
+                                            <TableCell>54</TableCell>
+                                            <TableCell>56</TableCell>
+                                            <TableCell>56.5</TableCell>
+                                            <TableCell>57</TableCell>
+                                            <TableCell>58</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>袖長</TableCell>
+                                            <TableCell>X</TableCell>
+                                            <TableCell>77</TableCell>
+                                            <TableCell>78.5</TableCell>
+                                            <TableCell>80</TableCell>
+                                            <TableCell>80.5</TableCell>
+                                            <TableCell>81</TableCell>
+                                            <TableCell>82</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+                <Grid item xs={8} sx={{ mt: 6 }} >
+                    <Grid id="#notice" container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
+                        <Grid item xs={8} sx={{ mb: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                注意事項
+                            </Typography>
+
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Divider />
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Typography component="p" sx={{ my: 3 }}>
+                                購買後5天內須要付款，未付款視為取消訂單，付款後會儘快出貨，商品物流情況詳情請在訂單查詢頁面追蹤
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+                <Grid item xs={8} sx={{ mt: 6 }} >
+                    <Grid container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
+                        <Grid item xs={8} sx={{ mb: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                你可能也會喜歡
+                            </Typography>
+
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Box >
+                                <Slider {...settingsYouMayInterested} >
+                                    {products.map((product) => (
+                                        <CustomSilde product={product} />
 
 
+                                    ))}
+                                </Slider>
+                            </Box>
 
-
-                    </Box>
-
+                        </Grid>
+                    </Grid>
                 </Grid>
 
             </Grid>
 
-        </Box>
+        </Box >
 
     )
 }
@@ -506,3 +680,46 @@ const ListWrapper = styled("ul")(
         paddingLeft: "0px",
         margin: "0px"
     })
+
+
+const CustomSilde = (props: any) => {
+    const { index, product, ...otherProps } = props;
+
+    return (
+        <Box {...otherProps} style={{ margin: "10px" }}>
+            <Card sx={{ boxShadow: "none" }}>
+                <CardMedia sx={{ '&:hover': { cursor: "pointer" } }}>
+
+                    <Box
+                        sx={{
+                            position: 'relative',
+                            width: '100%',
+                            height: 0,
+                            paddingBottom: '120%', // 这是根据宽高比计算的
+                            overflow: 'hidden',
+                        }}
+                    >
+                        <Image
+                            src={product.pic}
+                            alt="product information"
+                            fill
+                            style={{ objectFit: "cover" }}
+                        />
+                    </Box>
+
+                </CardMedia>
+                <CardContent sx={{
+                    maxHeight: "250px",
+                    px: { sm: 1, xs: 0 }
+                }}>
+                    <Stack spacing={1} sx={{ border: "0px solid black" }}>
+                        <Typography sx={{ fontWeight: { md: "bold", xs: "normal" }, fontSize: { xs: "14px" }, '&:hover': { cursor: "pointer" } }} >好男人需要時我都在衛生</Typography>
+                        <Typography>NT$100</Typography>
+                        <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT$1000</Typography>
+                    </Stack>
+                </CardContent>
+
+            </Card>
+        </Box>
+    )
+}
