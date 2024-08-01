@@ -2,7 +2,7 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Box, Collapse, Drawer, IconButton, List, ListItemButton, ListItemText, Stack, SxProps, Theme } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import Link from "next/link";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import NavLink from "../navLink";
 import { routes } from "@/routes/routes";
 import { UrlObject } from "url";
@@ -24,8 +24,8 @@ function SideNavBar({ open, setOpen }: SideNavBarProps) {
             <nav>
                 <List sx={{ width: "200px" }}>
 
-                    {routes.map((route) => (
-                        <>
+                    {routes.map((route,index) => (
+                        <Fragment key={index}>
                             {route.nestedRoute && (
                                 <NestedLink
                                     href={route.nestedRoute.href}
@@ -37,6 +37,7 @@ function SideNavBar({ open, setOpen }: SideNavBarProps) {
                                             href={innerRoute.href}
                                             setOpen={setOpen}
                                             sx={{ pl: 4 }}
+                                            key={innerRoute.title}
                                         >
                                             {innerRoute.title}
                                         </NavLink>
@@ -50,11 +51,12 @@ function SideNavBar({ open, setOpen }: SideNavBarProps) {
                                 <NavLink
                                     href={route.singleRoute.href}
                                     setOpen={setOpen}
+                                    key={route.singleRoute.title}
                                 >
                                     {route.singleRoute.title}
                                 </NavLink>
                             )}
-                        </>
+                        </Fragment>
 
                     ))}
 
