@@ -27,6 +27,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { useRouter } from "next/router";
 
 export default function ProductDetailPage() {
 
@@ -163,6 +164,11 @@ export default function ProductDetailPage() {
         });
     }
 
+    const router =useRouter();
+
+    const goToProductDetail=()=>{
+        router.push("/products/7aa1aas61cx1vs6d54fa96")
+    }
 
     return (
         <Box sx={{ px: 0 }}>
@@ -587,7 +593,7 @@ export default function ProductDetailPage() {
                             <Box >
                                 <Slider {...settingsYouMayInterested} >
                                     {products.map((product) => (
-                                        <CustomSilde product={product} />
+                                        <CustomSilde key={product.id} product={product} goToProductDetail={goToProductDetail}/>
 
 
                                     ))}
@@ -683,12 +689,12 @@ const ListWrapper = styled("ul")(
 
 
 const CustomSilde = (props: any) => {
-    const { index, product, ...otherProps } = props;
+    const { index, product,goToProductDetail ,...otherProps } = props;
 
     return (
         <Box {...otherProps} style={{ margin: "10px" }}>
             <Card sx={{ boxShadow: "none" }}>
-                <CardMedia sx={{ '&:hover': { cursor: "pointer" } }}>
+                <CardMedia sx={{ '&:hover': { cursor: "pointer" } }} onClick={goToProductDetail}>
 
                     <Box
                         sx={{
@@ -713,7 +719,7 @@ const CustomSilde = (props: any) => {
                     px: { sm: 1, xs: 0 }
                 }}>
                     <Stack spacing={1} sx={{ border: "0px solid black" }}>
-                        <Typography sx={{ fontWeight: { md: "bold", xs: "normal" }, fontSize: { xs: "14px" }, '&:hover': { cursor: "pointer" } }} >好男人需要時我都在衛生</Typography>
+                        <Typography sx={{ fontWeight: { md: "bold", xs: "normal" }, fontSize: { xs: "14px" }, '&:hover': { cursor: "pointer" }   }} onClick={goToProductDetail}>好男人需要時我都在衛生</Typography>
                         <Typography>NT$100</Typography>
                         <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT$1000</Typography>
                     </Stack>

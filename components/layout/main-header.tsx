@@ -22,29 +22,41 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { Collapse } from '@mui/material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import SideNavBar, { useOpenState } from './sidebar';
 
 
 
 export default function MainHeader() {
 
 
-    const [open, setOpen] = useState<boolean>(false)
+    const [open, setOpen] = useOpenState(false)
 
     const router = useRouter();
 
-    const backToHomePage=()=>{
+    const backToHomePage = () => {
         router.push("/")
     }
 
-    const goToLogin=()=>{
+    const goToLogin = () => {
         router.push("/login")
     }
+
+    const [topOpen, settopOpen] = useState<boolean>(false)
+
+
+    const handleTopClick = () => {
+        settopOpen(op => {
+            return !op
+        });
+    };
 
     return (
         <header>
             <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="fixed" >
-                    <Container sx={{px:0}}>
+                    <Container sx={{ px: 0 }}>
                         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
                             <IconButton
                                 size="large"
@@ -62,19 +74,19 @@ export default function MainHeader() {
                             <Stack direction={"row"}>
                                 <Box sx={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={backToHomePage}>
                                     <Typography variant="h5" sx={{
-                                        fontSize:{
-                                            sm:"25px",
-                                            xs:"15px"
+                                        fontSize: {
+                                            sm: "25px",
+                                            xs: "15px"
                                         },
                                         letterSpacing: {
                                             sm: 10,
                                             xs: 2
                                         }, fontWeight: 900, color: "#755F4B"
                                     }}>好男友</Typography>
-                                    <Typography  sx={{
-                                        fontSize:{
-                                            sm:"18px",
-                                            xs:"12px"
+                                    <Typography sx={{
+                                        fontSize: {
+                                            sm: "18px",
+                                            xs: "12px"
                                         },
                                         letterSpacing: {
                                             sm: 10,
@@ -89,7 +101,7 @@ export default function MainHeader() {
                             </Stack>
 
 
-                            <Box sx={{ display: 'flex',alignItems: "center" }}>
+                            <Box sx={{ display: 'flex', alignItems: "center" }}>
                                 <IconButton disableRipple>
                                     <SearchIcon />
                                 </IconButton>
@@ -106,80 +118,8 @@ export default function MainHeader() {
                     </Container>
 
                 </AppBar>
-                <Drawer
-                    PaperProps={{
-                        sx: { backgroundColor: "#61D1BD" }
-                    }}
-                    open={open} onClose={() => setOpen(false)}>
-                    <Stack direction="row-reverse">
-                        <IconButton disableRipple onClick={() => setOpen(false)}>
-                            <CloseIcon sx={{ color: "white" }} />
-                        </IconButton>
-                    </Stack>
-                    <nav>
-                        <List sx={{ width: "200px" }}>
-
-                            <Link passHref href={{
-                                pathname: "/products",
-                                query: { tag: "new-arrival" }
-                            }}
-                                style={{ color: 'inherit', textDecoration: "none" }}>
-                                <ListItemButton disableRipple onClick={() => setOpen(false)}>
-                                    <ListItemText sx={{ color: "white" }} primary={
-                                        "新品上市"
-                                    } />
-
-
-                                </ListItemButton >
-                            </Link>
-                            <Link passHref href={{
-                                pathname: "/products",
-                                query: { tag: "all-products" }
-                            }}
-                                style={{ color: 'inherit', textDecoration: "none" }}>
-                                <ListItemButton disableRipple onClick={() => setOpen(false)}>
-                                    <ListItemText sx={{ color: "white" }} primary={
-                                        "全部商品"
-                                    } />
-
-
-                                </ListItemButton >
-                            </Link>
-                            <Link passHref href={{
-                                pathname: "/products",
-                                query: { tag: "limit-time-offer" }
-                            }}
-                                style={{ color: 'inherit', textDecoration: "none" }}>
-                                <ListItemButton disableRipple onClick={() => setOpen(false)}>
-                                    <ListItemText sx={{ color: "white" }} primary={
-                                        "本月優惠"
-                                    } />
-
-
-                                </ListItemButton >
-                            </Link>
-                            <Link passHref href={{
-                                pathname: "/products",
-                                query: { tag: "daily-products" }
-                            }}
-                                style={{ color: 'inherit', textDecoration: "none" }}>
-                                <ListItemButton disableRipple onClick={() => setOpen(false)}>
-                                    <ListItemText sx={{ color: "white" }} primary={
-                                        "生活小物"
-                                    } />
-
-
-                                </ListItemButton >
-                            </Link>
-
-
-
-
-
-                        </List>
-                    </nav>
-
-                </Drawer>
+                <SideNavBar open={open} setOpen={setOpen}/>
+                
             </Box>
         </header>
     )
