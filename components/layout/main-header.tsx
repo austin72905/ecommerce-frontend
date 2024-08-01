@@ -43,14 +43,6 @@ export default function MainHeader() {
         router.push("/login")
     }
 
-    const [topOpen, settopOpen] = useState<boolean>(false)
-
-
-    const handleTopClick = () => {
-        settopOpen(op => {
-            return !op
-        });
-    };
 
     return (
         <header>

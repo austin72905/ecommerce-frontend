@@ -1,47 +1,13 @@
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { Box, Collapse, Drawer, IconButton, List, ListItemButton, ListItemText, Stack } from "@mui/material";
+import { Box, Collapse, Drawer, IconButton, List, ListItemButton, ListItemText, Stack, SxProps, Theme } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import Link from "next/link";
 import { useState } from "react";
 import NavLink from "../navLink";
+import { routes } from "@/routes/routes";
+import { UrlObject } from "url";
 
 function SideNavBar({ open, setOpen }: SideNavBarProps) {
-
-
-    const [topOpen, settopOpen] = useState<boolean>(false)
-
-    const handleTopClick = () => {
-        settopOpen(op => {
-            return !op
-        });
-    };
-
-    const routes = [
-        {
-            pathname: "/products",
-            query: { kind: "clothes" }
-        },
-        {
-            pathname: "/products",
-            query: { tag: "shirt" }
-        },
-        {
-            pathname: "/products",
-            query: { tag: "t-shirt" }
-        },
-        {
-            pathname: "/products",
-            query: { tag: "t-shirt" }
-        },
-        {
-            pathname: "/products",
-            query: { tag: "t-shirt" }
-        },
-        {
-            pathname: "/products",
-            query: { tag: "t-shirt" }
-        },
-    ]
 
 
     return (
@@ -58,201 +24,39 @@ function SideNavBar({ open, setOpen }: SideNavBarProps) {
             <nav>
                 <List sx={{ width: "200px" }}>
 
-                    {/*有分類的， btn 包 text 包lnk */}
-                    <ListItemButton disableRipple onClick={handleTopClick}>
+                    {routes.map((route) => (
+                        <>
+                            {route.nestedRoute && (
+                                <NestedLink
+                                    href={route.nestedRoute.href}
+                                    title={route.nestedRoute.title}
+                                    setOpen={setOpen}
+                                >
+                                    {route.innerRoutes && route.innerRoutes.map((innerRoute) => (
+                                        <NavLink
+                                            href={innerRoute.href}
+                                            setOpen={setOpen}
+                                            sx={{ pl: 4 }}
+                                        >
+                                            {innerRoute.title}
+                                        </NavLink>
+                                    ))}
 
-                        <ListItemText
-                            sx={{ color: "white" }}
-                            primary={
-                                <Link
-                                    passHref
-                                    href={{
-                                        pathname: "/products",
-                                        query: { kind: "clothes" }
+                                </NestedLink>
 
-                                    }}
-                                    style={{ color: 'inherit', textDecoration: "none" }}
-                                    onClick={() => setOpen(false)}>
-                                    上衣
-                                </Link>
-                            } />
+                            )}
 
-                        {topOpen ? <ExpandLess sx={{ color: "white" }} /> : <ExpandMore sx={{ color: "white" }} />}
+                            {route.singleRoute && (
+                                <NavLink
+                                    href={route.singleRoute.href}
+                                    setOpen={setOpen}
+                                >
+                                    {route.singleRoute.title}
+                                </NavLink>
+                            )}
+                        </>
 
-
-
-                    </ListItemButton >
-
-
-                    <Collapse in={topOpen} timeout="auto" unmountOnExit>
-                        <List>
-
-                            <Link passHref href={{
-                                pathname: "/products",
-                                query: { tag: "shirt" }
-                            }}
-                                style={{ color: 'inherit', textDecoration: "none" }}>
-                                <ListItemButton sx={{ pl: 4 }} disableRipple onClick={() => setOpen(false)}>
-                                    <ListItemText sx={{ color: "white" }} primary={
-                                        "襯衫"
-                                    } />
-
-                                </ListItemButton >
-                            </Link>
-
-                            <Link passHref href={{
-                                pathname: "/products",
-                                query: { tag: "t-shirt" }
-                            }}
-                                style={{ color: 'inherit', textDecoration: "none" }}>
-                                <ListItemButton sx={{ pl: 4 }} disableRipple onClick={() => setOpen(false)}>
-                                    <ListItemText sx={{ color: "white" }} primary={
-                                        "T恤"
-                                    } />
-
-                                </ListItemButton >
-                            </Link>
-                        </List>
-                    </Collapse>
-
-
-
-
-                    <NestedLink
-                        href={{
-                            pathname: "/products",
-                            query: { kind: "pants" }
-                        }}
-                        title="褲子"
-                        setOpen={setOpen}
-                    >
-                        <NavLink
-                            href={{
-                                pathname: "/products",
-                                query: { tag: "jeans" }
-                            }}
-                            setOpen={setOpen}
-                            sx={{ pl: 4 }}
-                        >
-                            牛仔褲
-                        </NavLink>
-                        <NavLink
-                            href={{
-                                pathname: "/products",
-                                query: { tag: "shorts" }
-                            }}
-                            setOpen={setOpen}
-                            sx={{ pl: 4 }}
-                        >
-                            短褲
-                        </NavLink>
-                    </NestedLink>
-
-
-                    <NestedLink
-                        href={{
-                            pathname: "/products",
-                            query: { kind: "coats" }
-                        }}
-                        title="外套"
-                        setOpen={setOpen}
-                    >
-                        <NavLink
-                            href={{
-                                pathname: "/products",
-                                query: { tag: "windcoat" }
-                            }}
-                            setOpen={setOpen}
-                            sx={{ pl: 4 }}
-                        >
-                            風衣
-                        </NavLink>
-                        <NavLink
-                            href={{
-                                pathname: "/products",
-                                query: { tag: "knitting" }
-                            }}
-                            setOpen={setOpen}
-                            sx={{ pl: 4 }}
-                        >
-                            針織
-                        </NavLink>
-                        
-                    </NestedLink>
-
-
-
-                    {/*單一層 */}
-                    <Link passHref href={{
-                        pathname: "/products",
-                        query: { tag: "accessories" }
-                    }}
-                        style={{ color: 'inherit', textDecoration: "none" }}>
-                        <ListItemButton disableRipple onClick={() => setOpen(false)}>
-                            <ListItemText sx={{ color: "white" }} primary={
-                                "配件"
-                            } />
-
-
-                        </ListItemButton >
-                    </Link>
-
-                    <Link passHref href={{
-                        pathname: "/products",
-                        query: { tag: "new-arrival" }
-                    }}
-                        style={{ color: 'inherit', textDecoration: "none" }}>
-                        <ListItemButton disableRipple onClick={() => setOpen(false)}>
-                            <ListItemText sx={{ color: "white" }} primary={
-                                "新品上市"
-                            } />
-
-
-                        </ListItemButton >
-                    </Link>
-                    <Link passHref href={{
-                        pathname: "/products",
-                        query: { tag: "all-products" }
-                    }}
-                        style={{ color: 'inherit', textDecoration: "none" }}>
-                        <ListItemButton disableRipple onClick={() => setOpen(false)}>
-                            <ListItemText sx={{ color: "white" }} primary={
-                                "全部商品"
-                            } />
-
-
-                        </ListItemButton >
-                    </Link>
-                    <Link passHref href={{
-                        pathname: "/products",
-                        query: { tag: "limit-time-offer" }
-                    }}
-                        style={{ color: 'inherit', textDecoration: "none" }}>
-                        <ListItemButton disableRipple onClick={() => setOpen(false)}>
-                            <ListItemText sx={{ color: "white" }} primary={
-                                "本月優惠"
-                            } />
-
-
-                        </ListItemButton >
-                    </Link>
-                    <Link passHref href={{
-                        pathname: "/products",
-                        query: { tag: "daily-products" }
-                    }}
-                        style={{ color: 'inherit', textDecoration: "none" }}>
-                        <ListItemButton disableRipple onClick={() => setOpen(false)}>
-                            <ListItemText sx={{ color: "white" }} primary={
-                                "生活小物"
-                            } />
-
-
-                        </ListItemButton >
-                    </Link>
-
-
-
-
+                    ))}
 
                 </List>
             </nav>
@@ -273,9 +77,16 @@ interface SideNavBarProps {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const NestedLink = (props: any) => {
 
-    const { setOpen, children, title, href,sx } = props
+interface NestedLinkProps {
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    title: string;
+    href: string | UrlObject;
+    sx?: SxProps<Theme>;
+    children?: React.ReactNode;
+}
+
+const NestedLink = ({ setOpen, children, title, href, sx }: NestedLinkProps) => {
 
 
     const [expandOpen, setExpandOpen] = useState<boolean>(false)
@@ -288,7 +99,7 @@ const NestedLink = (props: any) => {
 
     return (
         <>
-            <ListItemButton sx={{...sx}} disableRipple onClick={handleExpandClick}>
+            <ListItemButton sx={{ ...sx }} disableRipple onClick={handleExpandClick}>
                 <ListItemText
                     sx={{ color: "white" }}
                     primary={
@@ -330,9 +141,185 @@ const NestedLink = (props: any) => {
 
 
 
+
+
 export default SideNavBar;
 
 export { useOpenState }
 
 
 
+
+
+// #region 備用代碼
+
+// <NestedLink
+//     href={{
+//         pathname: "/products",
+//         query: { kind: "pants" }
+//     }}
+//     title="褲子"
+//     setOpen={setOpen}
+// >
+//     <NavLink
+//         href={{
+//             pathname: "/products",
+//             query: { tag: "jeans" }
+//         }}
+//         setOpen={setOpen}
+//         sx={{ pl: 4 }}
+//     >
+//         牛仔褲
+//     </NavLink>
+//     <NavLink
+//         href={{
+//             pathname: "/products",
+//             query: { tag: "shorts" }
+//         }}
+//         setOpen={setOpen}
+//         sx={{ pl: 4 }}
+//     >
+//         短褲
+//     </NavLink>
+// </NestedLink>
+
+
+// <NestedLink
+//     href={{
+//         pathname: "/products",
+//         query: { kind: "coats" }
+//     }}
+//     title="外套"
+//     setOpen={setOpen}
+// >
+//     <NavLink
+//         href={{
+//             pathname: "/products",
+//             query: { tag: "windcoat" }
+//         }}
+//         setOpen={setOpen}
+//         sx={{ pl: 4 }}
+//     >
+//         風衣
+//     </NavLink>
+//     <NavLink
+//         href={{
+//             pathname: "/products",
+//             query: { tag: "knitting" }
+//         }}
+//         setOpen={setOpen}
+//         sx={{ pl: 4 }}
+//     >
+//         針織
+//     </NavLink>
+
+// </NestedLink>
+
+
+
+// {/*單一層 */}
+// <Link passHref href={{
+//     pathname: "/products",
+//     query: { tag: "accessories" }
+// }}
+//     style={{ color: 'inherit', textDecoration: "none" }}>
+//     <ListItemButton disableRipple onClick={() => setOpen(false)}>
+//         <ListItemText sx={{ color: "white" }} primary={
+//             "配件"
+//         } />
+
+
+//     </ListItemButton >
+// </Link>
+
+// <Link passHref href={{
+//     pathname: "/products",
+//     query: { tag: "new-arrival" }
+// }}
+//     style={{ color: 'inherit', textDecoration: "none" }}>
+//     <ListItemButton disableRipple onClick={() => setOpen(false)}>
+//         <ListItemText sx={{ color: "white" }} primary={
+//             "新品上市"
+//         } />
+
+
+//     </ListItemButton >
+// </Link>
+
+// <Link passHref href={{
+//     pathname: "/products",
+//     query: { tag: "limit-time-offer" }
+// }}
+//     style={{ color: 'inherit', textDecoration: "none" }}>
+//     <ListItemButton disableRipple onClick={() => setOpen(false)}>
+//         <ListItemText sx={{ color: "white" }} primary={
+//             "本月優惠"
+//         } />
+
+
+//     </ListItemButton >
+// </Link>
+
+
+// #endregion
+
+
+
+//#region
+// {/*有分類的， btn 包 text 包lnk */}
+// <ListItemButton disableRipple onClick={handleTopClick}>
+
+// <ListItemText
+//     sx={{ color: "white" }}
+//     primary={
+//         <Link
+//             passHref
+//             href={{
+//                 pathname: "/products",
+//                 query: { kind: "clothes" }
+
+//             }}
+//             style={{ color: 'inherit', textDecoration: "none" }}
+//             onClick={() => setOpen(false)}>
+//             上衣
+//         </Link>
+//     } />
+
+// {topOpen ? <ExpandLess sx={{ color: "white" }} /> : <ExpandMore sx={{ color: "white" }} />}
+
+
+
+// </ListItemButton >
+
+
+// <Collapse in={topOpen} timeout="auto" unmountOnExit>
+// <List>
+
+//     <Link passHref href={{
+//         pathname: "/products",
+//         query: { tag: "shirt" }
+//     }}
+//         style={{ color: 'inherit', textDecoration: "none" }}>
+//         <ListItemButton sx={{ pl: 4 }} disableRipple onClick={() => setOpen(false)}>
+//             <ListItemText sx={{ color: "white" }} primary={
+//                 "襯衫"
+//             } />
+
+//         </ListItemButton >
+//     </Link>
+
+//     <Link passHref href={{
+//         pathname: "/products",
+//         query: { tag: "t-shirt" }
+//     }}
+//         style={{ color: 'inherit', textDecoration: "none" }}>
+//         <ListItemButton sx={{ pl: 4 }} disableRipple onClick={() => setOpen(false)}>
+//             <ListItemText sx={{ color: "white" }} primary={
+//                 "T恤"
+//             } />
+
+//         </ListItemButton >
+//     </Link>
+// </List>
+// </Collapse>
+//#endregion
