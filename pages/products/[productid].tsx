@@ -205,7 +205,8 @@ export default function ProductDetailPage() {
                     height: "50px",
                     opacity: "0.9",
                     transition: 'top 0.3s',
-                    zIndex: "1"
+                    zIndex: "1",
+
                 }}>
                 <Container sx={{ px: 0 }}>
                     <Toolbar sx={{ height: "50px", minHeight: "50px !important", display: 'flex', justifyContent: 'center' }}>
@@ -248,14 +249,15 @@ export default function ProductDetailPage() {
                     height: "50px",
                     opacity: "0.9",
                     zIndex: "999",
-                    border: "solid 0px black"
+                    border: "solid 0px black",
+                    backgroundColor:"white"
                 }}>
                 <Container sx={{ px: 0 }}>
                     <Toolbar sx={{ height: "50px", minHeight: "50px !important", display: 'flex' }}>
                         <Stack direction={"row"} alignItems={"center"} sx={{ width: "100%" }} spacing={2}>
-                            <Typography>NT100</Typography>
+                            <Typography sx={{color:"grey"}}>NT100</Typography>
                             <Stack direction={"row"} justifyContent={"flex-end"} sx={{ flexGrow: 1, gap: 1, justifyContent: "flex-end", border: "0px solid black" }}>
-                                <Button variant="outlined" sx={{ border: "1px solid black", flexGrow: 1, color: "black" }}>加入購物車</Button>
+                                <Button variant="outlined" sx={{ flexGrow: 1}}>加入購物車</Button>
                                 <Button variant="contained" sx={{ flexGrow: 1 }}>直接購買</Button>
                             </Stack>
 
@@ -301,83 +303,108 @@ export default function ProductDetailPage() {
 
 
                 </Grid>
-                <Grid item lg={4} md={4} sm={4} xs={8} >
-                    <Stack direction={"column"} alignItems={"center"} sx={{ width: '100%', mb: { xs: 0, sm: 8 }, minHeight: "500px" }}>
-                        <Stack sx={{ maxWidth: "400px", width: '100%', border: "0px solid" }} >
-                            <Stack>
-                                <Typography variant='h5' sx={{ fontWeight: "bold", margin: "30px" }}>好男人需要時我都在衛生紙(10入)</Typography>
+                <Grid item lg={4} md={4} sm={4} xs={8}>
+
+                    <Grid container alignItems={"center"} columns={8} rowSpacing={5} sx={{ px: 5, width: "100%" }} >
+                        <Grid item xs={8} sx={{ px: 0 }}>
+                            <Typography variant='h5' sx={{ fontWeight: "bold", margin: "30px", mx: 0 }}>好男人需要時我都在衛生紙(10入)</Typography>
+                        </Grid>
+
+                        <Grid item xs={2} sm={2.5} md={2} lg={1.5}>
+                            <Typography variant='body2'>售價</Typography>
+                        </Grid>
+
+                        <Grid item xs={6} sm={5.5} md={6} lg={6.5}>
+                            <Stack direction={"row"} sx={{ alignItems: "center" }} spacing={1}>
+                                <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "red" }}>$1000</Typography>
+                                <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>$100</Typography>
                             </Stack>
+                        </Grid>
 
-                            <Stack direction={"row"} alignItems={'center'} spacing={3} sx={{ mx: "30px", mb: "10px" }}>
-                                <Typography variant='body2'>售價</Typography>
+                        <Grid item xs={2} sm={2.5} md={2} lg={1.5}>
+                            <Typography variant='body2'>顏色</Typography>
+                        </Grid>
 
-                                <Stack direction={"row"} sx={{ alignItems: "center" }} spacing={1}>
-                                    <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "red" }}>$1000</Typography>
-                                    <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>$100</Typography>
-                                </Stack>
+                        <Grid item xs={6} sm={5.5} md={6} lg={6.5}>
 
-                            </Stack>
                             {/*顏色 */}
-                            <Stack direction={"row"} alignItems={'center'} spacing={3} sx={{ mx: "30px", mt: "10px", mb: "20px" }}>
-                                <Typography variant='body2'>顏色</Typography>
-                                <Stack direction={"row"} spacing={1}>
-                                    {
-                                        productInfo.color
-                                            ?
-                                            productInfo.color.map((s, index) => (
+                            <Grid container columns={8} >
+                                {
+                                    productInfo.color
+                                        ?
+                                        productInfo.color.map((s, index) => (
+
+                                            <Grid item xs={2} sm={2.5} md={2} lg={1}>
                                                 <Stack key={s} onClick={() => { setSelectColor(s) }} alignItems={"center"}
                                                     sx={{ border: s === selectColor ? "1px solid #61D1BD" : "1px solid #d9d9d9", width: "30px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
                                                     <Box sx={{ background: s, minWidth: "30px", minHeight: "30px" }}></Box>
 
                                                 </Stack>
-                                            ))
-                                            :
+                                            </Grid>
 
-                                            <Stack alignItems={"center"} sx={{ border: "1px solid #d9d9d9", width: "40px", p: 0.5, borderRadius: "4px" }}>
-                                                <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
-                                            </Stack>
-                                    }
 
-                                </Stack>
-                            </Stack>
-                            <Stack direction={"row"} alignItems={'center'} spacing={3} sx={{ mx: "30px", mt: "10px", mb: "20px" }}>
-                                <Typography variant='body2'>規格</Typography>
-                                <Stack direction={"row"} spacing={1}>
-                                    {
-                                        productInfo.size
-                                            ?
-                                            productInfo.size.map((s, index) => (
-                                                <Stack key={s} onClick={() => { setSelectSize(s) }} alignItems={"center"} sx={{ border: s === selectSize ? "1px solid #61D1BD" : "1px solid #d9d9d9", width: "40px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
+                                        ))
+                                        :
+
+                                        <Stack alignItems={"center"} sx={{ border: "1px solid #d9d9d9", width: "40px", p: 0.5, borderRadius: "4px" }}>
+                                            <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
+                                        </Stack>
+                                }
+                            </Grid>
+
+                            
+                        </Grid>
+
+                        <Grid item xs={2} sm={2.5} md={2} lg={1.5}>
+                            <Typography variant='body2'>規格</Typography>
+                        </Grid>
+
+                        <Grid item xs={6} sm={5.5} md={6} lg={6.5}>
+                            {/*規格 */}
+                            <Grid container columns={8} spacing={1}>
+                                {
+                                    productInfo.size
+                                        ?
+                                        productInfo.size.map((s, index) => (
+
+                                            <Grid item xs={2} sm={2.5} md={2} lg={1}>
+                                                <Stack key={s} onClick={() => { setSelectSize(s) }} alignItems={"center"} sx={{ border: s === selectSize ? "1px solid #61D1BD" : "1px solid #d9d9d9", minWidth: "25px", minHeight: "25px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
                                                     <Typography >{s}</Typography>
                                                 </Stack>
-                                            ))
-                                            :
+                                            </Grid>
 
-                                            <Stack alignItems={"center"} sx={{ border: "1px solid #d9d9d9", width: "40px", p: 0.5, borderRadius: "4px" }}>
-                                                <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
-                                            </Stack>
-                                    }
 
-                                </Stack>
-                            </Stack>
+                                        ))
+                                        :
 
-                            <Stack direction={"row"} alignItems={'center'} spacing={3} sx={{ mx: "30px" }}>
-                                <Typography variant='body2'>數量</Typography>
-                                {/*數量欄 */}
-                                <Box sx={{ display: "flex", ml: "30px" }}>
-                                    <RemoveIcon onClick={handleCountMinus} sx={{ "&:hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "38px", width: "38px", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }} />
-                                    <TextFieldWrapper value={itemCount} size='small' inputProps={{ style: { textAlign: "center" } }} ></TextFieldWrapper>
-                                    <AddIcon onClick={handleCountPlus} sx={{ "&:hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "38px", width: "38px", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }} />
-                                </Box>
-                            </Stack>
+                                        <Stack alignItems={"center"} sx={{ border: "1px solid #d9d9d9", width: "40px", p: 0.5, borderRadius: "4px" }}>
+                                            <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
+                                        </Stack>
+                                }
+                            </Grid>
 
-                            <Stack direction={"row"} justifyContent={"flex-end"} sx={{ flexGrow: 1, gap: 1, mt: 5, px: 3.5, border: "0px solid black", display: { xs: "none", sm: "none", md: "none", lg: "flex" } }}>
+                        </Grid>
+
+                        <Grid item xs={2} sm={2.5} md={2} lg={1.5}>
+                            <Typography variant='body2'>數量</Typography>
+                        </Grid>
+
+                        <Grid item xs={6} sm={5.5} md={6} lg={6.5}>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <RemoveIcon onClick={handleCountMinus} sx={{ "&:hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderRadius: "4px" }} />
+                                <TextFieldWrapper value={itemCount} size='small' inputProps={{ style: { textAlign: "center" } }} ></TextFieldWrapper>
+                                <AddIcon onClick={handleCountPlus} sx={{ "&:hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderRadius: "4px" }} />
+                            </Box>
+                        </Grid>
+
+                        <Grid item xs={8}>
+                            <Stack direction={"row"} justifyContent={"start"} sx={{ gap: 1, mt: 5, border: "0px solid black", display: { xs: "none", sm: "none", md: "none", lg: "flex" } }}>
                                 <Button variant="outlined" disableRipple sx={{ flexGrow: 1 }}>加入購物車</Button>
                                 <Button variant="contained" disableRipple sx={{ flexGrow: 1 }}>直接購買</Button>
                             </Stack>
+                        </Grid>
+                    </Grid>
 
-                        </Stack>
-                    </Stack>
 
 
                 </Grid>
@@ -433,14 +460,14 @@ export default function ProductDetailPage() {
                 <Grid item xs={8} sx={{ mt: 6 }} >
 
                     {/*商品介紹*/}
-                    <ProductIntroduce 
-                        productInfomation={fakeProductInfomation} 
+                    <ProductIntroduce
+                        productInfomation={fakeProductInfomation}
                         columns={8}
                         xs={2.5}
                         md={1}
                         id="#intro"
-                        />
-                    
+                    />
+
 
                 </Grid>
                 <Grid item xs={8} sx={{ mt: 6 }} >
@@ -552,7 +579,7 @@ const SizeTable = ({ sizeTable }: SizeTableProps) => {
 }
 
 
-const ProductIntroduce = ({ productInfomation,xs,md,columns,id }: ProductIntroduceProps) => {
+const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductIntroduceProps) => {
 
 
     return (
@@ -572,9 +599,9 @@ const ProductIntroduce = ({ productInfomation,xs,md,columns,id }: ProductIntrodu
                     顏色
                 </Typography>
             </Grid>
-            <Grid item xs={columns-xs} md={columns-md}>
+            <Grid item xs={columns - xs} md={columns - md}>
                 <Typography variant="subtitle1">
-                    {productInfomation.colorDescription?.join(", ") }
+                    {productInfomation.colorDescription?.join(", ")}
                 </Typography>
             </Grid>
             <Grid item xs={xs} md={md}>
@@ -582,9 +609,9 @@ const ProductIntroduce = ({ productInfomation,xs,md,columns,id }: ProductIntrodu
                     尺寸
                 </Typography>
             </Grid>
-            <Grid item xs={columns-xs} md={columns-md}>
+            <Grid item xs={columns - xs} md={columns - md}>
                 <Typography variant="subtitle1">
-                    {productInfomation.size?.join(", ") }
+                    {productInfomation.size?.join(", ")}
                 </Typography>
             </Grid>
             <Grid item xs={xs} md={md}>
@@ -592,9 +619,9 @@ const ProductIntroduce = ({ productInfomation,xs,md,columns,id }: ProductIntrodu
                     商品材質
                 </Typography>
             </Grid>
-            <Grid item xs={columns-xs} md={columns-md}>
+            <Grid item xs={columns - xs} md={columns - md}>
                 <Typography variant="subtitle1">
-                    {productInfomation.material?.join(", ") }
+                    {productInfomation.material?.join(", ")}
                 </Typography>
             </Grid>
             <Grid item xs={xs} md={md}>
@@ -602,8 +629,8 @@ const ProductIntroduce = ({ productInfomation,xs,md,columns,id }: ProductIntrodu
                     商品編號
                 </Typography>
             </Grid>
-            <Grid item xs={columns-xs} md={columns-md}>
-                <Typography variant="subtitle1">                  
+            <Grid item xs={columns - xs} md={columns - md}>
+                <Typography variant="subtitle1">
                     {productInfomation.productId}
                 </Typography>
             </Grid>
@@ -612,7 +639,7 @@ const ProductIntroduce = ({ productInfomation,xs,md,columns,id }: ProductIntrodu
                     洗滌方式
                 </Typography>
             </Grid>
-            <Grid item xs={columns-xs} md={columns-md}>
+            <Grid item xs={columns - xs} md={columns - md}>
                 <Typography variant="subtitle1">
                     {productInfomation.howToWash}
                 </Typography>
@@ -622,7 +649,7 @@ const ProductIntroduce = ({ productInfomation,xs,md,columns,id }: ProductIntrodu
                     商品特色
                 </Typography>
             </Grid>
-            <Grid item xs={columns-xs} md={columns-md}>
+            <Grid item xs={columns - xs} md={columns - md}>
                 <Typography variant="subtitle1">
                     {productInfomation.features}
                 </Typography>
@@ -665,7 +692,7 @@ const fakeProductInfomation: ProductInfomation =
     price: 100,
     size: ["S", "M", "L", "XL", "2XL", "3XL"],
     color: ["black", "wheat", "brown"],
-    colorDescription:["黑色", "白色", "深藍色", "灰色", "深灰色","紅色"],
+    colorDescription: ["黑色", "白色", "深藍色", "灰色", "深灰色", "紅色"],
     material: ["聚酯纖維", "聚氨酯纖維"],
     howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",
     features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a"
@@ -674,8 +701,8 @@ const fakeProductInfomation: ProductInfomation =
 
 interface ProductIntroduceProps {
     productInfomation: ProductInfomation;
-    xs:  number;
-    md:  number;
+    xs: number;
+    md: number;
     columns: number;
     id?: string | undefined
 }
@@ -691,7 +718,7 @@ interface ProductInfomation {
     howToWash?: string;
     features?: string;
     material?: string[];
-    colorDescription?:string[];
+    colorDescription?: string[];
 }
 
 
@@ -737,12 +764,18 @@ const TextFieldWrapper = styled(TextField)(
         /*修改 focus 時外框的顏色  */
         "& .MuiOutlinedInput-root.Mui-focused": {
             "& > fieldset": {
-                borderColor: "#AFAFAF"
+                borderColor: "white",
+
             }
         },
         /*修改外框的弧度 */
         '& fieldset': { borderRadius: "0px" },
         maxWidth: "70px",
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                border: 'none',
+            }
+        },
 
     })
 
@@ -795,3 +828,88 @@ const CustomSilde = (props: any) => {
         </Box>
     )
 }
+
+
+
+
+// #region
+
+{/* <Stack direction={"column"} alignItems={"center"} sx={{ width: '100%', mb: { xs: 0, sm: 8 }, minHeight: "500px" }}>
+                        <Stack sx={{ maxWidth: "400px", width: '100%', border: "0px solid" }} >
+                            <Stack>
+                                <Typography variant='h5' sx={{ fontWeight: "bold", margin: "30px" }}>好男人需要時我都在衛生紙(10入)</Typography>
+                            </Stack>
+
+                            <Stack direction={"row"} alignItems={'center'} spacing={3} sx={{ mx: "30px", mb: "10px" }}>
+                                <Typography variant='body2'>售價</Typography>
+
+                                <Stack direction={"row"} sx={{ alignItems: "center" }} spacing={1}>
+                                    <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "red" }}>$1000</Typography>
+                                    <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>$100</Typography>
+                                </Stack>
+
+                            </Stack>
+                           
+                            <Stack direction={"row"} alignItems={'center'} spacing={3} sx={{ mx: "30px", mt: "10px", mb: "20px" }}>
+                                <Typography variant='body2'>顏色</Typography>
+                                <Stack direction={"row"} spacing={1}>
+                                    {
+                                        productInfo.color
+                                            ?
+                                            productInfo.color.map((s, index) => (
+                                                <Stack key={s} onClick={() => { setSelectColor(s) }} alignItems={"center"}
+                                                    sx={{ border: s === selectColor ? "1px solid #61D1BD" : "1px solid #d9d9d9", width: "30px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
+                                                    <Box sx={{ background: s, minWidth: "30px", minHeight: "30px" }}></Box>
+
+                                                </Stack>
+                                            ))
+                                            :
+
+                                            <Stack alignItems={"center"} sx={{ border: "1px solid #d9d9d9", width: "40px", p: 0.5, borderRadius: "4px" }}>
+                                                <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
+                                            </Stack>
+                                    }
+
+                                </Stack>
+                            </Stack>
+                            <Stack direction={"row"} alignItems={'center'} spacing={3} sx={{ mx: "30px", mt: "10px", mb: "20px" }}>
+                                <Typography variant='body2'>規格</Typography>
+                                <Stack direction={"row"} spacing={1}>
+                                    {
+                                        productInfo.size
+                                            ?
+                                            productInfo.size.map((s, index) => (
+                                                <Stack key={s} onClick={() => { setSelectSize(s) }} alignItems={"center"} sx={{ border: s === selectSize ? "1px solid #61D1BD" : "1px solid #d9d9d9", width: "40px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
+                                                    <Typography >{s}</Typography>
+                                                </Stack>
+                                            ))
+                                            :
+
+                                            <Stack alignItems={"center"} sx={{ border: "1px solid #d9d9d9", width: "40px", p: 0.5, borderRadius: "4px" }}>
+                                                <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
+                                            </Stack>
+                                    }
+
+                                </Stack>
+                            </Stack>
+
+                            <Stack direction={"row"} alignItems={'center'} spacing={3} sx={{ mx: "30px" }}>
+                                <Typography variant='body2'>數量</Typography>
+                                
+                                <Box sx={{ display: "flex", ml: "30px" }}>
+                                    <RemoveIcon onClick={handleCountMinus} sx={{ "&:hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "38px", width: "38px", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }} />
+                                    <TextFieldWrapper value={itemCount} size='small' inputProps={{ style: { textAlign: "center" } }} ></TextFieldWrapper>
+                                    <AddIcon onClick={handleCountPlus} sx={{ "&:hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "38px", width: "38px", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }} />
+                                </Box>
+                            </Stack>
+
+                            <Stack direction={"row"} justifyContent={"flex-end"} sx={{ flexGrow: 1, gap: 1, mt: 5, px: 3.5, border: "0px solid black", display: { xs: "none", sm: "none", md: "none", lg: "flex" } }}>
+                                <Button variant="outlined" disableRipple sx={{ flexGrow: 1 }}>加入購物車</Button>
+                                <Button variant="contained" disableRipple sx={{ flexGrow: 1 }}>直接購買</Button>
+                            </Stack>
+
+                        </Stack>
+                    </Stack>
+
+                     */}
+// # endregion
