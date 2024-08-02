@@ -28,8 +28,23 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
+import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
 
-export default function ProductDetailPage() {
+export default function ProductDetailPage({ product }: ProductDetailPageProps) {
+
+    if(!product){
+        return <p>無商品資訊...</p>
+    }
+
+
+    const [recommendProducts,setrecommendProducts] = useState<ProductInfomation[]|null>(null);
+    // 你可能感興趣
+    useEffect(()=>{
+        const products = getProducts()
+        setrecommendProducts(products)
+    },[])
+
 
     const [activeSlide, setActiveSlide] = useState(0)
 
@@ -129,14 +144,14 @@ export default function ProductDetailPage() {
                 需要加上滑動的距離才能計算元素在頁面的絕對位置
             
             */
-            
-            const offsetTop=element.getBoundingClientRect().top + window.scrollY; 
-            const offset=110
+
+            const offsetTop = element.getBoundingClientRect().top + window.scrollY;
+            const offset = 110
 
             window.scrollTo({
                 top: offsetTop - offset,
                 behavior: 'smooth',
-              });
+            });
             //element.scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -206,19 +221,19 @@ export default function ProductDetailPage() {
                         opacity: "0.8"
 
                     },
-                    
+
                 }}
                 FabProps={{
                     sx: {
                         '&:hover': {
-                          backgroundColor: '#d9d9d9', // 自定义悬停颜色
+                            backgroundColor: '#d9d9d9', // 自定义悬停颜色
                         },
-                      },
+                    },
                 }}
                 open={false}
                 icon={<KeyboardArrowUpIcon sx={{ color: "grey" }} />}
                 onClick={handleScrollTop}
-                
+
             >
 
             </SpeedDial>
@@ -300,22 +315,12 @@ export default function ProductDetailPage() {
                         <Box sx={{ p: 0, m: 2, mb: 1, maxWidth: "400px", maxHeight: "400px", width: '100%', height: 'auto' }}>
 
                             <Slider {...settings} ref={sliderRef} >
-                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
-                                    <Image src={ProductImage4} alt="ProductImage4" fill style={{ objectFit: "cover" }} />
-                                </Box>
-                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
-                                    <Image src={ProductImage1} alt="ProductImage1" fill style={{ objectFit: "cover" }} />
-                                </Box>
-                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
-                                    <Image src={ProductImage2} alt="ProductImage2" fill style={{ objectFit: "cover" }} />
-                                </Box>
-                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
-                                    <Image src={ProductImage3} alt="ProductImage3" fill style={{ objectFit: "cover" }} />
-                                </Box>
-                                <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
-                                    <Image src={ProductImage} alt="ProductImage" fill style={{ objectFit: "cover" }} />
-                                </Box>
-
+                                {product?.images && product?.images.map((img, index) => (
+                                    <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
+                                        <Image src={img} alt={`img${index}`} fill style={{ objectFit: "cover" }} />
+                                    </Box>
+                                ))}
+                                
 
                             </Slider>
 
@@ -330,12 +335,13 @@ export default function ProductDetailPage() {
                 </Grid>
                 <Grid item lg={4} md={4} sm={4} xs={8}>
                     {/*購買資訊 */}
-                    <PurchaseDetail 
+                    <PurchaseDetail
                         columns={8}
                         xs={2}
                         sm={2.5}
                         md={2}
                         lg={1.5}
+                        product={product}
                     />
 
 
@@ -393,7 +399,7 @@ export default function ProductDetailPage() {
 
                     {/*商品介紹*/}
                     <ProductIntroduce
-                        productInfomation={fakeProductInfomation}
+                        productInfomation={product}
                         columns={8}
                         xs={2.5}
                         md={1}
@@ -449,8 +455,8 @@ export default function ProductDetailPage() {
                         <Grid item xs={8}>
                             <Box >
                                 <Slider {...settingsYouMayInterested} >
-                                    {products.map((product) => (
-                                        <CustomSilde key={product.id} product={product} goToProductDetail={goToProductDetail} />
+                                    {recommendProducts &&recommendProducts.map((product) => (
+                                        <CustomSilde key={product.productId} product={product} goToProductDetail={goToProductDetail} />
 
                                     ))}
                                 </Slider>
@@ -465,6 +471,39 @@ export default function ProductDetailPage() {
         </Box >
 
     )
+}
+
+
+
+
+interface ProductDetailPageProps {
+    product: ProductInfomation | null
+}
+
+export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = async (context) => {
+
+    const { params } = context
+
+    const productId = params?.productid;
+
+    console.log("productId=", productId)
+
+    if (!productId || typeof productId !== "string") {
+        return {
+            notFound: true
+        }
+    }
+
+    // params   segement  看你目錄怎麼定義的
+
+    const product = getProdcctById(productId)
+
+
+    return {
+        props: {
+            product
+        }
+    }
 }
 
 
@@ -513,7 +552,7 @@ const SizeTable = ({ sizeTable }: SizeTableProps) => {
 
 const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductIntroduceProps) => {
 
-    
+
     return (
         <Grid id={id} container columns={columns} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
             <Grid item xs={8} sx={{ mb: 1 }}>
@@ -591,12 +630,17 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
 }
 
 
-const PurchaseDetail = ({xs,sm,md,lg,columns}:PurchaseDetailProps) => {
+const PurchaseDetail = ({ xs, sm, md, lg, columns, product }: PurchaseDetailProps) => {
 
-    const contentxs :number= columns-xs;
-    const contentsm :number= columns-sm
-    const contentmd :number= columns-md
-    const contentlg :number= columns-lg
+
+    if (!product) {
+        return <p>無商品資訊...</p>
+    }
+
+    const contentxs: number = columns - xs;
+    const contentsm: number = columns - sm
+    const contentmd: number = columns - md
+    const contentlg: number = columns - lg
 
     const [productInfo, setProductInfo] = useState<ProductInfomationCount>({ ...fakeProductInfomation, count: 1 })
     const [selectSize, setSelectSize] = useState("")
@@ -627,7 +671,7 @@ const PurchaseDetail = ({xs,sm,md,lg,columns}:PurchaseDetailProps) => {
     return (
         <Grid container alignItems={"center"} columns={columns} rowSpacing={5} sx={{ px: 5, width: "100%" }} >
             <Grid item xs={8} sx={{ px: 0 }}>
-                <Typography variant='h5' sx={{ fontWeight: "bold", margin: "30px", mx: 0 }}>好男人需要時我都在衛生紙(10入)</Typography>
+                <Typography variant='h5' sx={{ fontWeight: "bold", margin: "30px", mx: 0 }}>{product.title}</Typography>
             </Grid>
 
             <Grid item xs={xs} sm={sm} md={md} lg={lg}>
@@ -636,8 +680,8 @@ const PurchaseDetail = ({xs,sm,md,lg,columns}:PurchaseDetailProps) => {
 
             <Grid item xs={contentxs} sm={contentsm} md={contentmd} lg={contentlg}>
                 <Stack direction={"row"} sx={{ alignItems: "center" }} spacing={1}>
-                    <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "red" }}>$1000</Typography>
-                    <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>$100</Typography>
+                    <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "red" }}>${product.price}</Typography>
+                    <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>${product.price}</Typography>
                 </Stack>
             </Grid>
 
@@ -650,11 +694,11 @@ const PurchaseDetail = ({xs,sm,md,lg,columns}:PurchaseDetailProps) => {
                 {/*顏色 */}
                 <Grid container columns={8} spacing={1}>
                     {
-                        productInfo.color
+                        product.color
                             ?
-                            productInfo.color.map((s, index) => (
+                            product.color.map((s, index) => (
 
-                                <Grid  key={s} item xs={2} sm={2.5} md={2} lg={1}>
+                                <Grid key={s} item xs={2} sm={2.5} md={2} lg={1}>
                                     <Stack onClick={() => { setSelectColor(s) }} alignItems={"center"}
                                         sx={{ border: s === selectColor ? "1px solid #61D1BD" : "1px solid #d9d9d9", width: "30px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
                                         <Box sx={{ background: s, minWidth: "30px", minHeight: "30px" }}></Box>
@@ -684,12 +728,12 @@ const PurchaseDetail = ({xs,sm,md,lg,columns}:PurchaseDetailProps) => {
                 {/*規格 */}
                 <Grid container columns={8} spacing={1}>
                     {
-                        productInfo.size
+                        product.size
                             ?
-                            productInfo.size.map((s, index) => (
+                            product.size.map((s, index) => (
 
                                 <Grid key={s} item xs={2} sm={2.5} md={2} lg={1}>
-                                    <Stack  onClick={() => { setSelectSize(s) }} alignItems={"center"} sx={{ border: s === selectSize ? "1px solid #61D1BD" : "1px solid #d9d9d9", minWidth: "25px", minHeight: "25px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
+                                    <Stack onClick={() => { setSelectSize(s) }} alignItems={"center"} sx={{ border: s === selectSize ? "1px solid #61D1BD" : "1px solid #d9d9d9", minWidth: "25px", minHeight: "25px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
                                         <Typography >{s}</Typography>
                                     </Stack>
                                 </Grid>
@@ -772,12 +816,13 @@ const fakeProductInfomation: ProductInfomation =
 
 }
 
-interface PurchaseDetailProps{
+interface PurchaseDetailProps {
     xs: number;
     sm: number;
     md: number;
-    lg:number;
+    lg: number;
     columns: number;
+    product: ProductInfomation | null
 }
 
 interface ProductIntroduceProps {
@@ -788,7 +833,7 @@ interface ProductIntroduceProps {
     id?: string | undefined
 }
 
-interface ProductInfomation {
+export interface ProductInfomation {
     productId: string;
     title: string;
     price: number;
@@ -800,6 +845,8 @@ interface ProductInfomation {
     features?: string;
     material?: string[];
     colorDescription?: string[];
+    images?: any[];
+    coverImg?: any;
 }
 
 
@@ -881,7 +928,7 @@ const CustomSilde = (props: any) => {
                         }}
                     >
                         <Image
-                            src={product.pic}
+                            src={product.coverImg}
                             alt="product information"
                             fill
                             style={{ objectFit: "cover" }}
@@ -894,9 +941,9 @@ const CustomSilde = (props: any) => {
                     px: { sm: 1, xs: 0 }
                 }}>
                     <Stack spacing={1} sx={{ border: "0px solid black" }}>
-                        <Typography sx={{ fontWeight: { md: "bold", xs: "normal" }, fontSize: { xs: "14px" }, '&:hover': { cursor: "pointer" } }} onClick={goToProductDetail}>好男人需要時我都在衛生</Typography>
-                        <Typography>NT$100</Typography>
-                        <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT$1000</Typography>
+                        <Typography sx={{ fontWeight: { md: "bold", xs: "normal" }, fontSize: { xs: "14px" }, '&:hover': { cursor: "pointer" } }} onClick={goToProductDetail}>{product.title}</Typography>
+                        <Typography>NT${product.price}</Typography>
+                        <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.price}</Typography>
                     </Stack>
                 </CardContent>
 

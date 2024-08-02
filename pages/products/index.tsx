@@ -4,30 +4,27 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
-import ProductImage from '/public/images/朋朋衛生紙商品圖.jpg'
-import ProductImage2 from '/public/images/coat1.jpg'
-import ProductImage3 from '/public/images/coat2.jpg'
-import ProductImage4 from '/public/images/coat3.jpg'
-import ProductImage5 from '/public/images/coat4.jpg'
-import { Box, Button, Stack, Typography } from "@mui/material";
-import { useState } from "react";
-import Image from "next/image";
 
-export default function ProductsPage() {
+import { Box, Button, Stack, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { getProducts } from "@/dummy-data/dummy-data";
+import { GetServerSideProps } from "next";
+import { ProductInfomation } from "./[productid]";
+
+export default function ProductsPage({ products }: ProductsPageProps) {
 
     const router = useRouter()
 
-    const goToProductDetail=()=>{
-        router.push("/products/7aa1aas61cx1vs6d54fa96")
+    const goToProductDetail = (productId: string) => {
+        router.push(`/products/${productId}`)
     }
 
-    const products = [
-        {id:1,pic:ProductImage},
-        {id:2,pic:ProductImage2},
-        {id:3,pic:ProductImage3},
-        {id:4,pic:ProductImage4},
-        {id:5,pic:ProductImage5}
-        ]
+    console.log(products)
+
+    useEffect(() => {
+        getProducts()
+    }, [])
 
     return (
         <Box sx={{ p: 2 }}>
@@ -38,9 +35,9 @@ export default function ProductsPage() {
 
 
                 {products.map((product) => (
-                    <Grid item lg={2} md={2} sm={4} xs={4} key={product.id}>
+                    <Grid item lg={2} md={2} sm={4} xs={4} key={product.productId}>
                         <Card sx={{ boxShadow: "none" }}>
-                            <CardMedia onClick={goToProductDetail} sx={{'&:hover': { cursor: "pointer" }}}>
+                            <CardMedia onClick={() => { goToProductDetail(product.productId) }} sx={{ '&:hover': { cursor: "pointer" } }}>
 
                                 <Box
                                     sx={{
@@ -52,10 +49,10 @@ export default function ProductsPage() {
                                     }}
                                 >
                                     <Image
-                                        src={product.pic}
+                                        src={product.coverImg}
                                         alt="product information"
                                         fill
-                                        style={{objectFit:"cover"}}
+                                        style={{ objectFit: "cover" }}
                                     />
                                 </Box>
 
@@ -64,9 +61,9 @@ export default function ProductsPage() {
                                 maxHeight: "250px"
                             }}>
                                 <Stack spacing={"15px"}>
-                                    <Typography sx={{ fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={goToProductDetail}>好男人需要時我都在衛生紙(10入)</Typography>
-                                    <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT$1000</Typography>
-                                    <Typography>NT$100</Typography>
+                                    <Typography sx={{ fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.productId) }}>{product.title}</Typography>
+                                    <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.price}</Typography>
+                                    <Typography>NT${product.price}</Typography>
 
                                 </Stack>
                             </CardContent>
@@ -81,4 +78,18 @@ export default function ProductsPage() {
         </Box>
 
     )
+}
+
+interface ProductsPageProps {
+    products: ProductInfomation[]
+}
+
+export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (context) => {
+
+    const products = getProducts();
+    return {
+        props: {
+            products
+        }
+    }
 }
