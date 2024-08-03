@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { getProducts } from "@/dummy-data/dummy-data";
 import { GetServerSideProps } from "next";
-import { ProductInfomation } from "./[productid]";
+import { ProductInfomation } from "@/interfaces";
 
 export default function ProductsPage({ products }: ProductsPageProps) {
 
@@ -19,12 +19,6 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     const goToProductDetail = (productId: string) => {
         router.push(`/products/${productId}`)
     }
-
-    console.log(products)
-
-    useEffect(() => {
-        getProducts()
-    }, [])
 
     return (
         <Box sx={{ p: 2 }}>

@@ -2,48 +2,37 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import styled from '@mui/system/styled'
-import ProductImage from '/public/images/朋朋衛生紙商品圖.jpg'
-import ProductImage1 from '/public/images/輪播圖1.jpg'
-import ProductImage2 from '/public/images/coat4.jpg'
-import ProductImage3 from '/public/images/coat3.jpg'
 import ProductImage4 from '/public/images/coat1.jpg'
 import ProductImage5 from '/public/images/coat2.jpg'
 import Image from "next/image";
 import { AppBar, Box, Button, Card, CardContent, CardHeader, CardMedia, Container, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, SpeedDial, SpeedDialIcon, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Toolbar, Typography, TypographyOwnProps, useMediaQuery, useTheme } from "@mui/material";
-import Grid, { GridSize } from '@mui/material/Grid';
+import Grid from '@mui/material/Grid';
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
+import { ProductInfomation, ProductInfomationCount } from "@/interfaces";
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
-    if(!product){
+    if (!product) {
         return <p>無商品資訊...</p>
     }
 
 
-    const [recommendProducts,setrecommendProducts] = useState<ProductInfomation[]|null>(null);
+    const [recommendProducts, setrecommendProducts] = useState<ProductInfomation[] | null>(null);
     // 你可能感興趣
-    useEffect(()=>{
+    useEffect(() => {
         const products = getProducts()
         setrecommendProducts(products)
-    },[])
+    }, [])
 
 
     const [activeSlide, setActiveSlide] = useState(0)
@@ -105,22 +94,6 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     const handleView = (e: React.SyntheticEvent, newVal: string) => {
         setviewValue(newVal)
     }
-
-    const imgList = [
-        ProductImage,
-        ProductImage1,
-        ProductImage2,
-        ProductImage3,
-        ProductImage4
-    ]
-
-    const products = [
-        { id: 1, pic: ProductImage, title: "好朋友衛生紙" },
-        { id: 2, pic: ProductImage2, title: "好朋友衛生紙" },
-        { id: 3, pic: ProductImage3, title: "好朋友衛生紙" },
-        { id: 4, pic: ProductImage4, title: "好朋友衛生紙" },
-        { id: 5, pic: ProductImage5, title: "好朋友衛生紙" }
-    ]
 
 
     let sliderRef = useRef<Slider | null>(null)
@@ -206,111 +179,15 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     return (
         <Box sx={{ px: 0 }}>
 
-            <SpeedDial
-                ariaLabel="SpeedDial basic example"
-                sx={{
-                    position: "fixed",
-                    bottom: "150px",
-                    right: "30px",
-                    '& .MuiFab-primary': {
-                        width: 45,
-                        height: 45,
-                        bgcolor: "white",
-                        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
-                        border: "0px solid grey",
-                        opacity: "0.8"
+            <GoToTopButton handleScrollTop={handleScrollTop} />
 
-                    },
+            <AnchorNavbar showNavBar={showNavBar} handleLinkClick={handleLinkClick}/>
 
-                }}
-                FabProps={{
-                    sx: {
-                        '&:hover': {
-                            backgroundColor: '#d9d9d9', // 自定义悬停颜色
-                        },
-                    },
-                }}
-                open={false}
-                icon={<KeyboardArrowUpIcon sx={{ color: "grey" }} />}
-                onClick={handleScrollTop}
-
-            >
-
-            </SpeedDial>
-
-            <AppBar
-                position="fixed"
-                sx={{
-                    top: showNavBar ? { sm: "64px", xs: "56px" } : '-50px',
-                    height: "50px",
-                    opacity: "0.9",
-                    transition: 'top 0.3s',
-                    zIndex: "1",
-
-                }}>
-                <Container sx={{ px: 0 }}>
-                    <Toolbar sx={{ height: "50px", minHeight: "50px !important", display: 'flex', justifyContent: 'center' }}>
-                        <nav>
-                            <List sx={{ display: "flex", flexDirection: "row" }}>
-                                <Link href="#" style={{ color: 'inherit', textDecoration: "none" }} onClick={(e) => handleLinkClick(e, '#intro')}>
-                                    <ListItemButton disableRipple >
-                                        <ListItemText sx={{ color: "grey" }} primary="商品介紹" />
-                                    </ListItemButton>
-                                </Link>
-                                <Link href="#" style={{ color: 'inherit', textDecoration: "none" }} onClick={(e) => handleLinkClick(e, '#spec')}>
-                                    <ListItemButton disableRipple >
-                                        <ListItemText sx={{ color: "grey" }} primary="產品規格" />
-                                    </ListItemButton>
-                                </Link>
-                                <Link href="#" style={{ color: 'inherit', textDecoration: "none" }} onClick={(e) => handleLinkClick(e, '#notice')}>
-                                    <ListItemButton disableRipple >
-                                        <ListItemText sx={{ color: "grey" }} primary="注意事項" />
-                                    </ListItemButton>
-                                </Link>
-                            </List>
-
-                        </nav>
-                    </Toolbar>
-                </Container>
-
-            </AppBar>
-
-
-            <AppBar
-                position="fixed"
-                sx={{
-                    top: "auto",
-                    bottom: {
-                        lg: "-50px",
-
-                        xs: "0px"
-                    },
-                    transition: "bottom 0.3s",
-                    height: "50px",
-                    opacity: "0.9",
-                    zIndex: "999",
-                    border: "solid 0px black",
-                    backgroundColor: "white"
-                }}>
-                <Container sx={{ px: 0 }}>
-                    <Toolbar sx={{ height: "50px", minHeight: "50px !important", display: 'flex' }}>
-                        <Stack direction={"row"} alignItems={"center"} sx={{ width: "100%" }} spacing={2}>
-                            <Typography sx={{ color: "grey" }}>NT100</Typography>
-                            <Stack direction={"row"} justifyContent={"flex-end"} sx={{ flexGrow: 1, gap: 1, justifyContent: "flex-end", border: "0px solid black" }}>
-                                <Button variant="outlined" sx={{ flexGrow: 1 }}>加入購物車</Button>
-                                <Button variant="contained" sx={{ flexGrow: 1 }}>直接購買</Button>
-                            </Stack>
-
-                        </Stack>
-                    </Toolbar>
-                </Container>
-
-            </AppBar>
+            <BottomBar />
 
             <Grid container columns={8} spacing={3} >
                 <Grid item lg={4} md={4} sm={4} xs={8}  >
                     <Stack direction={"column"} alignItems={"center"} sx={{ border: "0px solid", mb: 10 }}>
-
                         {/*輪播圖 */}
                         <Box sx={{ p: 0, m: 2, mb: 1, maxWidth: "400px", maxHeight: "400px", width: '100%', height: 'auto' }}>
 
@@ -320,19 +197,13 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                                         <Image src={img} alt={`img${index}`} fill style={{ objectFit: "cover" }} />
                                     </Box>
                                 ))}
-                                
-
                             </Slider>
 
                         </Box>
 
-
-
                     </Stack>
-
-
-
                 </Grid>
+
                 <Grid item lg={4} md={4} sm={4} xs={8}>
                     {/*購買資訊 */}
                     <PurchaseDetail
@@ -343,9 +214,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         lg={1.5}
                         product={product}
                     />
-
-
                 </Grid>
+
                 {/*大圖區 */}
                 <Grid item xs={8} sx={{ mt: 6 }} >
                     <Grid container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
@@ -395,6 +265,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         </Grid>
                     </Grid>
                 </Grid>
+
                 <Grid item xs={8} sx={{ mt: 6 }} >
 
                     {/*商品介紹*/}
@@ -405,10 +276,10 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         md={1}
                         id="#intro"
                     />
-
-
                 </Grid>
+
                 <Grid item xs={8} sx={{ mt: 6 }} >
+                    
                     <Grid id="#spec" container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
                         <Grid item xs={8} sx={{ mb: 1 }}>
                             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
@@ -423,9 +294,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                             <SizeTable sizeTable={sizeTable} />
                         </Grid>
                     </Grid>
+
                 </Grid>
 
                 <Grid item xs={8} sx={{ mt: 6 }} >
+                    
                     <Grid id="#notice" container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
                         <Grid item xs={8} sx={{ mb: 1 }}>
                             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
@@ -442,9 +315,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                             </Typography>
                         </Grid>
                     </Grid>
+
                 </Grid>
 
                 <Grid item xs={8} sx={{ mt: 6 }} >
+                    
                     <Grid container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
                         <Grid item xs={8} sx={{ mb: 1 }}>
                             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
@@ -455,15 +330,15 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         <Grid item xs={8}>
                             <Box >
                                 <Slider {...settingsYouMayInterested} >
-                                    {recommendProducts &&recommendProducts.map((product) => (
+                                    {recommendProducts && recommendProducts.map((product) => (
                                         <CustomSilde key={product.productId} product={product} goToProductDetail={goToProductDetail} />
-
                                     ))}
                                 </Slider>
                             </Box>
 
                         </Grid>
                     </Grid>
+
                 </Grid>
 
             </Grid>
@@ -511,6 +386,10 @@ interface SizeTableProps {
     sizeTable: SizeTableDetails[]
 }
 
+/**
+ * 尺寸表
+ * @component 
+ */
 const SizeTable = ({ sizeTable }: SizeTableProps) => {
 
 
@@ -550,6 +429,10 @@ const SizeTable = ({ sizeTable }: SizeTableProps) => {
 }
 
 
+/**
+ * 商品介紹
+ * @component 
+ */
 const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductIntroduceProps) => {
 
 
@@ -630,6 +513,10 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
 }
 
 
+/**
+ * 購買資訊
+ * @component 
+ */
 const PurchaseDetail = ({ xs, sm, md, lg, columns, product }: PurchaseDetailProps) => {
 
 
@@ -766,7 +653,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product }: PurchaseDetailProp
             </Grid>
 
             <Grid item xs={8}>
-                <Stack direction={"row"} justifyContent={"start"} sx={{ gap: 1, mt: 5, border: "0px solid black", display: { xs: "none", sm: "none", md: "none", lg: "flex" } }}>
+                <Stack direction={"row"} justifyContent={"start"} sx={{ gap: 1, mt: 5, border: "0px solid black", display: { xs: "none", sm: "none", md: "flex", lg: "flex" } }}>
                     <Button variant="outlined" disableRipple sx={{ flexGrow: 1 }}>加入購物車</Button>
                     <Button variant="contained" disableRipple sx={{ flexGrow: 1 }}>直接購買</Button>
                 </Stack>
@@ -833,26 +720,6 @@ interface ProductIntroduceProps {
     id?: string | undefined
 }
 
-export interface ProductInfomation {
-    productId: string;
-    title: string;
-    price: number;
-    stock: number;
-    color?: string[];
-    size?: string[];
-    selectSize?: string;
-    howToWash?: string;
-    features?: string;
-    material?: string[];
-    colorDescription?: string[];
-    images?: any[];
-    coverImg?: any;
-}
-
-
-interface ProductInfomationCount extends ProductInfomation {
-    count: number
-}
 
 
 
@@ -910,6 +777,10 @@ const TextFieldWrapper = styled(TextField)(
 
 
 
+/**
+ * 你可能也會喜歡
+ * @component
+ */
 const CustomSilde = (props: any) => {
     const { index, product, goToProductDetail, ...otherProps } = props;
 
@@ -954,4 +825,142 @@ const CustomSilde = (props: any) => {
 
 
 
+/**
+ * 畫面移動到最上方的按鈕
+ * 
+ * @component
+ */
+const GoToTopButton = ({ handleScrollTop }: GoToTopButtonProps) => {
+    return (
+        <SpeedDial
+            ariaLabel="SpeedDial to the top"
+            sx={{
+                position: "fixed",
+                bottom: "150px",
+                right: "30px",
+                '& .MuiFab-primary': {
+                    width: 45,
+                    height: 45,
+                    bgcolor: "white",
+                    boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+                    border: "0px solid grey",
+                    opacity: "0.8"
 
+                },
+
+            }}
+            FabProps={{
+                sx: {
+                    '&:hover': {
+                        backgroundColor: '#d9d9d9', // 自定义悬停颜色
+                    },
+                },
+            }}
+            open={false}
+            icon={<KeyboardArrowUpIcon sx={{ color: "grey" }} />}
+            onClick={handleScrollTop}
+
+        />
+
+    )
+}
+
+
+interface AnchorNavbarProps {
+    showNavBar: boolean;
+    handleLinkClick: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, id: string) => void
+}
+
+
+/**
+ * scroll高度導航到同一畫面指定id的位置 
+ * 
+ * @component
+ */
+const AnchorNavbar = ({ showNavBar, handleLinkClick }: AnchorNavbarProps) => {
+    return (
+        <AppBar
+            position="fixed"
+            sx={{
+                top: showNavBar ? { sm: "64px", xs: "56px" } : '-50px',
+                height: "50px",
+                opacity: "0.9",
+                transition: 'top 0.3s',
+                zIndex: "1",
+
+            }}>
+            <Container sx={{ px: 0 }}>
+                <Toolbar sx={{ height: "50px", minHeight: "50px !important", display: 'flex', justifyContent: 'center' }}>
+                    <nav>
+                        <List sx={{ display: "flex", flexDirection: "row" }}>
+                            <Link href="#" style={{ color: 'inherit', textDecoration: "none" }} onClick={(e) => handleLinkClick(e, '#intro')}>
+                                <ListItemButton disableRipple >
+                                    <ListItemText sx={{ color: "grey" }} primary="商品介紹" />
+                                </ListItemButton>
+                            </Link>
+                            <Link href="#" style={{ color: 'inherit', textDecoration: "none" }} onClick={(e) => handleLinkClick(e, '#spec')}>
+                                <ListItemButton disableRipple >
+                                    <ListItemText sx={{ color: "grey" }} primary="尺寸參考" />
+                                </ListItemButton>
+                            </Link>
+                            <Link href="#" style={{ color: 'inherit', textDecoration: "none" }} onClick={(e) => handleLinkClick(e, '#notice')}>
+                                <ListItemButton disableRipple >
+                                    <ListItemText sx={{ color: "grey" }} primary="注意事項" />
+                                </ListItemButton>
+                            </Link>
+                        </List>
+
+                    </nav>
+                </Toolbar>
+            </Container>
+
+        </AppBar>
+    )
+}
+
+
+
+
+interface GoToTopButtonProps {
+    handleScrollTop: () => void;
+}
+
+/**
+ * 顯示於底部的bar，當screen size  小於 md 才會出現
+ * 
+ * @component
+ */
+const BottomBar = () => {
+    return (
+        <AppBar
+            position="fixed"
+            sx={{
+                top: "auto",
+                bottom: {
+                    lg: "-50px",
+                    md: "-50px",
+                    xs: "0px"
+                },
+                transition: "bottom 0.3s",
+                height: "50px",
+                opacity: "0.9",
+                zIndex: "999",
+                border: "solid 0px black",
+                backgroundColor: "white"
+            }}>
+            <Container sx={{ px: 0 }}>
+                <Toolbar sx={{ height: "50px", minHeight: "50px !important", display: 'flex' }}>
+                    <Stack direction={"row"} alignItems={"center"} sx={{ width: "100%" }} spacing={2}>
+                        <Typography sx={{ color: "grey" }}>NT100</Typography>
+                        <Stack direction={"row"} justifyContent={"flex-end"} sx={{ flexGrow: 1, gap: 1, justifyContent: "flex-end", border: "0px solid black" }}>
+                            <Button variant="outlined" sx={{ flexGrow: 1 }}>加入購物車</Button>
+                            <Button variant="contained" sx={{ flexGrow: 1 }}>直接購買</Button>
+                        </Stack>
+
+                    </Stack>
+                </Toolbar>
+            </Container>
+
+        </AppBar>
+    )
+}
