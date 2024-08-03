@@ -10,7 +10,7 @@ import ProductImage5 from '/public/images/coat2.jpg'
 import Image from "next/image";
 import { AppBar, Box, Button, Card, CardContent, CardHeader, CardMedia, Container, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, SpeedDial, SpeedDialIcon, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Toolbar, Typography, TypographyOwnProps, useMediaQuery, useTheme } from "@mui/material";
 import Grid from '@mui/material/Grid';
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 
@@ -19,6 +19,7 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
 import { ProductInfomation, ProductInfomationCount } from "@/interfaces";
+import { useCartStore } from "@/store/store";
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
@@ -27,12 +28,18 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     }
 
 
+
+
     const [recommendProducts, setrecommendProducts] = useState<ProductInfomation[] | null>(null);
     // 你可能感興趣
     useEffect(() => {
         const products = getProducts()
         setrecommendProducts(products)
     }, [])
+
+
+    //從store 取值
+    const addToCart = useCartStore((state) => state.addToCart)
 
 
     const [activeSlide, setActiveSlide] = useState(0)
@@ -63,31 +70,6 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
     }
 
-    const [productInfo, setProductInfo] = useState<ProductInfomationCount>({ ...fakeProductInfomation, count: 1 })
-    const [selectSize, setSelectSize] = useState("")
-    const [selectColor, setSelectColor] = useState("")
-
-    const [itemCount, setItemCount] = useState<number>(1)
-
-    const handleCountMinus = () => {
-        setItemCount(i => {
-            if (i - 1 < 0) {
-                return 0
-            }
-
-            return i - 1
-        })
-    }
-
-    const handleCountPlus = () => {
-        setItemCount(i => {
-            if (i + 1 > 10) {
-                return 10
-            }
-
-            return i + 1
-        })
-    }
 
     const [viewValue, setviewValue] = useState<string>("商品介紹")
 
@@ -131,6 +113,13 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
     }
 
+    // 需要定義在父組件，因為buttonbar也會用到
+    const [selectSize, setSelectSize] = useState("")
+    const [selectColor, setSelectColor] = useState("")
+
+    const [itemCount, setItemCount] = useState<number>(1)
+
+
 
     const [showNavBar, setShowNavBar] = useState(false);
     const scrollPosition = useRef(0);
@@ -172,8 +161,19 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
     const router = useRouter();
 
-    const goToProductDetail = () => {
-        router.push("/products/7aa1aas61cx1vs6d54fa96")
+    const goToProductDetail = (productId: string) => {
+        router.push(`/products/${productId}`)
+    }
+
+
+    const addProductToCart =()=>{
+        addToCart({...product,selectSize:selectSize,selectColor:selectColor},itemCount)
+    }
+
+    const goToCheckoutDirectly = ()=>{
+        addProductToCart()
+        router.push("/checkout")
+
     }
 
     return (
@@ -181,9 +181,14 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
             <GoToTopButton handleScrollTop={handleScrollTop} />
 
-            <AnchorNavbar showNavBar={showNavBar} handleLinkClick={handleLinkClick}/>
+            <AnchorNavbar showNavBar={showNavBar} handleLinkClick={handleLinkClick} />
 
-            <BottomBar />
+            <BottomBar 
+                product={product}
+                addProductToCart={addProductToCart}
+                goToCheckoutDirectly={goToCheckoutDirectly}
+
+            />
 
             <Grid container columns={8} spacing={3} >
                 <Grid item lg={4} md={4} sm={4} xs={8}  >
@@ -193,7 +198,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
                             <Slider {...settings} ref={sliderRef} >
                                 {product?.images && product?.images.map((img, index) => (
-                                    <Box sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
+                                    <Box key={index} sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
                                         <Image src={img} alt={`img${index}`} fill style={{ objectFit: "cover" }} />
                                     </Box>
                                 ))}
@@ -213,6 +218,15 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         md={2}
                         lg={1.5}
                         product={product}
+                        itemCount={itemCount}
+                        selectColor={selectColor}
+                        selectSize={selectSize}
+                        addProductToCart={addProductToCart}
+                        goToCheckoutDirectly={goToCheckoutDirectly}
+                        setItemCount={setItemCount}
+                        setSelectColor={setSelectColor}
+                        setSelectSize={setSelectSize}
+                        
                     />
                 </Grid>
 
@@ -279,7 +293,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                 </Grid>
 
                 <Grid item xs={8} sx={{ mt: 6 }} >
-                    
+
                     <Grid id="#spec" container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
                         <Grid item xs={8} sx={{ mb: 1 }}>
                             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
@@ -298,7 +312,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                 </Grid>
 
                 <Grid item xs={8} sx={{ mt: 6 }} >
-                    
+
                     <Grid id="#notice" container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
                         <Grid item xs={8} sx={{ mb: 1 }}>
                             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
@@ -319,7 +333,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                 </Grid>
 
                 <Grid item xs={8} sx={{ mt: 6 }} >
-                    
+
                     <Grid container columns={8} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
                         <Grid item xs={8} sx={{ mb: 1 }}>
                             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
@@ -513,11 +527,28 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
 }
 
 
+interface PurchaseDetailProps {
+    xs: number;
+    sm: number;
+    md: number;
+    lg: number;
+    columns: number;
+    product: ProductInfomation | null,
+    selectSize:string;
+    selectColor:string;
+    itemCount:number;
+    setSelectSize:Dispatch<SetStateAction<string>>;
+    setSelectColor:Dispatch<SetStateAction<string>>;
+    setItemCount:Dispatch<SetStateAction<number>>;
+    addProductToCart: () => void
+    goToCheckoutDirectly: () => void
+}
+
 /**
  * 購買資訊
  * @component 
  */
-const PurchaseDetail = ({ xs, sm, md, lg, columns, product }: PurchaseDetailProps) => {
+const PurchaseDetail = ({ xs, sm, md, lg, columns, product,selectSize,selectColor,itemCount,setItemCount,setSelectSize,setSelectColor ,addProductToCart,goToCheckoutDirectly }: PurchaseDetailProps) => {
 
 
     if (!product) {
@@ -529,11 +560,6 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product }: PurchaseDetailProp
     const contentmd: number = columns - md
     const contentlg: number = columns - lg
 
-    const [productInfo, setProductInfo] = useState<ProductInfomationCount>({ ...fakeProductInfomation, count: 1 })
-    const [selectSize, setSelectSize] = useState("")
-    const [selectColor, setSelectColor] = useState("")
-
-    const [itemCount, setItemCount] = useState<number>(1)
 
     const handleCountMinus = () => {
         setItemCount(i => {
@@ -654,8 +680,8 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product }: PurchaseDetailProp
 
             <Grid item xs={8}>
                 <Stack direction={"row"} justifyContent={"start"} sx={{ gap: 1, mt: 5, border: "0px solid black", display: { xs: "none", sm: "none", md: "flex", lg: "flex" } }}>
-                    <Button variant="outlined" disableRipple sx={{ flexGrow: 1 }}>加入購物車</Button>
-                    <Button variant="contained" disableRipple sx={{ flexGrow: 1 }}>直接購買</Button>
+                    <Button variant="outlined" disableRipple sx={{ flexGrow: 1 }} onClick={addProductToCart}>加入購物車</Button>
+                    <Button variant="contained" disableRipple sx={{ flexGrow: 1 }} onClick={goToCheckoutDirectly}>直接購買</Button>
                 </Stack>
             </Grid>
         </Grid>
@@ -703,14 +729,7 @@ const fakeProductInfomation: ProductInfomation =
 
 }
 
-interface PurchaseDetailProps {
-    xs: number;
-    sm: number;
-    md: number;
-    lg: number;
-    columns: number;
-    product: ProductInfomation | null
-}
+
 
 interface ProductIntroduceProps {
     productInfomation: ProductInfomation;
@@ -776,18 +795,23 @@ const TextFieldWrapper = styled(TextField)(
 
 
 
+interface CustomSildeProps {
+    product: ProductInfomation;
+
+    goToProductDetail: (productId: string) => void
+}
 
 /**
  * 你可能也會喜歡
  * @component
  */
-const CustomSilde = (props: any) => {
-    const { index, product, goToProductDetail, ...otherProps } = props;
+const CustomSilde = ({ product, goToProductDetail }: CustomSildeProps) => {
+
 
     return (
-        <Box {...otherProps} style={{ margin: "10px" }}>
+        <Box style={{ margin: "10px" }}>
             <Card sx={{ boxShadow: "none" }}>
-                <CardMedia sx={{ '&:hover': { cursor: "pointer" } }} onClick={goToProductDetail}>
+                <CardMedia sx={{ '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.productId) }}>
 
                     <Box
                         sx={{
@@ -812,7 +836,7 @@ const CustomSilde = (props: any) => {
                     px: { sm: 1, xs: 0 }
                 }}>
                     <Stack spacing={1} sx={{ border: "0px solid black" }}>
-                        <Typography sx={{ fontWeight: { md: "bold", xs: "normal" }, fontSize: { xs: "14px" }, '&:hover': { cursor: "pointer" } }} onClick={goToProductDetail}>{product.title}</Typography>
+                        <Typography sx={{ fontWeight: { md: "bold", xs: "normal" }, fontSize: { xs: "14px" }, '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.productId) }}>{product.title}</Typography>
                         <Typography>NT${product.price}</Typography>
                         <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.price}</Typography>
                     </Stack>
@@ -925,12 +949,19 @@ interface GoToTopButtonProps {
     handleScrollTop: () => void;
 }
 
+interface BottomBarProps {
+    product: ProductInfomation,
+    addProductToCart: () => void
+    goToCheckoutDirectly: () => void
+}
+
+
 /**
  * 顯示於底部的bar，當screen size  小於 md 才會出現
  * 
  * @component
  */
-const BottomBar = () => {
+const BottomBar = ({product,addProductToCart,goToCheckoutDirectly}:BottomBarProps) => {
     return (
         <AppBar
             position="fixed"
@@ -951,10 +982,10 @@ const BottomBar = () => {
             <Container sx={{ px: 0 }}>
                 <Toolbar sx={{ height: "50px", minHeight: "50px !important", display: 'flex' }}>
                     <Stack direction={"row"} alignItems={"center"} sx={{ width: "100%" }} spacing={2}>
-                        <Typography sx={{ color: "grey" }}>NT100</Typography>
+                        <Typography sx={{ color: "grey" }}>NT{product.price}</Typography>
                         <Stack direction={"row"} justifyContent={"flex-end"} sx={{ flexGrow: 1, gap: 1, justifyContent: "flex-end", border: "0px solid black" }}>
-                            <Button variant="outlined" sx={{ flexGrow: 1 }}>加入購物車</Button>
-                            <Button variant="contained" sx={{ flexGrow: 1 }}>直接購買</Button>
+                            <Button variant="outlined" sx={{ flexGrow: 1 }} onClick={addProductToCart}>加入購物車</Button>
+                            <Button variant="contained" sx={{ flexGrow: 1 }} onClick={goToCheckoutDirectly}>直接購買</Button>
                         </Stack>
 
                     </Stack>

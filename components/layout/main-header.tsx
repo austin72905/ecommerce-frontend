@@ -22,9 +22,10 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Collapse } from '@mui/material';
+import { Badge, Collapse } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import SideNavBar, { useOpenState } from './sidebar';
+import { useCartStore } from '@/store/store';
 
 
 
@@ -42,6 +43,12 @@ export default function MainHeader() {
     const goToLogin = () => {
         router.push("/login")
     }
+
+    const goToCart =()=>{
+        router.push("/cart")
+    }
+
+    const cartContent= useCartStore(state=>state.cartContent)
 
 
     return (
@@ -97,8 +104,11 @@ export default function MainHeader() {
                                 <IconButton disableRipple>
                                     <SearchIcon />
                                 </IconButton>
-                                <IconButton disableRipple>
+                                <IconButton disableRipple onClick={goToCart}>
+                                    <Badge badgeContent={cartContent.length} max={99} color='error'>
                                     <ShoppingCartOutlinedIcon />
+                                    </Badge>
+                                    
                                 </IconButton>
 
                                 <IconButton disableRipple onClick={goToLogin}>

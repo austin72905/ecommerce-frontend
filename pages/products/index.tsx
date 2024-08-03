@@ -11,6 +11,8 @@ import Image from "next/image";
 import { getProducts } from "@/dummy-data/dummy-data";
 import { GetServerSideProps } from "next";
 import { ProductInfomation } from "@/interfaces";
+import { useCartStore } from "@/store/store";
+
 
 export default function ProductsPage({ products }: ProductsPageProps) {
 
@@ -19,6 +21,8 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     const goToProductDetail = (productId: string) => {
         router.push(`/products/${productId}`)
     }
+
+    const addToCart=useCartStore((state)=>state.addToCart)
 
     return (
         <Box sx={{ p: 2 }}>
@@ -62,7 +66,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                 </Stack>
                             </CardContent>
                             <CardActions>
-                                <Button variant="outlined" disableRipple onMouseEnter={() => { }}>加入購物車</Button>
+                                <Button variant="outlined"  onClick={() => { addToCart(product,1) }}>加入購物車</Button>
                             </CardActions>
                         </Card>
                     </Grid>

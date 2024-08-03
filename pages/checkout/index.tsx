@@ -28,6 +28,8 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 
 import ProductImage from '../../assets/朋朋衛生紙商品圖.jpg'
+import { useCartStore } from '@/store/store';
+import { ProductInfomation, ProductInfomationCount } from '@/interfaces';
 
 export default function CheckOut() {
 
@@ -116,10 +118,14 @@ export default function CheckOut() {
 
         setRecieveStoreInfo(storeInfo => {
 
-            return {...storeInfo,recieveWay:(e.target as HTMLInputElement).value}
+            return { ...storeInfo, recieveWay: (e.target as HTMLInputElement).value }
         })
 
     };
+
+    const cartContent = useCartStore(state => state.cartContent);
+
+    const removeFromCart = useCartStore(state => state.removeFromCart);
 
     return (
         <Container sx={{ border: "0px solid" }} maxWidth='xl'>
@@ -156,20 +162,23 @@ export default function CheckOut() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {/* {checkOutContent.map((item: ProductInfomationCount, index: number) =>
+                                {cartContent.map((item: ProductInfomationCount, index: number) =>
                                 (
                                     <TableRow key={index}>
                                         <TableCell style={{ width: "50%" }} >
                                             <Stack spacing={"20px"} direction={"row"} alignItems="center">
                                                 <Box sx={{ my: "5px" }}>
-                                                    <img src={ProductImage.src} style={{ width: "100px", height: "100px", padding: 0, margin: 0 }} />
+                                                    <img src={item.product.coverImg.src} style={{ width: "100px", height: "100px", padding: 0, margin: 0 }} />
                                                 </Box>
                                                 <Stack spacing={"2px"}>
                                                     <Typography >
-                                                        {item.title}
+                                                        {item.product.title}
                                                     </Typography>
                                                     <Typography variant='caption'>
-                                                        規格 : {item.selectSize}
+                                                        規格 : {item.product.selectSize ? item.product.selectSize : "標準"}
+                                                    </Typography>
+                                                    <Typography variant='caption'>
+                                                        顏色 : {item.product.selectColor ? item.product.selectColor : "標準"}
                                                     </Typography>
                                                 </Stack>
 
@@ -177,21 +186,21 @@ export default function CheckOut() {
                                             </Stack>
 
                                         </TableCell>
-                                        <TableCell align='center'>${item.price}</TableCell>
+                                        <TableCell align='center'>${item.product.price}</TableCell>
                                         <TableCell align='center'>
                                             {item.count}
                                         </TableCell>
-                                        <TableCell align='center'>${item.price * item.count}</TableCell>
+                                        <TableCell align='center'>${item.product.price * item.count}</TableCell>
                                         <TableCell sx={{ border: "0px solid" }} align='center'>
                                             <Stack sx={{ border: "0px solid" }} alignItems="center">
-                                                <IconButton onClick={() => { removeFromCheckOutContent(item) }}>
+                                                <IconButton onClick={() => { removeFromCart(item.product.productId) }}>
                                                     <DeleteOutlineOutlinedIcon />
                                                 </IconButton>
                                             </Stack>
                                         </TableCell>
                                     </TableRow>
 
-                                ))} */}
+                                ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
@@ -207,8 +216,8 @@ export default function CheckOut() {
                             <Grid item xs={8} >
                                 <FormControl sx={{ border: "0px solid red", width: "100%" }}>
                                     <RadioGroup value={recieveStoreInfo.recieveWay} onChange={handleRecieveWay} sx={{ mx: "0px", my: "0px", border: "0px solid #d9d9d9" }}>
-                                        <FormControlLabel  sx={{ backgroundColor: "#d9d9d9", mx: "0px", my: "0px", border: "1px solid #d9d9d9" }} value={"7-11"} control={<Radio sx={{ color: "#D9D9D9" }} />} label="7-11" />
-                                        <FormControlLabel  sx={{ mx: "0px", my: "0px", border: "1px solid #d9d9d9" }} value={"全家"} control={<Radio sx={{ color: "#D9D9D9" }} />} label="全家" />
+                                        <FormControlLabel sx={{ backgroundColor: "#d9d9d9", mx: "0px", my: "0px", border: "1px solid #d9d9d9" }} value={"7-11"} control={<Radio sx={{ color: "#D9D9D9" }} />} label="7-11" />
+                                        <FormControlLabel sx={{ mx: "0px", my: "0px", border: "1px solid #d9d9d9" }} value={"全家"} control={<Radio sx={{ color: "#D9D9D9" }} />} label="全家" />
 
                                     </RadioGroup>
                                 </FormControl>

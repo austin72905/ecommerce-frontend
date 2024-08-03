@@ -8,6 +8,7 @@ export interface ProductInfomation {
     color?: string[];
     size?: string[];
     selectSize?: string;
+    selectColor?: string;
     howToWash?: string;
     features?: string;
     material?: string[];
@@ -17,8 +18,9 @@ export interface ProductInfomation {
 }
 
 
-export interface ProductInfomationCount extends ProductInfomation {
+export interface ProductInfomationCount{
     count: number
+    product : ProductInfomation
 }
 
 
