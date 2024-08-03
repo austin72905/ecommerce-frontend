@@ -27,7 +27,8 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     return (
         <Box sx={{ p: 2 }}>
             <h1>
-                ProductsPage: {router.query.tag}
+                {router.query.tag && router.query.tag}
+                {router.query.kind && router.query.kind}
             </h1>
             <Grid container columns={8} spacing={3}>
 

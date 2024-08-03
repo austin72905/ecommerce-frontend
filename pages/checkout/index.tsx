@@ -127,6 +127,8 @@ export default function CheckOut() {
 
     const removeFromCart = useCartStore(state => state.removeFromCart);
 
+    const countTotalPrice = useCartStore(state => state.countTotalPrice);
+
     return (
         <Container sx={{ border: "0px solid" }} maxWidth='xl'>
             <Grid container columns={8} sx={{ border: "0px solid" }} spacing={3}>
@@ -335,7 +337,7 @@ export default function CheckOut() {
                                 <Typography sx={{ minWidth: "30px" }}  >商品金額</Typography>
                             </Grid>
                             <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px" }}  >${checkoutInfomation.productPrice}</Typography>
+                                <Typography sx={{ minWidth: "30px" }}  >${countTotalPrice()}</Typography>
                             </Grid>
 
                             <Grid item xs={2} >
@@ -349,7 +351,7 @@ export default function CheckOut() {
                                 <Typography sx={{ minWidth: "30px" }}  >總計</Typography>
                             </Grid>
                             <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px", color: "red" }}  >${checkoutInfomation.titlePrice}</Typography>
+                                <Typography sx={{ minWidth: "30px", color: "red" }}  >${countTotalPrice()}</Typography>
                             </Grid>
 
                             <Grid item xs={2} >
