@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import styled from '@mui/system/styled';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-import { Button } from '@mui/material';
+import { Button, useMediaQuery, useTheme } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
@@ -30,24 +30,14 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import ProductImage from '../../assets/朋朋衛生紙商品圖.jpg'
 import { useCartStore } from '@/store/store';
 import { ProductInfomation, ProductInfomationCount } from '@/interfaces';
+import { DefaultScreenCartContent, SmallScreenViewCartContent } from '@/components/cart/cart-content';
+import { GridContainer } from '@/components/ui/grid-container';
+
 
 export default function CheckOut() {
 
-    //const { checkOutContent, setCheckOutContent } = useContext(CartContext)
-
-    // const removeFromCheckOutContent = (product: ProductInfomationCount) => {
-    //     // setCheckOutContent((prev: ProductInfomationCount[]) => {
-    //     //     let newList = prev.filter(ele => {
-    //     //         if (ele.productId === product.productId && ele.selectSize === product.selectSize) {
-    //     //             return false
-    //     //         }
-
-    //     //         return true
-    //     //     })
-
-    //     //     return newList
-    //     // })
-    // }
+    const theme = useTheme()
+    const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
 
     const initCheckoutInfomation: CheckoutInfomation = { productPrice: 0, cargoPrice: 0, titlePrice: 0, payWay: "銀行付款" }
 
@@ -59,20 +49,6 @@ export default function CheckOut() {
     const [recieverInfo, setRecieverInfo] = useState<RecieverInfo>({ name: "", phoneNumber: "", mail: "" })
 
     const [recieveStoreInfo, setRecieveStoreInfo] = useState<RecievePlaceInfo>({ recieveWay: "7-11", recieveStore: "雅典", recieveAddress: "台中市南區三民西路377號西川一路1號" })
-
-    // useEffect(() => {
-    //     setCheckoutInfomation((checkout: CheckoutInfomation) => {
-
-    //         let productPrice = 0
-
-    //         checkOutContent.forEach((ele: ProductInfomationCount) => {
-    //             productPrice += ele.price * ele.count
-    //         });
-
-    //         return { ...checkout, productPrice: productPrice, cargoPrice: 39, titlePrice: productPrice + 39 }
-    //     })
-
-    // }, [checkOutContent])
 
 
     const handleOrderInfo = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -129,83 +105,41 @@ export default function CheckOut() {
 
     const countTotalPrice = useCartStore(state => state.countTotalPrice);
 
+    const plusProductCount = useCartStore((state) => state.plusProductCount)
+
+    const minusProductCount = useCartStore((state) => state.minusProductCount)
+
+
     return (
         <Container sx={{ border: "0px solid" }} maxWidth='xl'>
             <Grid container columns={8} sx={{ border: "0px solid" }} spacing={3}>
                 <Grid item xs={8} sx={{ mt: "15px" }}>
                     <Typography variant='h6' sx={{ fontWeight: "bold" }}>結帳</Typography>
-
-
-
                 </Grid>
 
-                <Grid item xs={8} sx={{ mt: "15px" }}>
-                    <Typography variant='body1' sx={{ fontWeight: "bold" }}>訂單商品內容</Typography>
-
-                    <TableContainer component={Paper} sx={{ mt: "15px", maxHeight: "480px", border: "1px solid #d9d9d9", boxShadow: 'none' }}>
-                        <Table stickyHeader size="small">
-                            <TableHead>
-                                <TableRow>
-                                    <StyledTableCell style={{ width: "50%" }}>
-                                        <Typography variant='body2' sx={{ fontWeight: "bold" }}>商品</Typography>
-
-                                    </StyledTableCell>
-                                    <StyledTableCell align='center'>
-                                        <Typography variant='body2' sx={{ fontWeight: "bold" }}>價格</Typography>
-                                    </StyledTableCell>
-                                    <StyledTableCell align='center'>
-                                        <Typography variant='body2' sx={{ fontWeight: "bold" }}>數量</Typography>
-                                    </StyledTableCell>
-                                    <StyledTableCell align='center'>
-                                        <Typography variant='body2' sx={{ fontWeight: "bold" }}>總計</Typography>
-                                    </StyledTableCell>
-                                    <StyledTableCell align='center'></StyledTableCell>
-
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {cartContent.map((item: ProductInfomationCount, index: number) =>
-                                (
-                                    <TableRow key={index}>
-                                        <TableCell style={{ width: "50%" }} >
-                                            <Stack spacing={"20px"} direction={"row"} alignItems="center">
-                                                <Box sx={{ my: "5px" }}>
-                                                    <img src={item.product.coverImg.src} style={{ width: "100px", height: "100px", padding: 0, margin: 0 }} />
-                                                </Box>
-                                                <Stack spacing={"2px"}>
-                                                    <Typography >
-                                                        {item.product.title}
-                                                    </Typography>
-                                                    <Typography variant='caption'>
-                                                        規格 : {item.product.selectSize ? item.product.selectSize : "標準"}
-                                                    </Typography>
-                                                    <Typography variant='caption'>
-                                                        顏色 : {item.product.selectColor ? item.product.selectColor : "標準"}
-                                                    </Typography>
-                                                </Stack>
+                <Grid item xs={8} sx={{ mt: "15px" }} >
+                    <Typography variant='body1' sx={{ fontWeight: "bold", mb: "15px" }}>訂單商品內容</Typography>
 
 
-                                            </Stack>
+                    {
+                        isSmallScreen ?
+                            <SmallScreenViewCartContent
+                                cartContent={cartContent}
+                                plusProductCount={plusProductCount}
+                                minusProductCount={minusProductCount}
+                                removeFromCart={removeFromCart}
+                            />
+                            :
+                            <DefaultScreenCartContent
+                                cartContent={cartContent}
+                                plusProductCount={plusProductCount}
+                                minusProductCount={minusProductCount}
+                                removeFromCart={removeFromCart}
 
-                                        </TableCell>
-                                        <TableCell align='center'>${item.product.price}</TableCell>
-                                        <TableCell align='center'>
-                                            {item.count}
-                                        </TableCell>
-                                        <TableCell align='center'>${item.product.price * item.count}</TableCell>
-                                        <TableCell sx={{ border: "0px solid" }} align='center'>
-                                            <Stack sx={{ border: "0px solid" }} alignItems="center">
-                                                <IconButton onClick={() => { removeFromCart(item.product.productId) }}>
-                                                    <DeleteOutlineOutlinedIcon />
-                                                </IconButton>
-                                            </Stack>
-                                        </TableCell>
-                                    </TableRow>
+                            />
 
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                    }
+
 
                 </Grid>
 
@@ -226,10 +160,6 @@ export default function CheckOut() {
 
                             </Grid>
                         </Grid>
-
-
-
-
 
                     </Paper>
 
@@ -331,42 +261,44 @@ export default function CheckOut() {
 
                     <Paper sx={{ mt: "15px", boxShadow: "none", border: "1px solid #d9d9d9" }}>
 
-                        <Grid container columns={12} sx={{ m: "30px" }} spacing={"30px"}>
 
-                            <Grid item xs={2} >
-                                <Typography sx={{ minWidth: "30px" }}  >商品金額</Typography>
-                            </Grid>
-                            <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px" }}  >${countTotalPrice()}</Typography>
-                            </Grid>
+                        <Stack sx={{ p: "30px" }} spacing={"30px"}>
+                            <GridContainer
+                                title={<Typography >商品金額</Typography>}
+                                content={<Typography  >${countTotalPrice()}</Typography>}
+                                columns={12}
+                                xs={4}
+                                sm={3}
+                                md={2}
+                            />
 
-                            <Grid item xs={2} >
-                                <Typography sx={{ minWidth: "30px" }}  >運費</Typography>
-                            </Grid>
-                            <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px" }}  >${checkoutInfomation.cargoPrice}</Typography>
-                            </Grid>
+                            <GridContainer
+                                title={<Typography >運費</Typography>}
+                                content={<Typography >${checkoutInfomation.cargoPrice}</Typography>}
+                                columns={12}
+                                xs={4}
+                                sm={3}
+                                md={2}
+                            />
 
-                            <Grid item xs={2} >
-                                <Typography sx={{ minWidth: "30px" }}  >總計</Typography>
-                            </Grid>
-                            <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px", color: "red" }}  >${countTotalPrice()}</Typography>
-                            </Grid>
+                            <GridContainer
+                                title={<Typography >總計</Typography>}
+                                content={<Typography sx={{ color: "red" }}  >${countTotalPrice()}</Typography>}
+                                columns={12}
+                                xs={4}
+                                sm={3}
+                                md={2}
+                            />
 
-                            <Grid item xs={2} >
-                                <Typography sx={{ minWidth: "30px" }}  >付款方式</Typography>
-                            </Grid>
-                            <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px" }}  >{checkoutInfomation.payWay}</Typography>
-                            </Grid>
-
-
-
-
-
-                        </Grid>
-
+                            <GridContainer
+                                title={<Typography >付款方式</Typography>}
+                                content={ <Typography>{checkoutInfomation.payWay}</Typography>}
+                                columns={12}
+                                xs={4}
+                                sm={3}
+                                md={2}
+                            />
+                        </Stack>
                     </Paper>
 
 
@@ -377,54 +309,69 @@ export default function CheckOut() {
 
                     <Paper sx={{ mt: "15px", boxShadow: "none", border: "1px solid #d9d9d9" }}>
 
-                        <Grid container columns={12} sx={{ m: "30px" }} spacing={"30px"}>
-                            <Grid item xs={2} >
-                                <Typography sx={{ minWidth: "30px" }}  >寄送方式</Typography>
-                            </Grid>
-                            <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px" }}  >{recieveStoreInfo.recieveWay}取貨</Typography>
-                            </Grid>
-                            <Grid item xs={2} >
-                                <Typography sx={{ minWidth: "30px" }}  >付款方式</Typography>
-                            </Grid>
-                            <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px" }}  >{checkoutInfomation.payWay}</Typography>
-                            </Grid>
-                            <Grid item xs={2} >
-                                <Typography sx={{ minWidth: "30px" }}  >收件人</Typography>
-                            </Grid>
-                            <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px" }}  >{recieverInfo.name}</Typography>
-                            </Grid>
-                            <Grid item xs={2} >
-                                <Typography sx={{ minWidth: "30px" }}  >連絡電話</Typography>
-                            </Grid>
-                            <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px" }}  >{recieverInfo.phoneNumber}</Typography>
-
-                            </Grid>
-                            <Grid item xs={2} >
-                                <Typography sx={{ minWidth: "30px" }}  >信箱</Typography>
-                            </Grid>
-                            <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px" }}  >{recieverInfo.mail}</Typography>
-                            </Grid>
-                            <Grid item xs={2} >
-                                <Typography sx={{ minWidth: "30px" }}  >取件地址</Typography>
-                            </Grid>
-                            <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px" }}  >{recieveStoreInfo.recieveStore}門市-{recieveStoreInfo.recieveAddress}</Typography>
-                            </Grid>
-                            <Grid item xs={2} >
-                                <Typography sx={{ minWidth: "30px" }}  >總付款金額</Typography>
-                            </Grid>
-                            <Grid item xs={10} >
-                                <Typography sx={{ minWidth: "30px", color: "red" }}  >${checkoutInfomation.titlePrice}</Typography>
-                            </Grid>
-
-                        </Grid>
 
 
+                    <Stack sx={{ p: "30px" }} spacing={"30px"}>
+                            <GridContainer
+                                title={<Typography   >寄送方式</Typography>}
+                                content={<Typography  >{recieveStoreInfo.recieveWay}取貨</Typography>}
+                                columns={12}
+                                xs={4}
+                                sm={3}
+                                md={2}
+                            />
+
+                            <GridContainer
+                                title={<Typography  >付款方式</Typography>}
+                                content={<Typography >{checkoutInfomation.payWay}</Typography>}
+                                columns={12}
+                                xs={4}
+                                sm={3}
+                                md={2}
+                            />
+
+                            <GridContainer
+                                title={<Typography  >收件人</Typography>}
+                                content={<Typography >{recieverInfo.name}</Typography>}
+                                columns={12}
+                                xs={4}
+                                sm={3}
+                                md={2}
+                            />
+
+                            <GridContainer
+                                title={ <Typography  >連絡電話</Typography>}
+                                content={  <Typography  >{recieverInfo.phoneNumber}</Typography>}
+                                columns={12}
+                                xs={4}
+                                sm={3}
+                                md={2}
+                            />
+                             <GridContainer
+                                title={ <Typography >信箱</Typography>}
+                                content={ <Typography>{recieverInfo.mail}</Typography>}
+                                columns={12}
+                                xs={4}
+                                sm={3}
+                                md={2}
+                            />
+                             <GridContainer
+                                title={  <Typography  >取件地址</Typography>}
+                                content={ <Typography  >{recieveStoreInfo.recieveStore}門市-{recieveStoreInfo.recieveAddress}</Typography>}
+                                columns={12}
+                                xs={4}
+                                sm={3}
+                                md={2}
+                            />
+                             <GridContainer
+                                title={ <Typography>總付款金額</Typography>}
+                                content={  <Typography sx={{ color: "red" }}  >${checkoutInfomation.titlePrice}</Typography>}
+                                columns={12}
+                                xs={4}
+                                sm={3}
+                                md={2}
+                            />
+                        </Stack>
 
                     </Paper>
 
@@ -433,7 +380,7 @@ export default function CheckOut() {
                     <Typography variant='body1' sx={{ fontWeight: "bold" }}>下單須知</Typography>
 
                     <Paper sx={{ mt: "15px", boxShadow: "none", border: "1px solid #d9d9d9" }}>
-                        <Typography sx={{ m: "30px" }}>
+                        <Typography sx={{ p: "30px" }}>
                             購買後5天內須要付款，未付款視為取消訂單，付款後會儘快出貨，商品物流情況詳情請在訂單查詢頁面追蹤
                         </Typography>
 
@@ -455,18 +402,6 @@ export default function CheckOut() {
 }
 
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-        backgroundColor: "#d9d9d9",
-    }
-
-}));
-
-const ItemWrapper = styled(Box)({
-    paddingTop: "5px",
-    paddingLeft: "30px",
-    paddingRight: "30px"
-})
 
 type CheckoutInfomation = {
     productPrice: number;
@@ -490,19 +425,4 @@ interface RecievePlaceInfo {
     recieveWay: string;
     recieveStore: string;
     recieveAddress: string;
-}
-
-const fakeData: ProductData = {
-    name: "好男人需要時我都在衛生紙(10入)",
-    price: 100
-}
-
-const fakeDataList: () => ProductData[] = () => {
-    let list: ProductData[] = []
-    for (let index = 0; index < 5; index++) {
-
-        list.push(fakeData)
-
-    }
-    return list
 }

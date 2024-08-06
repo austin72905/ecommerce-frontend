@@ -24,11 +24,14 @@ import RemoveIcon from '@mui/icons-material/Remove';
 
 
 
-import ProductImage from '../../assets/朋朋衛生紙商品圖.jpg'
+import ProductImage1 from '/public/images/coat1.jpg'
 import { useRouter } from 'next/router';
 import { useCartStore } from '@/store/store';
 import { it } from 'node:test';
 import { ProductInfomationCount } from '@/interfaces';
+import { Card, CardActions, CardContent, CardMedia, useMediaQuery, useTheme } from '@mui/material';
+import Image from 'next/image';
+import { DefaultScreenCartContent, SmallScreenViewCartContent } from '@/components/cart/cart-content';
 
 export default function Cart() {
 
@@ -38,96 +41,29 @@ export default function Cart() {
         router.push("/checkout")
     }
 
-    const cartContent =useCartStore((state)=>state.cartContent)
+    const cartContent = useCartStore((state) => state.cartContent)
 
-    const removeFromCart=useCartStore((state)=>state.removeFromCart)
-    
-    const plusProductCount=useCartStore((state)=>state.plusProductCount)
-    
-    const minusProductCount=useCartStore((state)=>state.minusProductCount)
+    const removeFromCart = useCartStore((state) => state.removeFromCart)
 
-    const countTotalPrice=useCartStore((state)=>state.countTotalPrice)
-    
+    const plusProductCount = useCartStore((state) => state.plusProductCount)
 
-    const addToCheckOutList=()=>{
+    const minusProductCount = useCartStore((state) => state.minusProductCount)
+
+    const countTotalPrice = useCartStore((state) => state.countTotalPrice)
+
+
+    const addToCheckOutList = () => {
         //setCheckOutContent([...cartContent])
         //setCartContent([])
         toCheckout()
     }
 
-    // const addProductCount = (product: ProductInfomation) => {
-    //     //console.log("product",product)
-    //     setCartContent((prev: ProductInfomationCount[]) => {
-
-    //         let newList = prev.map(ele => {
-
-    //             if (ele.productId === product.productId && ele.selectSize === product.selectSize) {
-
-    //                 if (ele.count + 1 > 10) {
-    //                     ele.count = 10
-    //                 } else {
-    //                     ele.count += 1;
-    //                 }
-
-    //             }
-    //             //console.log("ele.count",ele.count)
-    //             return ele
-    //         })
-
-    //         //console.log("prev",prev)
-    //         return newList
-    //     })
-    // }
-
-    // const minusProductCount = (product: ProductInfomation) => {
-    //     //console.log("product",product)
-    //     setCartContent((prev: ProductInfomationCount[]) => {
-    //         prev.forEach(ele => {
-
-    //             if (ele.productId === product.productId && ele.selectSize === product.selectSize) {
-
-    //                 if (ele.count - 1 < 1) {
-    //                     ele.count = 1
-    //                 } else {
-    //                     ele.count -= 1
-    //                 }
-
-
-    //             }
-    //             //console.log("ele.count",ele.count)
-    //             return ele
-    //         })
-
-    //         return [...prev]
-    //     })
-    // }
-
-    // const countTotalPirce = () => {
-    //     let totalPrice: number = 0
-    //     cartContent.forEach((element: ProductInfomationCount) => {
-    //         totalPrice += element.price * element.count
-    //     });
-    //     return totalPrice
-    // }
-
-    // const removeFromCart = (product: ProductInfomationCount) => {
-    //     setCartContent((prev: ProductInfomationCount[]) => {
-    //         //避免同id 的 商品一起被清理掉，只過濾掉同id 且 同規格的商品
-    //         let newList = prev.filter(ele => {
-    //             if (ele.productId === product.productId && ele.selectSize === product.selectSize) {
-    //                 return false
-    //             }
-    //             return true
-    //         })
-    //         return newList
-    //     })
-    // }
-    // //ele.productId !== product.productId ||(ele.productId===product.productId &&ele.selectSize!==product.selectSize)
-
+    const theme = useTheme()
+    const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
 
     // const handleFavoriteChecked=(event: React.ChangeEvent<HTMLInputElement>,product:ProductInfomation)=>{
 
-  
+
     //     //是打勾的
     //     if(event.target.checked){
     //       addToCollectionList(product)
@@ -146,87 +82,34 @@ export default function Cart() {
                 </Grid>
                 <Grid item xs={8}>
 
-                    <TableContainer component={Paper} sx={{ maxHeight: "480px", border: "1px solid #d9d9d9", boxShadow: 'none' }}>
+                    {
+                        isSmallScreen ?
+                            <SmallScreenViewCartContent
+                                cartContent={cartContent}
+                                plusProductCount={plusProductCount}
+                                minusProductCount={minusProductCount}
+                                removeFromCart={removeFromCart}
+                            />
+                            :
+                            <DefaultScreenCartContent
+                                cartContent={cartContent}
+                                plusProductCount={plusProductCount}
+                                minusProductCount={minusProductCount}
+                                removeFromCart={removeFromCart}
 
-                        <Table stickyHeader size="small">
-                            <TableHead>
-                                <TableRow>
-                                    <StyledTableCell style={{ width: "50%" }}>
-                                        <Typography variant='body2' sx={{ fontWeight: "bold" }}>商品</Typography>
+                            />
 
-                                    </StyledTableCell>
-                                    <StyledTableCell align='center'>
-                                        <Typography variant='body2' sx={{ fontWeight: "bold" }}>價格</Typography>
-                                    </StyledTableCell>
-                                    <StyledTableCell align='center'>
-                                        <Typography variant='body2' sx={{ fontWeight: "bold" }}>數量</Typography>
-                                    </StyledTableCell>
-                                    <StyledTableCell align='center'>
-                                        <Typography variant='body2' sx={{ fontWeight: "bold" }}>總計</Typography>
-                                    </StyledTableCell>
-                                    <StyledTableCell align='center'></StyledTableCell>
-
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {
-                                    cartContent.length>0 &&
-                                    cartContent.map((item: ProductInfomationCount, index: number) =>
-                                    (
-                                        <TableRow key={index}>
-                                            <TableCell style={{ width: "50%" }} >
-                                                <Stack spacing={"20px"} direction={"row"} alignItems="center">
-                                                    <Box sx={{ my: "5px" }}>
-                                                        <img src={item.product.coverImg.src} style={{ width: "100px", height: "100px", padding: 0, margin: 0 }} />
-                                                    </Box>
-                                                    <Stack spacing={"2px"}>
-                                                        <Typography >
-                                                            {item.product.title}
-                                                        </Typography>
-                                                        <Typography variant='caption'>
-                                                            規格 : {item.product.selectSize ? item.product.selectSize : "標準"}
-                                                        </Typography>
-                                                        <Typography variant='caption'>
-                                                            顏色 : {item.product.selectColor ? item.product.selectColor : "標準"}
-                                                        </Typography>
-                                                    </Stack>
+                    }
 
 
-                                                </Stack>
-
-                                            </TableCell>
-                                            <TableCell align='center'>${item.product.price}</TableCell>
-                                            <TableCell align='center'>
-                                                {/*數量框 */}
-                                                <Box sx={{ display: "flex", marginLeft: "30px", border: "0px solid" }}>
-                                                    <RemoveIcon onClick={() => { minusProductCount(item.product.productId)  }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }} />
-                                                    <TextFieldWrapper value={item.count} size='small' inputProps={{ style: { textAlign: "center", height: "15px" } }} ></TextFieldWrapper>
-                                                    <AddIcon onClick={() => { plusProductCount(item.product.productId) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }} />
-                                                </Box>
-                                            </TableCell>
-                                            <TableCell align='center'>${item.product.price * item.count}</TableCell>
-                                            <TableCell sx={{ border: "0px solid" }} align='center'>
-                                                <Stack sx={{ border: "0px solid" }} alignItems="center">
-                                                    <Checkbox onChange={(e)=>{}} icon={<FavoriteBorderIcon />} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
-                                                    <IconButton onClick={() => { removeFromCart(item.product.productId) }}>
-                                                        <DeleteOutlineOutlinedIcon />
-                                                    </IconButton>
-                                                </Stack>
-                                            </TableCell>
-                                        </TableRow>
-
-                                    ))
-                                }
-
-                            </TableBody>
-                        </Table>
-                    </TableContainer >
                 </Grid>
                 <Grid item xs={8}>
                     <Paper sx={{ border: "1px solid #d9d9d9", boxShadow: 'none' }} >
+
                         <Grid container columns={8}>
-                            <Grid item xs={4} sx={{ borderBottom: "1px solid #d9d9d9" }}></Grid>
-                            <Grid item xs={4} sx={{ borderBottom: "1px solid #d9d9d9" }}>
+                            <Grid item xs={0.5} sm={2} md={3} lg={4} sx={{ borderBottom: "1px solid #d9d9d9" }}></Grid>
+
+                            <Grid item xs={7.5} sm={6} md={5} lg={4} sx={{ borderBottom: "1px solid #d9d9d9" }}>
                                 <Stack direction={"row"} justifyContent={"space-between"}>
                                     <Typography sx={{ my: "5px" }}>
                                         目前無使用優惠券
@@ -236,8 +119,8 @@ export default function Cart() {
                                     </Typography>
                                 </Stack>
                             </Grid>
-                            <Grid item xs={4}></Grid>
-                            <Grid item xs={4}>
+                            <Grid item  xs={0.5} sm={2} md={3} lg={4} ></Grid>
+                            <Grid item  xs={7.5} sm={6} md={5} lg={4} >
                                 <Stack sx={{ my: "20px" }} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                                     <Stack spacing={"5px"} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                                         <Typography >
@@ -282,39 +165,3 @@ export interface ProductData {
     name: string;
     price: number;
 }
-
-
-
-
-// const fakeDataList: () => ProductInfomation[] = () => {
-//     let list: ProductInfomation[] = []
-//     for (let index = 0; index < 5; index++) {
-
-//         list.push(fakeProductInfomation)
-
-//     }
-//     return list
-// }
-
-
-const TextFieldWrapper = styled(TextField)(
-    {
-        /*修改 focus 時外框的顏色  */
-        "& .MuiOutlinedInput-root.Mui-focused": {
-            "& > fieldset": {
-                borderColor: "#AFAFAF"
-            }
-        },
-        /*修改外框的弧度 */
-        '& fieldset': { borderRadius: "0px" },
-        maxWidth: "50px",
-        height: "30px"
-
-    })
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-        backgroundColor: "#d9d9d9",
-    }
-
-}));
