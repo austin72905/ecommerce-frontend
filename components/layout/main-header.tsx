@@ -22,16 +22,17 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Badge, Collapse } from '@mui/material';
+import { Badge, Collapse, Menu, MenuItem } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import SideNavBar, { useOpenState } from './sidebar';
 import { useCartStore } from '@/store/store';
+import UserMenu from './user-menu';
 
 
 
 export default function MainHeader() {
 
-
+    const isLogin = true;
     const [open, setOpen] = useOpenState(false)
 
     const router = useRouter();
@@ -44,11 +45,21 @@ export default function MainHeader() {
         router.push("/login")
     }
 
-    const goToCart =()=>{
+    const goToCart = () => {
         router.push("/cart")
     }
 
-    const cartContent= useCartStore(state=>state.cartContent)
+    const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(null)
+
+    const handleSetAnchor = (e: React.MouseEvent<HTMLElement>) => {
+        setAnchorElement(e.currentTarget)
+    }
+
+    const handleCancelAnchor = () => {
+        setAnchorElement(null)
+    }
+
+    const cartContent = useCartStore(state => state.cartContent)
 
 
     return (
@@ -106,12 +117,12 @@ export default function MainHeader() {
                                 </IconButton>
                                 <IconButton disableRipple onClick={goToCart}>
                                     <Badge badgeContent={cartContent.length} max={99} color='error'>
-                                    <ShoppingCartOutlinedIcon />
+                                        <ShoppingCartOutlinedIcon />
                                     </Badge>
-                                    
+
                                 </IconButton>
 
-                                <IconButton disableRipple onClick={goToLogin}>
+                                <IconButton disableRipple onClick={isLogin?handleSetAnchor:goToLogin}>
                                     <AccountCircleOutlinedIcon />
                                 </IconButton>
 
@@ -120,8 +131,15 @@ export default function MainHeader() {
                     </Container>
 
                 </AppBar>
-                <SideNavBar open={open} setOpen={setOpen}/>
-                
+                <SideNavBar open={open} setOpen={setOpen} />
+
+
+                {/*他是黏著 帳戶icon 鈕的 */}
+                <UserMenu 
+                    anchorElement={anchorElement}
+                    handleCancelAnchor={handleCancelAnchor}
+                />         
+
             </Box>
         </header>
     )
