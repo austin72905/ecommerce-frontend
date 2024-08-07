@@ -23,10 +23,10 @@ const ChatRoom = ({ chatOpen, handleToggleChatRoom }: ChatRoomProps) => {
      * 
      */
     return (
-        <Box sx={{ bottom: "0px", right: "30px", width: "280px" ,display: chatOpen ? "block" : "none", border: "1px solid #9c9c9c", position: "fixed", zIndex: 9999 }} >
-            <Paper sx={{ width: "100%" }}>
+        <Box sx={{ bottom: "35px", right: "30px", width: "280px",height: "435px",display: chatOpen ? "block" : "none", border: "1px solid #9c9c9c", position: "fixed", zIndex: 9999 }} >
+            <Paper sx={{ width: "100%",height:"100%"}}>
                 {/*聊天室top */}
-                <Stack onClick={handleToggleChatRoom} justifyContent={"space-between"} direction={"row"} sx={{ background: "#61D1BD", border: "0px solid #9c9c9c", width: "280px", height: "35px", alignItems: "center" }} >
+                <Stack onClick={handleToggleChatRoom} justifyContent={"space-between"} direction={"row"} sx={{ background: "#61D1BD", border: "0px solid #9c9c9c", width: "100%", height: "35px", alignItems: "center" }} >
                     <Stack alignItems={"center"} sx={{ border: "0px solid #9c9c9c" }} direction={"row"} >
                         <Badge badgeContent={chatRecord.length} max={99} color='error' >
                             <ChatOutlinedIcon style={{ color: 'white' }} sx={{ width: "25px", height: "25px", pl: "15px" }} />
@@ -48,11 +48,11 @@ const ChatRoom = ({ chatOpen, handleToggleChatRoom }: ChatRoomProps) => {
 
                 </Stack>
 
-                <Stack justifyContent={"space-between"} sx={{ height: "400px", display: chatOpen ? "flex" : "none" }}>
+                <Stack justifyContent={"space-between"} sx={{ height: "100%", display: chatOpen ? "flex" : "none" }}>
                     {/*聊天紀錄 */}
                     <Box sx={{ height: "100%" }}>
 
-                        <List sx={{ maxWidth: "280px", maxHeight: "347px", overflow: 'auto' }}>
+                        <List sx={{ width: "100%", maxHeight: "347px", overflow: 'auto' }}>
                             {
                                 chatRecord.map((chat, index) =>
                                 (
@@ -100,7 +100,7 @@ const ChatRoom = ({ chatOpen, handleToggleChatRoom }: ChatRoomProps) => {
                     </Box>
                     {/*訊息輸入框 */}
                     <Stack direction={"row"} sx={{ justifyContent: "end" }}>
-                        <Paper sx={{ border: "1px solid #d9d9d9", boxShadow: "none", display: 'flex', alignItems: 'center', width: "280px", height: 35 }}>
+                        <Paper sx={{ border: "1px solid #d9d9d9", boxShadow: "none", display: 'flex', alignItems: 'center', width: "100%", height: 35 }}>
 
                             <InputBase
                                 sx={{ ml: 1, flex: 1 }}
