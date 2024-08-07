@@ -13,13 +13,14 @@ import Grid from '@mui/material/Grid';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
-
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
 import { ProductInfomation, ProductInfomationCount } from "@/interfaces";
 import { useCartStore } from "@/store/store";
+import GoToTopButton from "@/components/layout/speed-dial-group";
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
@@ -166,11 +167,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     }
 
 
-    const addProductToCart =()=>{
-        addToCart({...product,selectSize:selectSize,selectColor:selectColor},itemCount)
+    const addProductToCart = () => {
+        addToCart({ ...product, selectSize: selectSize, selectColor: selectColor }, itemCount)
     }
 
-    const goToCheckoutDirectly = ()=>{
+    const goToCheckoutDirectly = () => {
         addProductToCart()
         router.push("/checkout")
 
@@ -179,11 +180,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     return (
         <Box sx={{ px: 0 }}>
 
-            <GoToTopButton handleScrollTop={handleScrollTop} />
+            
 
             <AnchorNavbar showNavBar={showNavBar} handleLinkClick={handleLinkClick} />
 
-            <BottomBar 
+            <BottomBar
                 product={product}
                 addProductToCart={addProductToCart}
                 goToCheckoutDirectly={goToCheckoutDirectly}
@@ -226,7 +227,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         setItemCount={setItemCount}
                         setSelectColor={setSelectColor}
                         setSelectSize={setSelectSize}
-                        
+
                     />
                 </Grid>
 
@@ -534,12 +535,12 @@ interface PurchaseDetailProps {
     lg: number;
     columns: number;
     product: ProductInfomation | null,
-    selectSize:string;
-    selectColor:string;
-    itemCount:number;
-    setSelectSize:Dispatch<SetStateAction<string>>;
-    setSelectColor:Dispatch<SetStateAction<string>>;
-    setItemCount:Dispatch<SetStateAction<number>>;
+    selectSize: string;
+    selectColor: string;
+    itemCount: number;
+    setSelectSize: Dispatch<SetStateAction<string>>;
+    setSelectColor: Dispatch<SetStateAction<string>>;
+    setItemCount: Dispatch<SetStateAction<number>>;
     addProductToCart: () => void
     goToCheckoutDirectly: () => void
 }
@@ -548,7 +549,7 @@ interface PurchaseDetailProps {
  * 購買資訊
  * @component 
  */
-const PurchaseDetail = ({ xs, sm, md, lg, columns, product,selectSize,selectColor,itemCount,setItemCount,setSelectSize,setSelectColor ,addProductToCart,goToCheckoutDirectly }: PurchaseDetailProps) => {
+const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectColor, itemCount, setItemCount, setSelectSize, setSelectColor, addProductToCart, goToCheckoutDirectly }: PurchaseDetailProps) => {
 
 
     if (!product) {
@@ -849,46 +850,6 @@ const CustomSilde = ({ product, goToProductDetail }: CustomSildeProps) => {
 
 
 
-/**
- * 畫面移動到最上方的按鈕
- * 
- * @component
- */
-const GoToTopButton = ({ handleScrollTop }: GoToTopButtonProps) => {
-    return (
-        <SpeedDial
-            ariaLabel="SpeedDial to the top"
-            sx={{
-                position: "fixed",
-                bottom: "150px",
-                right: "30px",
-                '& .MuiFab-primary': {
-                    width: 45,
-                    height: 45,
-                    bgcolor: "white",
-                    boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
-                    border: "0px solid grey",
-                    opacity: "0.8"
-
-                },
-
-            }}
-            FabProps={{
-                sx: {
-                    '&:hover': {
-                        backgroundColor: '#d9d9d9', // 自定义悬停颜色
-                    },
-                },
-            }}
-            open={false}
-            icon={<KeyboardArrowUpIcon sx={{ color: "grey" }} />}
-            onClick={handleScrollTop}
-
-        />
-
-    )
-}
-
 
 interface AnchorNavbarProps {
     showNavBar: boolean;
@@ -961,7 +922,7 @@ interface BottomBarProps {
  * 
  * @component
  */
-const BottomBar = ({product,addProductToCart,goToCheckoutDirectly}:BottomBarProps) => {
+const BottomBar = ({ product, addProductToCart, goToCheckoutDirectly }: BottomBarProps) => {
     return (
         <AppBar
             position="fixed"

@@ -6,6 +6,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { orange } from '@mui/material/colors';
 import Footer from "./footer";
 import { Box } from "@mui/material";
+import GoToTopButton from "./speed-dial-group";
 
 interface LayoutProps {
     children: ReactNode
@@ -25,6 +26,17 @@ const customTheme = createTheme({
 })
 
 export default function Layout({ children }: LayoutProps) {
+
+
+
+    const handleScrollTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+    }
+
+
     return (
         <ThemeProvider theme={customTheme}>
             <MainHeader />
@@ -38,6 +50,8 @@ export default function Layout({ children }: LayoutProps) {
                     {children}
                 </Container>
             </Box>
+
+            <GoToTopButton handleScrollTop={handleScrollTop} />
 
             <Footer />
         </ThemeProvider>

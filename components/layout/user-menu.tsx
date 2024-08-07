@@ -12,11 +12,8 @@ export default function UserMenu({anchorElement,handleCancelAnchor}:UserMenu) {
             <MenuItem component={Link} href="/user/account" sx={{ border: "0px solid black" }}>
                 <Typography variant='body2'>我的帳戶</Typography>
             </MenuItem>
-            <MenuItem component={Link} href="/user/purchase">
+            <MenuItem component={Link} href="/user/order-record">
                 <Typography variant='body2'>訂單查詢</Typography>
-            </MenuItem>
-            <MenuItem component={Link} href="/user/collection-list">
-                <Typography variant='body2'>願望清單</Typography>
             </MenuItem>
             <MenuItem component={Link} href="/user/modify-password">
                 <Typography variant='body2'>修改密碼</Typography>
