@@ -106,14 +106,12 @@ const useSubscribeListStore = create<SubscribeListState>((set,get)=>({
         let idList=[]
         return state.subscribeList.map(item=> item.productId)
     },
-    addToList:(product:ProductInfomation) => set((state) => {
+    addToList: (product:ProductInfomation) => set((state) => {
 
         let subscribeList = [...state.subscribeList];
 
         if (subscribeList.length === 0) {
-            subscribeList.push(
-                product
-            )
+            subscribeList.push(product)
 
             return {
                 subscribeList: subscribeList
@@ -132,14 +130,14 @@ const useSubscribeListStore = create<SubscribeListState>((set,get)=>({
 
 
         return {
-            subscribeList: subscribeList
+            subscribeList: subscribeList,
         }
     }),
     removeFromList: (productId) => set((state) => {
         let subscribeList = [...state.subscribeList].filter(item => item.productId !== productId);
 
         return {
-            subscribeList: subscribeList
+            subscribeList: subscribeList,
         }
     }),
 }))
@@ -154,5 +152,3 @@ interface SubscribeListState {
 
 
 export { useCartStore,useSubscribeListStore }
-
-

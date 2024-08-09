@@ -5,13 +5,17 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
 
-import { Box, Button, Stack, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Box, Button, Checkbox, Stack, Typography } from "@mui/material";
+import { ChangeEvent, useEffect, useReducer, useState } from "react";
 import Image from "next/image";
 import { getProducts } from "@/dummy-data/dummy-data";
 import { GetServerSideProps } from "next";
 import { ProductInfomation } from "@/interfaces";
 import { useCartStore, useSubscribeListStore } from "@/store/store";
+
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+
 
 
 export default function ProductsPage({ products }: ProductsPageProps) {
@@ -25,12 +29,20 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     const addToCart = useCartStore((state) => state.addToCart)
 
     const subscribeIdList = useSubscribeListStore((state) => state.subscribeIdList())
+    const subscribeList = useSubscribeListStore((state) => state.subscribeList)
     const addToList = useSubscribeListStore((state) => state.addToList)
     const removeFromList = useSubscribeListStore((state) => state.removeFromList)
 
 
-
-
+    const handeClickSubscribe =(e: ChangeEvent<HTMLInputElement>,product:ProductInfomation)=>{
+        
+        if(e.target.checked){
+            addToList(product)
+        }else{
+            removeFromList(product.productId)
+        }
+    }
+   
     return (
         <Box sx={{ p: 2 }}>
             <h1>
@@ -74,15 +86,12 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                 </Stack>
                             </CardContent>
                             <CardActions>
-                                <Stack spacing={1} sx={{width:"100%"}}>
+                                
                                     <Button sx={{  flexGrow: 1 }} variant="outlined" onClick={() => { addToCart(product, 1) }}>加入購物車</Button>
-                                    {
-                                        subscribeIdList.includes(product.productId) ?
-                                            <Button sx={{ flexGrow: 1, backgroundColor: "#EFB878", color: "black"}} variant="contained" onClick={() => { removeFromList(product.productId) }}>取消收藏</Button>
-                                            :
-                                            <Button sx={{ flexGrow: 1}} variant="contained" onClick={() => { addToList(product) }}>加入收藏</Button>
-                                    }
-                                </Stack>
+
+                                    <Checkbox checked={subscribeIdList.includes(product.productId)} icon={<FavoriteBorderIcon />} onChange={(e) => {handeClickSubscribe(e,product) }} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
+                                   
+                               
 
 
                             </CardActions>
