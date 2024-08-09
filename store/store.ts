@@ -99,5 +99,60 @@ interface CartState {
     countTotalPrice: () => number;
 }
 
+const useSubscribeListStore = create<SubscribeListState>((set,get)=>({
+    subscribeList:[],
+    subscribeIdList:()=> {
+        const state = get()
+        let idList=[]
+        return state.subscribeList.map(item=> item.productId)
+    },
+    addToList:(product:ProductInfomation) => set((state) => {
 
-export { useCartStore }
+        let subscribeList = [...state.subscribeList];
+
+        if (subscribeList.length === 0) {
+            subscribeList.push(
+                product
+            )
+
+            return {
+                subscribeList: subscribeList
+            }
+        }
+
+        // 加入購物車
+        // 比較carcontent 裡面是否已經有ProductId? 
+        const item = subscribeList.find(item => item.productId === product.productId);
+
+        if(item){
+            return {}
+        }else{
+            subscribeList.push(product)
+        }
+
+
+        return {
+            subscribeList: subscribeList
+        }
+    }),
+    removeFromList: (productId) => set((state) => {
+        let subscribeList = [...state.subscribeList].filter(item => item.productId !== productId);
+
+        return {
+            subscribeList: subscribeList
+        }
+    }),
+}))
+
+
+interface SubscribeListState {
+    subscribeList: ProductInfomation[] | never[]; //可能是空數組
+    subscribeIdList:()=>string[];
+    addToList: (product: ProductInfomation) => void;
+    removeFromList: (productId: string) => void;
+}
+
+
+export { useCartStore,useSubscribeListStore }
+
+

@@ -5,6 +5,7 @@ import Image from "next/image";
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import { useRouter } from "next/router";
 
 interface TableViewCartContentProps {
     cartContent: ProductInfomationCount[] | never[];
@@ -14,10 +15,17 @@ interface TableViewCartContentProps {
 }
 
 const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductCount, removeFromCart }: TableViewCartContentProps) => {
-    console.log(cartContent)
+    //console.log(cartContent)
     if (cartContent.length === 0) {
         return <p>購物車內沒有商品</p>
     }
+
+    const router = useRouter()
+
+    const goToProductDetail = (productId: string) => {
+        router.push(`/products/${productId}`)
+    }
+
 
     return (
         <TableContainer component={Paper} sx={{ maxHeight: "480px", border: "1px solid #d9d9d9", boxShadow: 'none' }}>
@@ -54,7 +62,7 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                                             <img src={item.product.coverImg.src} style={{ width: "100px", height: "100px", padding: 0, margin: 0 }} />
                                         </Box>
                                         <Stack spacing={"2px"}>
-                                            <Typography >
+                                            <Typography  sx={{ '&:hover': { cursor: "pointer" } }} onClick={()=>{goToProductDetail(item.product.productId)}}>
                                                 {item.product.title}
                                             </Typography>
                                             <Typography variant='caption'>

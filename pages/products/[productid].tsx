@@ -2,15 +2,17 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import styled from '@mui/system/styled'
 import ProductImage4 from '/public/images/coat1.jpg'
 import ProductImage5 from '/public/images/coat2.jpg'
 import Image from "next/image";
-import { AppBar, Box, Button, Card, CardContent, CardHeader, CardMedia, Container, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, SpeedDial, SpeedDialIcon, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Toolbar, Typography, TypographyOwnProps, useMediaQuery, useTheme } from "@mui/material";
+import { AppBar, Box, Button, Card, CardContent, CardHeader, CardMedia, Checkbox, Container, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, SpeedDial, SpeedDialIcon, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Toolbar, Typography, TypographyOwnProps, useMediaQuery, useTheme } from "@mui/material";
 import Grid from '@mui/material/Grid';
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
@@ -19,7 +21,7 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
 import { ProductInfomation, ProductInfomationCount } from "@/interfaces";
-import { useCartStore } from "@/store/store";
+import { useCartStore, useSubscribeListStore } from "@/store/store";
 import GoToTopButton from "@/components/layout/speed-dial-group";
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
@@ -180,7 +182,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     return (
         <Box sx={{ px: 0 }}>
 
-            
+
 
             <AnchorNavbar showNavBar={showNavBar} handleLinkClick={handleLinkClick} />
 
@@ -562,6 +564,20 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
     const contentlg: number = columns - lg
 
 
+    const subscribeIdList=useSubscribeListStore((state)=>state.subscribeIdList())
+    const addToList=useSubscribeListStore((state)=>state.addToList)
+    const removeFromList=useSubscribeListStore((state)=>state.removeFromList)
+
+    const handeClickSubscribe =(e: ChangeEvent<HTMLInputElement>,product:ProductInfomation)=>{
+        
+        if(e.target.checked){
+            addToList(product)
+        }else{
+            removeFromList(product.productId)
+        }
+    }
+
+
     const handleCountMinus = () => {
         setItemCount(i => {
             if (i - 1 < 0) {
@@ -585,7 +601,11 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
     return (
         <Grid container alignItems={"center"} columns={columns} rowSpacing={5} sx={{ px: 5, width: "100%" }} >
             <Grid item xs={8} sx={{ px: 0 }}>
-                <Typography variant='h5' sx={{ fontWeight: "bold", margin: "30px", mx: 0 }}>{product.title}</Typography>
+                <Stack direction={"row"} justifyContent={"space-between"}>
+                    <Typography variant='h5' sx={{ fontWeight: "bold", margin: "30px", mx: 0 }}>{product.title}</Typography>
+                    <Checkbox checked={subscribeIdList.includes(product.productId)} icon={<FavoriteBorderIcon />} onChange={(e) => {handeClickSubscribe(e,product) }} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
+                </Stack>
+
             </Grid>
 
             <Grid item xs={xs} sm={sm} md={md} lg={lg}>
@@ -681,6 +701,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
 
             <Grid item xs={8}>
                 <Stack direction={"row"} justifyContent={"start"} sx={{ gap: 1, mt: 5, border: "0px solid black", display: { xs: "none", sm: "none", md: "flex", lg: "flex" } }}>
+
                     <Button variant="outlined" disableRipple sx={{ flexGrow: 1 }} onClick={addProductToCart}>加入購物車</Button>
                     <Button variant="contained" disableRipple sx={{ flexGrow: 1 }} onClick={goToCheckoutDirectly}>直接購買</Button>
                 </Stack>
