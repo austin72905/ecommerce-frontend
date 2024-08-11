@@ -4,7 +4,7 @@ import ProductImage2 from '/public/images/coat2.jpg'
 import ProductImage3 from '/public/images/coat3.jpg'
 import ProductImage4 from '/public/images/coat4.jpg'
 import ProductImage5 from '/public/images/coat5.jpg'
-import { ProductInfomation } from '@/interfaces'
+import { ProductInfomation, ProductInfomationCount } from '@/interfaces'
 
 
 const imgList = [ 
@@ -30,7 +30,7 @@ const getProducts = (): ProductInfomation[] => {
     return fakeProducts;
 }
 
-export { getProdcctById, getProducts }
+export { getProdcctById, getProducts,fakeProducts }
 
 const fakeProducts: ProductInfomation[] = [
     {
@@ -109,3 +109,6 @@ const fakeProducts: ProductInfomation[] = [
 
     }
 ]
+
+
+

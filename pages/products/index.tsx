@@ -90,10 +90,6 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                     <Button sx={{  flexGrow: 1 }} variant="outlined" onClick={() => { addToCart(product, 1) }}>加入購物車</Button>
 
                                     <Checkbox checked={subscribeIdList.includes(product.productId)} icon={<FavoriteBorderIcon />} onChange={(e) => {handeClickSubscribe(e,product) }} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
-                                   
-                               
-
-
                             </CardActions>
                         </Card>
                     </Grid>
