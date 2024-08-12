@@ -29,9 +29,17 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 
 import ProductImage from '../../assets/朋朋衛生紙商品圖.jpg'
 import { useCartStore } from '@/store/store';
-import { ProductInfomation, ProductInfomationCount } from '@/interfaces';
+import { CheckoutInfomation, ProductInfomation, ProductInfomationCount, RecievePlaceInfo, RecieverInfo } from '@/interfaces';
 import { DefaultScreenCartContent, SmallScreenViewCartContent } from '@/components/cart/cart-content';
 import { GridContainer } from '@/components/ui/grid-container';
+
+import WarningMsg from '@/components/checkout/warning-msg';
+import { LastConfirm } from '@/components/checkout/last-confirm';
+import PaymentAmount from '@/components/checkout/payment-amount';
+import CargoWay from '@/components/checkout/cargo-way';
+import PaymentWay from '@/components/checkout/payment-way';
+import SubscriberInfo from '@/components/checkout/subscriber';
+import RecieverInfomation from '@/components/checkout/reciever';
 
 
 export default function CheckOut() {
@@ -101,6 +109,8 @@ export default function CheckOut() {
 
     const cartContent = useCartStore(state => state.cartContent);
 
+
+
     const removeFromCart = useCartStore(state => state.removeFromCart);
 
     const countTotalPrice = useCartStore(state => state.countTotalPrice);
@@ -109,15 +119,19 @@ export default function CheckOut() {
 
     const minusProductCount = useCartStore((state) => state.minusProductCount)
 
+    
+    if (cartContent.length <= 0) {
+        return <p style={{ textAlign: 'center' }}>購物車內沒有商品....</p>
+    }
 
     return (
         <Container sx={{ border: "0px solid" }} maxWidth='xl'>
-            <Grid container columns={8} sx={{ border: "0px solid" }} spacing={3}>
+            <Grid container columns={8} sx={{ border: "0px solid" }} rowSpacing={5}>
                 <Grid item xs={8} sx={{ mt: "15px" }}>
                     <Typography variant='h6' sx={{ fontWeight: "bold" }}>結帳</Typography>
                 </Grid>
 
-                <Grid item xs={8} sx={{ mt: "15px" }} >
+                <Grid item xs={8} >
                     <Typography variant='body1' sx={{ fontWeight: "bold", mb: "15px" }}>訂單商品內容</Typography>
 
 
@@ -142,252 +156,65 @@ export default function CheckOut() {
 
 
                 </Grid>
+                {/*商品運送方式 */}
+                <Grid item xs={8} >
 
-                <Grid item xs={8} sx={{ mt: "15px" }}>
-                    <Typography variant='body1' sx={{ fontWeight: "bold" }}>商品運送方式</Typography>
-
-                    <Paper sx={{ mt: "15px", boxShadow: "none", border: "1px solid #d9d9d9" }}>
-
-                        <Grid container columns={8} sx={{ border: "0px solid red" }}>
-                            <Grid item xs={8} >
-                                <FormControl sx={{ border: "0px solid red", width: "100%" }}>
-                                    <RadioGroup value={recieveStoreInfo.recieveWay} onChange={handleRecieveWay} sx={{ mx: "0px", my: "0px", border: "0px solid #d9d9d9" }}>
-                                        <FormControlLabel sx={{ backgroundColor: "#d9d9d9", mx: "0px", my: "0px", border: "1px solid #d9d9d9" }} value={"7-11"} control={<Radio sx={{ color: "#D9D9D9" }} />} label="7-11" />
-                                        <FormControlLabel sx={{ mx: "0px", my: "0px", border: "1px solid #d9d9d9" }} value={"全家"} control={<Radio sx={{ color: "#D9D9D9" }} />} label="全家" />
-
-                                    </RadioGroup>
-                                </FormControl>
-
-                            </Grid>
-                        </Grid>
-
-                    </Paper>
-
-                    <Stack direction={"row"} sx={{ my: "5px" }}>
-                        <Button variant='contained' sx={{ backgroundColor: "#EFB878", color: "black", "&:hover": { backgroundColor: "#EFB878" } }}>選擇門市</Button>
-                    </Stack>
-
-                    <Stack spacing={"5px"} sx={{ mt: "15px" }}>
-                        <Stack direction={"row"} spacing={"15px"}>
-                            <Typography variant='body2' >門市名稱:</Typography>
-
-                            <Typography variant='body2' >{recieveStoreInfo.recieveStore}</Typography>
-                        </Stack>
-                        <Stack direction={"row"} spacing={"15px"}>
-                            <Typography variant='body2' >門市地址:</Typography>
-
-                            <Typography variant='body2' >{recieveStoreInfo.recieveAddress}</Typography>
-                        </Stack>
-
-                    </Stack>
-
+                    <CargoWay
+                        recieveStoreInfo={recieveStoreInfo}
+                        handleRecieveWay={handleRecieveWay}
+                    />
 
                 </Grid>
-                <Grid item xs={8} sx={{ mt: "15px" }}>
-                    <Typography variant='body1' sx={{ fontWeight: "bold" }}>付款方式</Typography>
-
-                    <Paper sx={{ mt: "15px", boxShadow: "none", border: "1px solid #d9d9d9" }}>
-
-                        <Grid container columns={8} sx={{ border: "0px solid red" }}>
-                            <Grid item xs={8} >
-                                <FormControl sx={{ width: "100%" }}>
-                                    <RadioGroup sx={{ mx: "0px", my: "0px", border: "0px solid #d9d9d9" }}>
-                                        <FormControlLabel sx={{ backgroundColor: "#d9d9d9", mx: "0px", my: "0px", border: "1px solid #d9d9d9" }} value={"銀行匯款"} control={<Radio disabled checked sx={{ color: "#D9D9D9" }} />} label="銀行匯款" />
-
-
-                                    </RadioGroup>
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-
-
-
-
-                    </Paper>
-
-                </Grid>
-
-                <Grid item xs={8} sx={{ mt: "15px" }}>
-                    <Typography variant='body1' sx={{ fontWeight: "bold" }}>訂購人資訊</Typography>
-
-                    <Paper sx={{ mt: "15px", boxShadow: "none", border: "1px solid #d9d9d9" }}>
-
-                        <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
-                            <Typography sx={{ mr: "10px", minWidth: "30px" }} variant='caption' >姓名</Typography>
-                            <TextField value={orderInfo.name} name="name" onChange={handleOrderInfo} placeholder='不得包含特殊符號 / $ . @ & # @...' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
-                        </Stack>
-                        <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
-                            <Typography sx={{ mr: "10px", minWidth: "30px" }} variant='caption' >電話</Typography>
-                            <TextField value={orderInfo.phoneNumber} name="phoneNumber" onChange={handleOrderInfo} placeholder='ex: 09xxxxxxxx' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
-                        </Stack>
-                        <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
-                            <Typography sx={{ mr: "10px", minWidth: "30px" }} variant='caption' >信箱</Typography>
-                            <TextField value={orderInfo.mail} name="mail" onChange={handleOrderInfo} placeholder='ex: asbc@gmail.com' inputProps={{ sx: { height: "15px" } }} sx={{ my: "10px" }} size='small' fullWidth />
-                        </Stack>
-
-
-                    </Paper>
-
-                </Grid>
-                <Grid item xs={8} sx={{ mt: "15px" }}>
-                    <Typography variant='body1' sx={{ fontWeight: "bold" }}>收件人資訊</Typography>
-
-                    <Paper sx={{ mt: "15px", boxShadow: "none", border: "1px solid #d9d9d9" }}>
-                        <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
-                            <FormControlLabel control={<Checkbox onChange={handleCheckRecieverInfo} />} label="同訂購人資訊" />
-                        </Stack>
-
-                        <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
-                            <Typography sx={{ mr: "10px", minWidth: "30px" }} variant='caption' >姓名</Typography>
-                            <TextField value={recieverInfo.name} name="name" onChange={handleRecieverInfo} placeholder='不得包含特殊符號 / $ . @ & # @...' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
-                        </Stack>
-                        <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
-                            <Typography sx={{ mr: "10px", minWidth: "30px" }} variant='caption' >電話</Typography>
-                            <TextField value={recieverInfo.phoneNumber} name="phoneNumber" onChange={handleRecieverInfo} placeholder='ex: 09xxxxxxxx' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
-                        </Stack>
-                        <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
-                            <Typography sx={{ mr: "10px", minWidth: "30px" }} variant='caption' >信箱</Typography>
-                            <TextField value={recieverInfo.mail} name="mail" onChange={handleRecieverInfo} placeholder='ex: asbc@gmail.com' inputProps={{ sx: { height: "15px" } }} sx={{ my: "10px" }} size='small' fullWidth />
-                        </Stack>
-
-
-                    </Paper>
-
-                </Grid>
-
-                <Grid item xs={8} sx={{ mt: "15px" }}>
-                    <Typography variant='body1' sx={{ fontWeight: "bold" }}>訂單金額</Typography>
-
-
-                    <Paper sx={{ mt: "15px", boxShadow: "none", border: "1px solid #d9d9d9" }}>
-
-
-                        <Stack sx={{ p: "30px" }} spacing={"30px"}>
-                            <GridContainer
-                                title={<Typography >商品金額</Typography>}
-                                content={<Typography  >${countTotalPrice()}</Typography>}
-                                columns={12}
-                                xs={4}
-                                sm={3}
-                                md={2}
-                            />
-
-                            <GridContainer
-                                title={<Typography >運費</Typography>}
-                                content={<Typography >${checkoutInfomation.cargoPrice}</Typography>}
-                                columns={12}
-                                xs={4}
-                                sm={3}
-                                md={2}
-                            />
-
-                            <GridContainer
-                                title={<Typography >總計</Typography>}
-                                content={<Typography sx={{ color: "red" }}  >${countTotalPrice()}</Typography>}
-                                columns={12}
-                                xs={4}
-                                sm={3}
-                                md={2}
-                            />
-
-                            <GridContainer
-                                title={<Typography >付款方式</Typography>}
-                                content={ <Typography>{checkoutInfomation.payWay}</Typography>}
-                                columns={12}
-                                xs={4}
-                                sm={3}
-                                md={2}
-                            />
-                        </Stack>
-                    </Paper>
+                {/*付款方式 */}
+                <Grid item xs={8}>
+                    <PaymentWay />
 
 
                 </Grid>
 
-                <Grid item xs={8} sx={{ mt: "15px" }}>
-                    <Typography variant='body1' sx={{ fontWeight: "bold" }}>最後確認</Typography>
+                {/*訂購人資訊 */}
+                <Grid item xs={8}>
 
-                    <Paper sx={{ mt: "15px", boxShadow: "none", border: "1px solid #d9d9d9" }}>
-
-
-
-                    <Stack sx={{ p: "30px" }} spacing={"30px"}>
-                            <GridContainer
-                                title={<Typography   >寄送方式</Typography>}
-                                content={<Typography  >{recieveStoreInfo.recieveWay}取貨</Typography>}
-                                columns={12}
-                                xs={4}
-                                sm={3}
-                                md={2}
-                            />
-
-                            <GridContainer
-                                title={<Typography  >付款方式</Typography>}
-                                content={<Typography >{checkoutInfomation.payWay}</Typography>}
-                                columns={12}
-                                xs={4}
-                                sm={3}
-                                md={2}
-                            />
-
-                            <GridContainer
-                                title={<Typography  >收件人</Typography>}
-                                content={<Typography >{recieverInfo.name}</Typography>}
-                                columns={12}
-                                xs={4}
-                                sm={3}
-                                md={2}
-                            />
-
-                            <GridContainer
-                                title={ <Typography  >連絡電話</Typography>}
-                                content={  <Typography  >{recieverInfo.phoneNumber}</Typography>}
-                                columns={12}
-                                xs={4}
-                                sm={3}
-                                md={2}
-                            />
-                             <GridContainer
-                                title={ <Typography >信箱</Typography>}
-                                content={ <Typography>{recieverInfo.mail}</Typography>}
-                                columns={12}
-                                xs={4}
-                                sm={3}
-                                md={2}
-                            />
-                             <GridContainer
-                                title={  <Typography  >取件地址</Typography>}
-                                content={ <Typography  >{recieveStoreInfo.recieveStore}門市-{recieveStoreInfo.recieveAddress}</Typography>}
-                                columns={12}
-                                xs={4}
-                                sm={3}
-                                md={2}
-                            />
-                             <GridContainer
-                                title={ <Typography>總付款金額</Typography>}
-                                content={  <Typography sx={{ color: "red" }}  >${checkoutInfomation.titlePrice}</Typography>}
-                                columns={12}
-                                xs={4}
-                                sm={3}
-                                md={2}
-                            />
-                        </Stack>
-
-                    </Paper>
+                    <SubscriberInfo
+                        orderInfo={orderInfo}
+                        handleOrderInfo={handleOrderInfo}
+                    />
 
                 </Grid>
-                <Grid item xs={8} sx={{ mt: "15px" }}>
-                    <Typography variant='body1' sx={{ fontWeight: "bold" }}>下單須知</Typography>
+                {/*收件人資訊 */}
+                <Grid item xs={8} >
 
-                    <Paper sx={{ mt: "15px", boxShadow: "none", border: "1px solid #d9d9d9" }}>
-                        <Typography sx={{ p: "30px" }}>
-                            購買後5天內須要付款，未付款視為取消訂單，付款後會儘快出貨，商品物流情況詳情請在訂單查詢頁面追蹤
-                        </Typography>
-
-                    </Paper>
+                    <RecieverInfomation
+                        recieverInfo={recieverInfo}
+                        handleCheckRecieverInfo={handleCheckRecieverInfo}
+                        handleRecieverInfo={handleRecieverInfo}
+                    />
 
                 </Grid>
-                <Grid item xs={8} sx={{ mt: "15px" }}>
+                {/*訂單金額 */}
+                <Grid item xs={8} >
+
+                    <PaymentAmount
+                        checkoutInfomation={checkoutInfomation}
+                        countTotalPrice={countTotalPrice}
+                    />
+
+                </Grid>
+                {/*最後確認 */}
+                <Grid item xs={8} >
+
+                    <LastConfirm
+                        recieveStoreInfo={recieveStoreInfo}
+                        checkoutInfomation={checkoutInfomation}
+                        recieverInfo={recieverInfo}
+                    />
+
+                </Grid>
+                {/*下單須知 */}
+                <Grid item xs={8}>
+                    <WarningMsg />
+                </Grid>
+                <Grid item xs={8} >
                     <Stack direction={"row"} justifyContent="end">
                         <Button variant='contained'>送出訂單</Button>
                     </Stack>
@@ -403,26 +230,4 @@ export default function CheckOut() {
 
 
 
-type CheckoutInfomation = {
-    productPrice: number;
-    cargoPrice: number;
-    titlePrice: number;
-    payWay: string;
-}
 
-interface ProductData {
-    name: string;
-    price: number;
-}
-
-interface RecieverInfo {
-    name: string;
-    phoneNumber: string;
-    mail: string;
-}
-
-interface RecievePlaceInfo {
-    recieveWay: string;
-    recieveStore: string;
-    recieveAddress: string;
-}

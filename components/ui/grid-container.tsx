@@ -26,6 +26,7 @@ const GridContainer = ({ title, content, columns, xs, sm, md, lg, xl }: GridCont
 interface GridContainerProps {
     title: ReactNode;
     content: ReactNode;
+    alignItems?:string;
     columns: number;
     xs?: number;
     sm?: number;

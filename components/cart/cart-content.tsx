@@ -17,7 +17,7 @@ interface TableViewCartContentProps {
 const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductCount, removeFromCart }: TableViewCartContentProps) => {
     //console.log(cartContent)
     if (cartContent.length === 0) {
-        return <p>購物車內沒有商品</p>
+        return <p style={{textAlign:"center"}}>購物車內沒有商品</p>
     }
 
     const router = useRouter()
@@ -114,6 +114,10 @@ interface SmallScreenViewCartContentProps {
 }
 
 const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProductCount, removeFromCart }: SmallScreenViewCartContentProps) => {
+    
+    if (cartContent.length === 0) {
+        return <p style={{textAlign:"center"}}>購物車內沒有商品</p>
+    }
     return (
         <Stack spacing={1}>
             {

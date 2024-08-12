@@ -25,3 +25,29 @@ export interface OrderInfomation {
     orderStepInfomation: OrderStepInfomation[];
 
 }
+
+
+
+export interface CheckoutInfomation {
+    productPrice: number;
+    cargoPrice: number;
+    titlePrice: number;
+    payWay: string;
+}
+
+export interface ProductData {
+    name: string;
+    price: number;
+}
+
+export interface RecieverInfo {
+    name: string;
+    phoneNumber: string;
+    mail: string;
+}
+
+export interface RecievePlaceInfo {
+    recieveWay: string;
+    recieveStore: string;
+    recieveAddress: string;
+}

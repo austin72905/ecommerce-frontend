@@ -43,6 +43,8 @@ export default function Cart() {
 
     const cartContent = useCartStore((state) => state.cartContent)
 
+ 
+
     const removeFromCart = useCartStore((state) => state.removeFromCart)
 
     const plusProductCount = useCartStore((state) => state.plusProductCount)
@@ -104,56 +106,59 @@ export default function Cart() {
 
                 </Grid>
                 <Grid item xs={8}>
-                    <Paper sx={{ border: "1px solid #d9d9d9", boxShadow: 'none' }} >
+                    {cartContent.length>0 &&
+                        <Paper sx={{ border: "1px solid #d9d9d9", boxShadow: 'none' }} >
 
-                        <Grid container columns={8}>
-                            <Grid item xs={0.5} sm={2} md={3} lg={4} sx={{ borderBottom: "1px solid #d9d9d9" }}></Grid>
+                            <Grid container columns={8}>
+                                <Grid item xs={0.5} sm={2} md={3} lg={4} sx={{ borderBottom: "1px solid #d9d9d9" }}></Grid>
 
-                            <Grid item xs={7.5} sm={6} md={5} lg={4} sx={{ borderBottom: "1px solid #d9d9d9" }}>
-                                <Stack direction={"row"} justifyContent={"space-between"}>
-                                    <Typography sx={{ my: "5px" }}>
-                                        目前無使用優惠券
-                                    </Typography>
-                                    <Typography sx={{ marginRight: "30px", my: "5px", color: "#3E8FB2" }}>
-                                        輸入優惠碼
-                                    </Typography>
-                                </Stack>
-                            </Grid>
-                            <Grid item  xs={0.5} sm={2} md={3} lg={4} ></Grid>
-                            <Grid item  xs={7.5} sm={6} md={5} lg={4} >
-                                <Stack sx={{ my: "20px" }} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-                                    <Stack spacing={"5px"} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-                                        <Typography >
-                                            總金額
+                                <Grid item xs={7.5} sm={6} md={5} lg={4} sx={{ borderBottom: "1px solid #d9d9d9" }}>
+                                    <Stack direction={"row"} justifyContent={"space-between"}>
+                                        <Typography sx={{ my: "5px" }}>
+                                            目前無使用優惠券
                                         </Typography>
-                                        <Stack direction={"row"}>
-                                            <Typography>
-                                                (
+                                        <Typography sx={{ marginRight: "30px", my: "5px", color: "#3E8FB2" }}>
+                                            輸入優惠碼
+                                        </Typography>
+                                    </Stack>
+                                </Grid>
+                                <Grid item xs={0.5} sm={2} md={3} lg={4} ></Grid>
+                                <Grid item xs={7.5} sm={6} md={5} lg={4} >
+                                    <Stack sx={{ my: "20px" }} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+                                        <Stack spacing={"5px"} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+                                            <Typography >
+                                                總金額
                                             </Typography>
-                                            <Typography sx={{ color: "red", fontWeight: "bold" }} >
-                                                {cartContent.length}
+                                            <Stack direction={"row"}>
+                                                <Typography>
+                                                    (
+                                                </Typography>
+                                                <Typography sx={{ color: "red", fontWeight: "bold" }} >
+                                                    {cartContent.length}
+                                                </Typography>
+                                                <Typography>
+                                                    個商品)
+                                                </Typography>
+                                            </Stack>
+
+                                            <Typography >
+                                                :
                                             </Typography>
-                                            <Typography>
-                                                個商品)
+                                            <Typography variant='h6' sx={{ color: "red", fontWeight: "bold" }} >
+                                                ${countTotalPrice()}
                                             </Typography>
                                         </Stack>
 
-                                        <Typography >
-                                            :
-                                        </Typography>
-                                        <Typography variant='h6' sx={{ color: "red", fontWeight: "bold" }} >
-                                            ${countTotalPrice()}
-                                        </Typography>
+
+                                        <Button onClick={addToCheckOutList} variant='contained' sx={{ marginRight: "30px", my: "5px" }}>
+                                            前往結帳
+                                        </Button>
                                     </Stack>
-
-
-                                    <Button onClick={addToCheckOutList} variant='contained' sx={{ marginRight: "30px", my: "5px" }}>
-                                        前往結帳
-                                    </Button>
-                                </Stack>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </Paper>
+                        </Paper>
+                    }
+
                 </Grid>
             </Grid>
         </Container>
