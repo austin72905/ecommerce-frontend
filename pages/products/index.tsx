@@ -15,6 +15,7 @@ import { useCartStore, useSubscribeListStore } from "@/store/store";
 
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import PurchaseModal from "@/components/products/purchase-modal";
 
 
 
@@ -41,6 +42,24 @@ export default function ProductsPage({ products }: ProductsPageProps) {
         }else{
             removeFromList(product.productId)
         }
+    }
+
+    const [selectProduct,setSelectProduct] = useState<ProductInfomation>(initSelectProduct)
+
+    const [modalOpen,setModalOpen] = useState<boolean>(false)
+
+    const handleModalOpen = ()=>{
+        setModalOpen(true)
+    }
+
+    const handleModalClose = ()=>{
+        setSelectProduct(initSelectProduct)
+        setModalOpen(false)
+    }
+
+    const handleSelectProduct=(product:ProductInfomation)=>{
+        setSelectProduct(product)
+        handleModalOpen()
     }
    
     return (
@@ -87,7 +106,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                             </CardContent>
                             <CardActions>
                                 
-                                    <Button sx={{  flexGrow: 1 }} variant="outlined" onClick={() => { addToCart(product, 1) }}>加入購物車</Button>
+                                    <Button sx={{  flexGrow: 1 }} variant="outlined" onClick={() => { handleSelectProduct(product) }}>加入購物車</Button>
 
                                     <Checkbox checked={subscribeIdList.includes(product.productId)} icon={<FavoriteBorderIcon />} onChange={(e) => {handeClickSubscribe(e,product) }} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
                             </CardActions>
@@ -96,9 +115,32 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                 ))}
 
             </Grid>
+
+            <PurchaseModal 
+                product={selectProduct}
+                handleModalOpen={handleModalOpen}
+                handleModalClose={handleModalClose}
+                modalOpen={modalOpen}
+            />
         </Box>
 
     )
+}
+
+const initSelectProduct:ProductInfomation={
+    title: "",
+    productId: "",
+    stock: 0,
+    price: 0,
+    size: [],
+    color: [],
+    colorDescription: [],
+    material: [],
+    howToWash: "",
+    features: "",
+    images: undefined,
+    coverImg:""
+
 }
 
 interface ProductsPageProps {
