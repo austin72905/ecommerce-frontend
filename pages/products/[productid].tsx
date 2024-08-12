@@ -23,6 +23,7 @@ import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
 import { ProductInfomation, ProductInfomationCount } from "@/interfaces";
 import { useCartStore, useSubscribeListStore } from "@/store/store";
 import GoToTopButton from "@/components/layout/speed-dial-group";
+import GridContent from "@/components/ui/gridContent";
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
@@ -465,66 +466,88 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
                 <Divider />
             </Grid>
 
-            <Grid item xs={xs} md={md}>
-                <Typography variant="subtitle1">
-                    顏色
-                </Typography>
+            <Grid item xs={columns}>
+                <GridContent
+                    title={<Typography variant="subtitle1">顏色</Typography>}
+                    content={<Typography variant="subtitle1">
+                        {productInfomation.colorDescription?.join(", ")}
+                    </Typography>
+                    }
+                    xs={xs} md={md}
+                    columns={columns}
+                />
             </Grid>
-            <Grid item xs={columns - xs} md={columns - md}>
-                <Typography variant="subtitle1">
-                    {productInfomation.colorDescription?.join(", ")}
-                </Typography>
+
+
+            <Grid item xs={columns}>
+                <GridContent
+                    title={<Typography variant="subtitle1">尺寸</Typography>}
+                    content={
+                        <Typography variant="subtitle1">
+                            {productInfomation.size?.join(", ")}
+                        </Typography>
+                    }
+                    xs={xs} md={md}
+                    columns={columns}
+                />
             </Grid>
-            <Grid item xs={xs} md={md}>
-                <Typography variant="subtitle1">
-                    尺寸
-                </Typography>
+
+            <Grid item xs={columns}>
+                <GridContent
+                    title={<Typography variant="subtitle1">商品材質</Typography>}
+                    content={
+                        <Typography variant="subtitle1">
+                            {productInfomation.material?.join(", ")}
+                        </Typography>
+                    }
+                    xs={xs} md={md}
+                    columns={columns}
+                />
+
             </Grid>
-            <Grid item xs={columns - xs} md={columns - md}>
-                <Typography variant="subtitle1">
-                    {productInfomation.size?.join(", ")}
-                </Typography>
+
+            <Grid item xs={columns}>
+                <GridContent
+                    title={<Typography variant="subtitle1">商品編號</Typography>}
+                    content={
+                        <Typography variant="subtitle1">
+                            {productInfomation.productId}
+                        </Typography>
+                    }
+                    xs={xs} md={md}
+                    columns={columns}
+                />
+
             </Grid>
-            <Grid item xs={xs} md={md}>
-                <Typography variant="subtitle1">
-                    商品材質
-                </Typography>
+
+            <Grid item xs={columns}>
+                <GridContent
+                    title={<Typography variant="subtitle1">洗滌方式</Typography>}
+                    content={
+                        <Typography variant="subtitle1">
+                            {productInfomation.howToWash}
+                        </Typography>
+                    }
+                    xs={xs} md={md}
+                    columns={columns}
+                />
             </Grid>
-            <Grid item xs={columns - xs} md={columns - md}>
-                <Typography variant="subtitle1">
-                    {productInfomation.material?.join(", ")}
-                </Typography>
+
+
+
+            <Grid item xs={columns}>
+                <GridContent
+                    title={<Typography variant="subtitle1">商品特色</Typography>}
+                    content={<Typography variant="subtitle1">
+                        {productInfomation.features}
+                    </Typography>
+                    }
+                    xs={xs} md={md}
+                    columns={columns}
+                />
             </Grid>
-            <Grid item xs={xs} md={md}>
-                <Typography variant="subtitle1">
-                    商品編號
-                </Typography>
-            </Grid>
-            <Grid item xs={columns - xs} md={columns - md}>
-                <Typography variant="subtitle1">
-                    {productInfomation.productId}
-                </Typography>
-            </Grid>
-            <Grid item xs={xs} md={md}>
-                <Typography variant="subtitle1">
-                    洗滌方式
-                </Typography>
-            </Grid>
-            <Grid item xs={columns - xs} md={columns - md}>
-                <Typography variant="subtitle1">
-                    {productInfomation.howToWash}
-                </Typography>
-            </Grid>
-            <Grid item xs={xs} md={md}>
-                <Typography variant="subtitle1">
-                    商品特色
-                </Typography>
-            </Grid>
-            <Grid item xs={columns - xs} md={columns - md}>
-                <Typography variant="subtitle1">
-                    {productInfomation.features}
-                </Typography>
-            </Grid>
+
+
         </Grid>
     )
 }
@@ -564,15 +587,15 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
     const contentlg: number = columns - lg
 
 
-    const subscribeIdList=useSubscribeListStore((state)=>state.subscribeIdList())
-    const addToList=useSubscribeListStore((state)=>state.addToList)
-    const removeFromList=useSubscribeListStore((state)=>state.removeFromList)
+    const subscribeIdList = useSubscribeListStore((state) => state.subscribeIdList())
+    const addToList = useSubscribeListStore((state) => state.addToList)
+    const removeFromList = useSubscribeListStore((state) => state.removeFromList)
 
-    const handeClickSubscribe =(e: ChangeEvent<HTMLInputElement>,product:ProductInfomation)=>{
-        
-        if(e.target.checked){
+    const handeClickSubscribe = (e: ChangeEvent<HTMLInputElement>, product: ProductInfomation) => {
+
+        if (e.target.checked) {
             addToList(product)
-        }else{
+        } else {
             removeFromList(product.productId)
         }
     }
@@ -603,100 +626,116 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
             <Grid item xs={8} sx={{ px: 0 }}>
                 <Stack direction={"row"} justifyContent={"space-between"}>
                     <Typography variant='h5' sx={{ fontWeight: "bold", margin: "30px", mx: 0 }}>{product.title}</Typography>
-                    <Checkbox checked={subscribeIdList.includes(product.productId)} icon={<FavoriteBorderIcon />} onChange={(e) => {handeClickSubscribe(e,product) }} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
+                    <Checkbox checked={subscribeIdList.includes(product.productId)} icon={<FavoriteBorderIcon />} onChange={(e) => { handeClickSubscribe(e, product) }} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
                 </Stack>
 
             </Grid>
 
-            <Grid item xs={xs} sm={sm} md={md} lg={lg}>
-                <Typography variant='body2'>售價</Typography>
-            </Grid>
-
-            <Grid item xs={contentxs} sm={contentsm} md={contentmd} lg={contentlg}>
-                <Stack direction={"row"} sx={{ alignItems: "center" }} spacing={1}>
-                    <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "red" }}>${product.price}</Typography>
-                    <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>${product.price}</Typography>
-                </Stack>
-            </Grid>
-
-            <Grid item xs={xs} sm={sm} md={md} lg={lg}>
-                <Typography variant='body2'>顏色</Typography>
-            </Grid>
-
-            <Grid item xs={contentxs} sm={contentsm} md={contentmd} lg={contentlg}>
-
-                {/*顏色 */}
-                <Grid container columns={8} spacing={1}>
-                    {
-                        product.color
-                            ?
-                            product.color.map((s, index) => (
-
-                                <Grid key={s} item xs={2} sm={2.5} md={2} lg={1}>
-                                    <Stack onClick={() => { setSelectColor(s) }} alignItems={"center"}
-                                        sx={{ border: s === selectColor ? "1px solid #61D1BD" : "1px solid #d9d9d9", width: "30px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
-                                        <Box sx={{ background: s, minWidth: "30px", minHeight: "30px" }}></Box>
-
-                                    </Stack>
-                                </Grid>
-
-
-                            ))
-                            :
-                            <Grid item xs={2} sm={2.5} md={2} lg={1}>
-                                <Stack alignItems={"center"} sx={{ border: "1px solid #d9d9d9", p: 0.5, borderRadius: "4px" }}>
-                                    <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
-                                </Stack>
-                            </Grid>
+            <Grid item xs={columns}>
+                <GridContent
+                    xs={xs} sm={sm} md={md} lg={lg}
+                    columns={columns}
+                    title={<Typography variant='body2'>售價</Typography>}
+                    content={
+                        <Stack direction={"row"} sx={{ alignItems: "center" }} spacing={1}>
+                            <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "red" }}>${product.price}</Typography>
+                            <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>${product.price}</Typography>
+                        </Stack>
                     }
-                </Grid>
-
-
+                    alignItems="center"
+                />
             </Grid>
 
-            <Grid item xs={2} sm={2.5} md={2} lg={1.5}>
-                <Typography variant='body2'>規格</Typography>
-            </Grid>
+            {/*顏色 */}
+            <Grid item xs={columns}>
+                <GridContent
+                    xs={xs} sm={sm} md={md} lg={lg}
+                    columns={columns}
+                    title={<Typography variant='body2'>顏色</Typography>}
+                    content={
+                        <Grid container columns={8} spacing={1}>
+                            {
+                                product.color
+                                    ?
+                                    product.color.map((s, index) => (
 
-            <Grid item xs={6} sm={5.5} md={6} lg={6.5}>
-                {/*規格 */}
-                <Grid container columns={8} spacing={1}>
-                    {
-                        product.size
-                            ?
-                            product.size.map((s, index) => (
+                                        <Grid key={s} item xs={2} sm={2.5} md={2} lg={1}>
+                                            <Stack onClick={() => { setSelectColor(s) }} alignItems={"center"}
+                                                sx={{ border: s === selectColor ? "1px solid #61D1BD" : "1px solid #d9d9d9", width: "30px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
+                                                <Box sx={{ background: s, minWidth: "30px", minHeight: "30px" }}></Box>
 
-                                <Grid key={s} item xs={2} sm={2.5} md={2} lg={1}>
-                                    <Stack onClick={() => { setSelectSize(s) }} alignItems={"center"} sx={{ border: s === selectSize ? "1px solid #61D1BD" : "1px solid #d9d9d9", minWidth: "25px", minHeight: "25px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
-                                        <Typography >{s}</Typography>
-                                    </Stack>
-                                </Grid>
+                                            </Stack>
+                                        </Grid>
 
 
-                            ))
-                            :
-
-                            <Grid item xs={2} sm={2.5} md={2} lg={1}>
-                                <Stack alignItems={"center"} sx={{ border: "1px solid #d9d9d9", p: 0.5, borderRadius: "4px" }}>
-                                    <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
-                                </Stack>
-                            </Grid>
-
+                                    ))
+                                    :
+                                    <Grid item xs={2} sm={2.5} md={2} lg={1}>
+                                        <Stack alignItems={"center"} sx={{ border: "1px solid #d9d9d9", p: 0.5, borderRadius: "4px" }}>
+                                            <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
+                                        </Stack>
+                                    </Grid>
+                            }
+                        </Grid>
                     }
-                </Grid>
+                    alignItems="center"
+                />
 
             </Grid>
 
-            <Grid item xs={2} sm={2.5} md={2} lg={1.5}>
-                <Typography variant='body2'>數量</Typography>
+
+            <Grid item xs={columns}>
+
+                <GridContent
+                    xs={xs} sm={sm} md={md} lg={lg}
+                    columns={columns}
+                    title={<Typography variant='body2'>規格</Typography>}
+                    content={
+                        <Grid container columns={8} spacing={1}>
+                            {
+                                product.size
+                                    ?
+                                    product.size.map((s, index) => (
+
+                                        <Grid key={s} item xs={2} sm={2.5} md={2} lg={1}>
+                                            <Stack onClick={() => { setSelectSize(s) }} alignItems={"center"} sx={{ border: s === selectSize ? "1px solid #61D1BD" : "1px solid #d9d9d9", minWidth: "25px", minHeight: "25px", p: 0.5, borderRadius: "4px", cursor: "pointer" }}>
+                                                <Typography >{s}</Typography>
+                                            </Stack>
+                                        </Grid>
+
+
+                                    ))
+                                    :
+
+                                    <Grid item xs={2} sm={2.5} md={2} lg={1}>
+                                        <Stack alignItems={"center"} sx={{ border: "1px solid #d9d9d9", p: 0.5, borderRadius: "4px" }}>
+                                            <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
+                                        </Stack>
+                                    </Grid>
+
+                            }
+                        </Grid>
+                    }
+                    alignItems="center"
+                />
+
             </Grid>
 
-            <Grid item xs={6} sm={5.5} md={6} lg={6.5}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <RemoveIcon onClick={handleCountMinus} sx={{ "&:hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderRadius: "4px" }} />
-                    <TextFieldWrapper value={itemCount} size='small' inputProps={{ style: { textAlign: "center" } }} ></TextFieldWrapper>
-                    <AddIcon onClick={handleCountPlus} sx={{ "&:hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderRadius: "4px" }} />
-                </Box>
+            <Grid item xs={columns}>
+                <GridContent
+                    xs={xs} sm={sm} md={md} lg={lg}
+                    columns={columns}
+                    title={<Typography variant='body2'>數量</Typography>}
+                    content={
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <RemoveIcon onClick={handleCountMinus} sx={{ "&:hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderRadius: "4px" }} />
+                            <TextFieldWrapper value={itemCount} size='small' inputProps={{ style: { textAlign: "center" } }} ></TextFieldWrapper>
+                            <AddIcon onClick={handleCountPlus} sx={{ "&:hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderRadius: "4px" }} />
+                        </Box>
+                    }
+                    alignItems="center"
+                />
+
             </Grid>
 
             <Grid item xs={8}>

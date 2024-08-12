@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material";
 import { ReactNode } from "react";
 
-export default function GridContent({ xs, sm, md, lg, xl, columns,title,content }: GridContentProps) {
+export default function GridContent({ xs, sm, md, lg, xl, columns,title,content,alignItems }: GridContentProps) {
 
     const cxs= columns && xs? columns - xs:undefined;
     const csm =  columns && sm? columns - sm:undefined;
@@ -10,7 +10,7 @@ export default function GridContent({ xs, sm, md, lg, xl, columns,title,content 
     const cxl = columns && xl? columns - xl:undefined;
 
     return (
-        <Grid container columns={columns} alignItems={"center"}>
+        <Grid container columns={columns} alignItems={alignItems}>
             <Grid item xs={xs} sm={sm} md={md} lg={lg} xl={xl}>
                 {title}
             </Grid>
@@ -31,4 +31,5 @@ interface GridContentProps {
     columns?: number;
     title:ReactNode;
     content:ReactNode;
+    alignItems?:string;
 }

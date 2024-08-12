@@ -139,7 +139,7 @@ const initSelectProduct:ProductInfomation={
     howToWash: "",
     features: "",
     images: undefined,
-    coverImg:""
+    coverImg:undefined
 
 }
 

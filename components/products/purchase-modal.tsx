@@ -121,6 +121,7 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
                                             <Grid item xs={columns}>
                                                 <GridContent
                                                     xs={xs} sm={sm} md={md} lg={lg} columns={columns}
+                                                    alignItems="center"
                                                     title={<Typography variant='body2'>售價</Typography>}
                                                     content={
                                                         <Stack direction={"row"} sx={{ alignItems: "center" }} spacing={1}>
@@ -166,12 +167,12 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
                                                     }
                                                     columns={columns}
                                                     xs={xs} sm={sm} md={md} lg={lg}
+                                                    alignItems="center"
                                                 />
 
                                             </Grid>
                                             {/*規格 */}
                                             <Grid item xs={columns}>
-
                                                 <GridContent
                                                     title={<Typography variant='body2'>規格</Typography>}
                                                     content={
@@ -202,17 +203,17 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
                                                     }
                                                     columns={columns}
                                                     xs={xs} sm={sm} md={md} lg={lg}
+                                                    alignItems="center"
                                                 />
 
 
                                             </Grid>
-
-
                                         </Grid>
                                     </CardContent>
                                 </Grid>
                                 
                             </Grid>
+
                             <CardActions sx={{ px: 1,my:1 }}>
                                 <Box sx={{ display: "flex", alignItems: "center", width: "50%" }}>
                                     <RemoveIcon onClick={handleCountMinus} sx={{ "&:hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderRadius: "4px" }} />
