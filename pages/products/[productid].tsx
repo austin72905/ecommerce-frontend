@@ -23,7 +23,8 @@ import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
 import { ProductInfomation, ProductInfomationCount } from "@/interfaces";
 import { useCartStore, useSubscribeListStore } from "@/store/store";
 import GoToTopButton from "@/components/layout/speed-dial-group";
-import GridContent from "@/components/ui/gridContent";
+import { GridContainer } from "@/components/ui/grid-container";
+
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
@@ -467,7 +468,7 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
             </Grid>
 
             <Grid item xs={columns}>
-                <GridContent
+                <GridContainer
                     title={<Typography variant="subtitle1">顏色</Typography>}
                     content={<Typography variant="subtitle1">
                         {productInfomation.colorDescription?.join(", ")}
@@ -480,7 +481,7 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
 
 
             <Grid item xs={columns}>
-                <GridContent
+                <GridContainer
                     title={<Typography variant="subtitle1">尺寸</Typography>}
                     content={
                         <Typography variant="subtitle1">
@@ -493,7 +494,7 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
             </Grid>
 
             <Grid item xs={columns}>
-                <GridContent
+                <GridContainer
                     title={<Typography variant="subtitle1">商品材質</Typography>}
                     content={
                         <Typography variant="subtitle1">
@@ -507,7 +508,7 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
             </Grid>
 
             <Grid item xs={columns}>
-                <GridContent
+                <GridContainer
                     title={<Typography variant="subtitle1">商品編號</Typography>}
                     content={
                         <Typography variant="subtitle1">
@@ -521,7 +522,7 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
             </Grid>
 
             <Grid item xs={columns}>
-                <GridContent
+                <GridContainer
                     title={<Typography variant="subtitle1">洗滌方式</Typography>}
                     content={
                         <Typography variant="subtitle1">
@@ -536,7 +537,7 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
 
 
             <Grid item xs={columns}>
-                <GridContent
+                <GridContainer
                     title={<Typography variant="subtitle1">商品特色</Typography>}
                     content={<Typography variant="subtitle1">
                         {productInfomation.features}
@@ -632,7 +633,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
             </Grid>
 
             <Grid item xs={columns}>
-                <GridContent
+                <GridContainer
                     xs={xs} sm={sm} md={md} lg={lg}
                     columns={columns}
                     title={<Typography variant='body2'>售價</Typography>}
@@ -648,7 +649,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
 
             {/*顏色 */}
             <Grid item xs={columns}>
-                <GridContent
+                <GridContainer
                     xs={xs} sm={sm} md={md} lg={lg}
                     columns={columns}
                     title={<Typography variant='body2'>顏色</Typography>}
@@ -686,7 +687,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
 
             <Grid item xs={columns}>
 
-                <GridContent
+                <GridContainer
                     xs={xs} sm={sm} md={md} lg={lg}
                     columns={columns}
                     title={<Typography variant='body2'>規格</Typography>}
@@ -722,7 +723,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
             </Grid>
 
             <Grid item xs={columns}>
-                <GridContent
+                <GridContainer
                     xs={xs} sm={sm} md={md} lg={lg}
                     columns={columns}
                     title={<Typography variant='body2'>數量</Typography>}

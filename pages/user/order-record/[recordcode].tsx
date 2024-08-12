@@ -24,6 +24,7 @@ import { Divider, useMediaQuery } from '@mui/material';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { orderInfoList } from '@/dummy-data/order-dummy-data';
+import { GridContainer } from '@/components/ui/grid-container';
 
 
 //訂單細節
@@ -151,7 +152,7 @@ export default function OrderDetailPage() {
                                                 maxWidth: '130px',
                                                 border: '0px solid black',
                                                 overflow: 'hidden',
-                                                p:1
+                                                p: 1
                                             }}
                                         >
                                             <Box
@@ -183,7 +184,7 @@ export default function OrderDetailPage() {
                                                     </Box>
                                                 </Grid>
                                                 <Grid item xs={8} sm={2} >
-                                                    <Box sx={{ display: "flex", flexDirection: "row"}}>
+                                                    <Box sx={{ display: "flex", flexDirection: "row" }}>
                                                         <Stack sx={{ alignItems: "end" }} spacing={3}>
                                                             <Typography>NT${item.product.price}</Typography>
                                                         </Stack>
@@ -200,10 +201,15 @@ export default function OrderDetailPage() {
 
 
                         <Grid container columns={12}>
+
+
+
+
                             <Grid item xs={4} sm={6} md={9}></Grid>
                             {/*靠右 */}
                             <Grid item xs={8} sm={6} md={3}>
                                 <Grid container columns={4} sx={{ mt: 4, pr: 4 }}>
+
                                     <Grid item xs={2}>
                                         <Stack spacing={3} sx={{ border: "0px solid", alignItems: "start" }}>
                                             <Typography >

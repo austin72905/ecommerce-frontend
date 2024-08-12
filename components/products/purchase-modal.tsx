@@ -6,7 +6,7 @@ import { ProductInfomation } from "@/interfaces";
 import Image from "next/image";
 import { useState } from "react";
 import { useCartStore } from "@/store/store";
-import GridContent from "../ui/gridContent";
+import { GridContainer } from "../ui/grid-container";
 
 
 export default function PurchaseModal({ product, modalOpen, handleModalOpen, handleModalClose }: PurchaseModalProps) {
@@ -119,7 +119,7 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
                                             </Grid>
                                             {/*售價 */}
                                             <Grid item xs={columns}>
-                                                <GridContent
+                                                <GridContainer
                                                     xs={xs} sm={sm} md={md} lg={lg} columns={columns}
                                                     alignItems="center"
                                                     title={<Typography variant='body2'>售價</Typography>}
@@ -134,7 +134,7 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
 
                                             {/*顏色 */}
                                             <Grid item xs={columns}>
-                                                <GridContent
+                                                <GridContainer
                                                     title={<Typography variant='body2'>顏色</Typography>}
                                                     content={
                                                         <Grid container columns={8} spacing={1}>
@@ -173,7 +173,7 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
                                             </Grid>
                                             {/*規格 */}
                                             <Grid item xs={columns}>
-                                                <GridContent
+                                                <GridContainer
                                                     title={<Typography variant='body2'>規格</Typography>}
                                                     content={
                                                         <Grid container columns={8} spacing={1}>

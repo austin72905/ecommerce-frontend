@@ -16,6 +16,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import Backdrop from '@mui/material/Backdrop';
 import { useMediaQuery, useTheme } from '@mui/material';
+import { GridContainer } from '@/components/ui/grid-container';
+
 
 
 export default function AddressPage() {
@@ -265,12 +267,17 @@ const RecieverInfo = ({ handleEditModal, changeDefaultAddress, content, isSmallS
 
                                 return (
                                     <React.Fragment key={n}>
-                                        <Grid item xs={5} sm={2}>
-                                            <Typography sx={{ minWidth: "30px" }} variant='subtitle2' >{addressTitle.get(n)}</Typography>
+                                        <Grid item xs={12}>
+                                            <GridContainer
+                                                xs={5} sm={2}
+                                                columns={12}
+                                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >{addressTitle.get(n)}</Typography>}
+                                                content={
+                                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content[n as keyof AddressInfo]}</Typography>
+                                                }
+                                            />
                                         </Grid>
-                                        <Grid item xs={7} sm={10}>
-                                            <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content[n as keyof AddressInfo]}</Typography>
-                                        </Grid>
+                                        
                                     </React.Fragment>
                                 )
 
