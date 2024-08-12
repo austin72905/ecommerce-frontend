@@ -1,4 +1,4 @@
-import { ProductInfomation, ProductInfomationCount } from "@/interfaces";
+import { OrderInfomation, ProductInfomation, ProductInfomationCount } from "@/interfaces";
 
 import ProductImage from '/public/images/朋朋衛生紙商品圖.jpg'
 import ProductImage1 from '/public/images/coat1.jpg'
@@ -7,22 +7,7 @@ import ProductImage3 from '/public/images/coat3.jpg'
 import ProductImage4 from '/public/images/coat4.jpg'
 import ProductImage5 from '/public/images/coat5.jpg'
 
-interface OrderInfomation {
-    recordCode: string;
-    productList: ProductInfomationCount[];
-    productName: string;
-    prouctPrice: number;
-    orderPrice: number;
-    size: string;
-    count: number;
-    address: OrderAddress;
-    status: string;
-    cargoPrice: number;
-    payWay: string;
-    cargoInfomation: CargoInfomation[];
-    orderStepInfomation: OrderStepInfomation[];
 
-}
 
 const orderStatus = new Map([
     ["1", "已完成"],
@@ -216,4 +201,4 @@ const orderInfoList: OrderInfomation[] = [
 ]
 
 
-export { orderInfoList }
+export { orderInfoList,orderStepInfomationList,orderInfo,cargoInfomation,orderStatus,orderStatusColor }
