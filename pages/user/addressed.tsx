@@ -17,6 +17,7 @@ import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import Backdrop from '@mui/material/Backdrop';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { GridContainer } from '@/components/ui/grid-container';
+import { useAlertMsgStore } from '@/store/store';
 
 
 
@@ -81,6 +82,9 @@ export default function AddressPage() {
 
     const [defaultAddressList, setDefaultAddressList] = useState(recieverInfoList)
 
+
+    const setAlertMsg =useAlertMsgStore(state=>state.setAlertMsg)
+
     const changeDefaultAddress = (e: React.MouseEvent, i: number) => {
 
         setDefaultAddressList(temp => {
@@ -96,6 +100,9 @@ export default function AddressPage() {
 
             return [...temp]
         })
+
+        setAlertMsg("修改預設地址成功")
+
     }
 
     const addNewAddress = () => {

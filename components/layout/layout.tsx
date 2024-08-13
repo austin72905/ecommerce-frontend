@@ -7,6 +7,7 @@ import { orange } from '@mui/material/colors';
 import Footer from "./footer";
 import { Box } from "@mui/material";
 import GoToTopButton from "./speed-dial-group";
+import AlertMsg from "../msg/alert-msg";
 
 interface LayoutProps {
     children: ReactNode
@@ -52,6 +53,8 @@ export default function Layout({ children }: LayoutProps) {
             </Box>
 
             <GoToTopButton handleScrollTop={handleScrollTop} />
+
+            <AlertMsg/>
 
             <Footer />
         </ThemeProvider>

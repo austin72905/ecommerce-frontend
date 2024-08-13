@@ -5,11 +5,11 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { ProductInfomation } from "@/interfaces";
 import Image from "next/image";
 import { useState } from "react";
-import { useCartStore } from "@/store/store";
+import { useAlertMsgStore, useCartStore } from "@/store/store";
 import { GridContainer } from "../ui/grid-container";
 
 
-export default function PurchaseModal({ product, modalOpen, handleModalOpen, handleModalClose }: PurchaseModalProps) {
+export default function PurchaseModal({ product, modalOpen,handleModalOpen, handleModalClose }: PurchaseModalProps) {
 
     const xs = 2;
     const sm = 2;
@@ -25,9 +25,13 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
 
     const addToCart = useCartStore((state) => state.addToCart)
 
+    const alertMsg =useAlertMsgStore(state=>state.alertMsg)
+    const setAlertMsg =useAlertMsgStore(state=>state.setAlertMsg)
+
     const addProductToCart = () => {
         handleModalClose()
         addToCart({ ...product, selectSize: selectSize, selectColor: selectColor }, itemCount)
+        setAlertMsg("新增購物車成功")
     }
 
     const [selectSize, setSelectSize] = useState("")

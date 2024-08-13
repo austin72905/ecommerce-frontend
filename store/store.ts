@@ -99,14 +99,14 @@ interface CartState {
     countTotalPrice: () => number;
 }
 
-const useSubscribeListStore = create<SubscribeListState>((set,get)=>({
-    subscribeList:[],
-    subscribeIdList:()=> {
+const useSubscribeListStore = create<SubscribeListState>((set, get) => ({
+    subscribeList: [],
+    subscribeIdList: () => {
         const state = get()
-        let idList=[]
-        return state.subscribeList.map(item=> item.productId)
+        let idList = []
+        return state.subscribeList.map(item => item.productId)
     },
-    addToList: (product:ProductInfomation) => set((state) => {
+    addToList: (product: ProductInfomation) => set((state) => {
 
         let subscribeList = [...state.subscribeList];
 
@@ -122,9 +122,9 @@ const useSubscribeListStore = create<SubscribeListState>((set,get)=>({
         // 比較carcontent 裡面是否已經有ProductId? 
         const item = subscribeList.find(item => item.productId === product.productId);
 
-        if(item){
+        if (item) {
             return {}
-        }else{
+        } else {
             subscribeList.push(product)
         }
 
@@ -145,10 +145,27 @@ const useSubscribeListStore = create<SubscribeListState>((set,get)=>({
 
 interface SubscribeListState {
     subscribeList: ProductInfomation[] | never[]; //可能是空數組
-    subscribeIdList:()=>string[];
+    subscribeIdList: () => string[];
     addToList: (product: ProductInfomation) => void;
     removeFromList: (productId: string) => void;
 }
 
+const useAlertMsgStore = create<AlertMsgStoreState>((set, get) => ({
+    alertMsg: "",
+    setAlertMsg: (msg) => set((state) => {
 
-export { useCartStore,useSubscribeListStore }
+        return {
+            alertMsg: msg
+        }
+
+    })
+}))
+
+
+interface AlertMsgStoreState {
+    alertMsg: string;
+    setAlertMsg: (msg: string) => void
+}
+
+
+export { useCartStore, useSubscribeListStore, useAlertMsgStore }

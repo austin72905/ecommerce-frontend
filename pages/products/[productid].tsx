@@ -248,39 +248,27 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                             <Divider />
                         </Grid>
                         <Grid item xs={8}>
-                            <Box
-                                sx={{
-                                    position: 'relative',
-                                    width: '100%',
-                                    height: 0,
-                                    paddingBottom: '120%', // 这是根据宽高比计算的
-                                    overflow: 'hidden',
-                                }}
-                            >
-                                <Image
-                                    src={ProductImage5}
-                                    alt="product information5"
-                                    fill
-                                    style={{ objectFit: "cover" }}
-                                />
-                            </Box>
-                            <Box
-                                sx={{
-                                    position: 'relative',
-                                    width: '100%',
-                                    height: 0,
-                                    paddingBottom: '120%', // 这是根据宽高比计算的
-                                    overflow: 'hidden',
-                                }}
-                            >
-                                <Image
-                                    src={ProductImage4}
-                                    alt="product information4"
-                                    fill
-                                    style={{ objectFit: "cover" }}
-                                />
-                            </Box>
+                            {product.images?.map((img, index) => (
+                                <Box
+                                    key={index}
+                                    sx={{
+                                        position: 'relative',
+                                        width: '100%',
+                                        height: 0,
+                                        paddingBottom: '120%', // 这是根据宽高比计算的
+                                        overflow: 'hidden',
+                                    }}
+                                >
+                                    <Image
+                                        src={img}
+                                        alt="product information5"
+                                        fill
+                                        style={{ objectFit: "cover" }}
+                                    />
+                                </Box>
+                            ))}
 
+                            
                         </Grid>
                     </Grid>
                 </Grid>

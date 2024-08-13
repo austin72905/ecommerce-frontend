@@ -5,13 +5,13 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
 
-import { Box, Button, Checkbox, Stack, Typography } from "@mui/material";
+import { Alert, Box, Button, Checkbox, Stack, Typography } from "@mui/material";
 import { ChangeEvent, useEffect, useReducer, useState } from "react";
 import Image from "next/image";
 import { getProducts } from "@/dummy-data/dummy-data";
 import { GetServerSideProps } from "next";
 import { ProductInfomation } from "@/interfaces";
-import { useCartStore, useSubscribeListStore } from "@/store/store";
+import { useAlertMsgStore, useCartStore, useSubscribeListStore } from "@/store/store";
 
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -35,33 +35,38 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     const removeFromList = useSubscribeListStore((state) => state.removeFromList)
 
 
-    const handeClickSubscribe =(e: ChangeEvent<HTMLInputElement>,product:ProductInfomation)=>{
-        
-        if(e.target.checked){
+    const handeClickSubscribe = (e: ChangeEvent<HTMLInputElement>, product: ProductInfomation) => {
+
+        if (e.target.checked) {
             addToList(product)
-        }else{
+        } else {
             removeFromList(product.productId)
         }
     }
 
-    const [selectProduct,setSelectProduct] = useState<ProductInfomation>(initSelectProduct)
+    const [selectProduct, setSelectProduct] = useState<ProductInfomation>(initSelectProduct)
 
-    const [modalOpen,setModalOpen] = useState<boolean>(false)
+    const [modalOpen, setModalOpen] = useState<boolean>(false)
 
-    const handleModalOpen = ()=>{
+    const handleModalOpen = () => {
         setModalOpen(true)
     }
 
-    const handleModalClose = ()=>{
+    const handleModalClose = () => {
         setSelectProduct(initSelectProduct)
         setModalOpen(false)
     }
 
-    const handleSelectProduct=(product:ProductInfomation)=>{
+    const handleSelectProduct = (product: ProductInfomation) => {
         setSelectProduct(product)
         handleModalOpen()
     }
+
    
+
+
+
+
     return (
         <Box sx={{ p: 2 }}>
             <h1>
@@ -98,17 +103,17 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                 maxHeight: "250px"
                             }}>
                                 <Stack spacing={"15px"}>
-                                    <Typography sx={{ minHeight:{xs:"48px",sm:"unset"},fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.productId) }}>{product.title}</Typography>
+                                    <Typography sx={{ minHeight: { xs: "48px", sm: "unset" }, fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.productId) }}>{product.title}</Typography>
                                     <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.price}</Typography>
                                     <Typography>NT${product.price}</Typography>
 
                                 </Stack>
                             </CardContent>
                             <CardActions>
-                                
-                                    <Button sx={{  flexGrow: 1 }} variant="outlined" onClick={() => { handleSelectProduct(product) }}>加入購物車</Button>
 
-                                    <Checkbox checked={subscribeIdList.includes(product.productId)} icon={<FavoriteBorderIcon />} onChange={(e) => {handeClickSubscribe(e,product) }} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
+                                <Button sx={{ flexGrow: 1 }} variant="outlined" onClick={() => { handleSelectProduct(product) }}>加入購物車</Button>
+
+                                <Checkbox checked={subscribeIdList.includes(product.productId)} icon={<FavoriteBorderIcon />} onChange={(e) => { handeClickSubscribe(e, product) }} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
                             </CardActions>
                         </Card>
                     </Grid>
@@ -116,18 +121,19 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
             </Grid>
 
-            <PurchaseModal 
+            <PurchaseModal
                 product={selectProduct}
                 handleModalOpen={handleModalOpen}
                 handleModalClose={handleModalClose}
                 modalOpen={modalOpen}
             />
+
         </Box>
 
     )
 }
 
-const initSelectProduct:ProductInfomation={
+const initSelectProduct: ProductInfomation = {
     title: "",
     productId: "",
     stock: 0,
@@ -139,7 +145,7 @@ const initSelectProduct:ProductInfomation={
     howToWash: "",
     features: "",
     images: undefined,
-    coverImg:undefined
+    coverImg: undefined
 
 }
 

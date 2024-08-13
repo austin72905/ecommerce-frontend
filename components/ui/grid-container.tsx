@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material"
 import { ReactNode } from "react";
 
-const GridContainer = ({ title, content, columns, xs, sm, md, lg, xl }: GridContainerProps) => {
+const GridContainer = ({ title, content, columns, xs, sm, md, lg, xl,alignItems }: GridContainerProps) => {
 
 
     const cxs: number | undefined = xs ? columns - xs : undefined;
@@ -11,7 +11,7 @@ const GridContainer = ({ title, content, columns, xs, sm, md, lg, xl }: GridCont
     const cxl: number | undefined = xl ? columns - xl : undefined;
 
     return (
-        <Grid container columns={columns}>
+        <Grid container columns={columns} alignItems={alignItems}>
             <Grid item xs={xs} sm={sm} md={md} lg={lg} xl={xl}>
                 {title}
             </Grid>
