@@ -20,19 +20,21 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Badge, Collapse, Menu, MenuItem } from '@mui/material';
+import { Avatar, Badge, Collapse, Menu, MenuItem } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import SideNavBar, { useOpenState } from './sidebar';
-import { useCartStore } from '@/store/store';
+import { useCartStore, userUserInfoStore } from '@/store/store';
 import UserMenu from './user-menu';
+import Image from 'next/image';
 
 
 
 export default function MainHeader() {
 
-    const isLogin = true;
+    const [isLogin, setIsLogin] = useState<boolean>(false)
+    //const isLogin = false;
     const [open, setOpen] = useOpenState(false)
 
     const router = useRouter();
@@ -61,6 +63,18 @@ export default function MainHeader() {
 
     const cartContent = useCartStore(state => state.cartContent)
 
+
+    const setUserInfo = userUserInfoStore((state) => state.setUserInfo)
+
+    const userInfo = userUserInfoStore((state) => state.userInfo)
+
+    useEffect(() => {
+        if (userInfo) {
+            if (userInfo.userId) {
+                setIsLogin(true)
+            }
+        }
+    }, [userInfo])
 
     return (
         <header>
@@ -121,10 +135,27 @@ export default function MainHeader() {
                                     </Badge>
 
                                 </IconButton>
+                                {
+                                    isLogin ?
+                                        <IconButton disableRipple onClick={isLogin ? handleSetAnchor : goToLogin}>
+                                            {
+                                                userInfo && userInfo.picture ?
+                                                    <Avatar src={userInfo?.picture} alt='user picture' sx={{ width: "30px", height: "30px" }} />
+                                                    :
+                                                    <AccountCircleOutlinedIcon />
+                                            }
 
-                                <IconButton disableRipple onClick={isLogin?handleSetAnchor:goToLogin}>
-                                    <AccountCircleOutlinedIcon />
-                                </IconButton>
+                                        </IconButton>
+                                        :
+                                        <IconButton disableRipple onClick={isLogin ? handleSetAnchor : goToLogin}>
+                                            <AccountCircleOutlinedIcon />
+                                        </IconButton>
+                                }
+                                {
+                                    isLogin && <Typography variant="caption">{userInfo?.name}，Hello</Typography>
+                                }
+                                
+
 
                             </Box>
                         </Toolbar>
@@ -135,10 +166,10 @@ export default function MainHeader() {
 
 
                 {/*他是黏著 帳戶icon 鈕的 */}
-                <UserMenu 
+                <UserMenu
                     anchorElement={anchorElement}
                     handleCancelAnchor={handleCancelAnchor}
-                />         
+                />
 
             </Box>
         </header>

@@ -18,7 +18,7 @@ import InputLabel from '@mui/material/InputLabel';
 import { breadcrumbsClasses } from '@mui/material';
 export default function MyAccountPage() {
 
-  const initPersonInfo: PersonalInfomation = { name: "", email: "", phoneNumber: "", birthday: `${thisYear - 10}/1/1`, sex: "男" }
+  const initPersonInfo: PersonalInfomation = { userId:"",name: "", email: "", phoneNumber: "", birthday: `${thisYear - 10}/1/1`, sex: "男",type:"web" }
 
   const [personalInfo, setPersonalInfo] = useState<PersonalInfomation>(initPersonInfo);
 
@@ -143,12 +143,15 @@ export default function MyAccountPage() {
   )
 }
 
-interface PersonalInfomation {
+export interface PersonalInfomation {
+  userId:string;
   name: string;
-  phoneNumber: string;
+  phoneNumber?: string;
   email: string;
   birthday: string;
-  sex: string;
+  sex?: string;
+  picture?:string;
+  type:string;
 }
 
 interface InputSetProps {

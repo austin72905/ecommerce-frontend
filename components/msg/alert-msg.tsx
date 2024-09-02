@@ -25,7 +25,7 @@ export default function AlertMsg(){
                 severity="success"
                 sx={{
                     position: "fixed",
-                    top: alertMsg?"15%":"-20%",
+                    top: alertMsg?"10%":"-20%",
                     transition:"top 0.5s",
                     left: "50%",
                     transform: "translateX(-50%)",

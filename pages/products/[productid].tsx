@@ -21,7 +21,7 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
 import { ProductInfomation, ProductInfomationCount } from "@/interfaces";
-import { useCartStore, useSubscribeListStore } from "@/store/store";
+import { useAlertMsgStore, useCartStore, useSubscribeListStore } from "@/store/store";
 import GoToTopButton from "@/components/layout/speed-dial-group";
 import { GridContainer } from "@/components/ui/grid-container";
 
@@ -580,6 +580,8 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
     const addToList = useSubscribeListStore((state) => state.addToList)
     const removeFromList = useSubscribeListStore((state) => state.removeFromList)
 
+    const setAlertMsg=useAlertMsgStore((state)=>state.setAlertMsg)
+
     const handeClickSubscribe = (e: ChangeEvent<HTMLInputElement>, product: ProductInfomation) => {
 
         if (e.target.checked) {
@@ -609,6 +611,12 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
             return i + 1
         })
     }
+
+    const addToCart =()=>{
+        addProductToCart()
+        setAlertMsg("新增購物車成功")
+    }
+
 
     return (
         <Grid container alignItems={"center"} columns={columns} rowSpacing={5} sx={{ px: 5, width: "100%" }} >
@@ -730,7 +738,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
             <Grid item xs={8}>
                 <Stack direction={"row"} justifyContent={"start"} sx={{ gap: 1, mt: 5, border: "0px solid black", display: { xs: "none", sm: "none", md: "flex", lg: "flex" } }}>
 
-                    <Button variant="outlined" disableRipple sx={{ flexGrow: 1 }} onClick={addProductToCart}>加入購物車</Button>
+                    <Button variant="outlined" disableRipple sx={{ flexGrow: 1 }} onClick={addToCart}>加入購物車</Button>
                     <Button variant="contained" disableRipple sx={{ flexGrow: 1 }} onClick={goToCheckoutDirectly}>直接購買</Button>
                 </Stack>
             </Grid>

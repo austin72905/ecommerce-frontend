@@ -1,4 +1,6 @@
 import { ProductInfomation, ProductInfomationCount } from '@/interfaces';
+import { PersonalInfomation } from '@/pages/user/account';
+import { userInfo } from 'os';
 import { create } from 'zustand'
 
 const useCartStore = create<CartState>((set, get) => ({
@@ -86,7 +88,7 @@ const useCartStore = create<CartState>((set, get) => ({
             totalPrice += item.product.price * item.count
         })
         return totalPrice
-    }
+    },
 }))
 
 
@@ -168,4 +170,20 @@ interface AlertMsgStoreState {
 }
 
 
-export { useCartStore, useSubscribeListStore, useAlertMsgStore }
+const userUserInfoStore =create<UserInfoStore>((set, get)=>({
+    userInfo:null,
+    setUserInfo:(info) => set((state)=>{
+
+        
+        return {
+            userInfo:info
+        }
+    })
+}))
+
+interface UserInfoStore{
+    userInfo:PersonalInfomation | null;
+    setUserInfo:(info:PersonalInfomation) =>void
+}
+
+export { useCartStore, useSubscribeListStore, useAlertMsgStore,userUserInfoStore }

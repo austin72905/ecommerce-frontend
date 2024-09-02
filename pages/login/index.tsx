@@ -14,6 +14,10 @@ import FormControl from '@mui/material/FormControl';
 
 import Checkbox from '@mui/material/Checkbox';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
+
+
+import GoogleIcon from '/public/images/google-icon.png'
 
 export default function Login() {
 
@@ -22,21 +26,46 @@ export default function Login() {
     const toSignUp = () => {
         router.push("/signup")
     }
+
+    const handleCGoogleLogin = async () => {
+
+        const query = new URLSearchParams({
+            client_id: "88199731036-4ve6gh6a0vdj63j41r4gnhd7cf8s8kpr.apps.googleusercontent.com",
+            redirect_uri: "http://localhost:3000/auth",
+            response_type: "code",
+            scope: "openid profile email",
+            state: "google-login:/products",
+        }).toString()
+
+        const url = `https://accounts.google.com/o/oauth2/v2/auth?${query}`
+        window.location.href =url
+        // const response = await fetch(url)
+        // if (!response.ok) {
+        //     throw new Error('Network response was not ok ' + response.statusText);
+        // }
+
+        // // 將回應解析為 JSON
+        // const data = await response.json();
+
+        // // 處理 JSON 資料
+        // console.log(data);
+    }
+
     return (
 
-        <Stack justifyContent={"center"} direction={"row"} sx={{ width:"100%",border: "0px solid #9f9f9f",mt:{ sm:4,xs:0 },px:2, borderRadius: "4px" }}>
+        <Stack alignItems={"center"} sx={{ width: "100%", border: "0px solid #9f9f9f", mt: { sm: 4, xs: 0 }, px: 2, borderRadius: "4px" }}>
 
-            <Stack spacing={2.5} 
-                    sx={{ 
-                        width:"100%",
-                        border: "0px solid", 
-                        minHeight: "600px", 
-                        maxWidth:"400px",
-                        minWidth: {
-                            sm:"400px",
-                            xs:"300px"
-                        } 
-                        }} justifyContent={"center"}>
+            <Stack spacing={2.5}
+                sx={{
+                    width: "100%",
+                    border: "0px solid",
+                    minHeight: "600px",
+                    maxWidth: "400px",
+                    minWidth: {
+                        sm: "400px",
+                        xs: "300px"
+                    }
+                }} justifyContent={"center"}>
                 <Stack alignItems={"center"}>
                     <Typography variant='h6' sx={{ fontWeight: 'bold' }}>會員登入</Typography>
                 </Stack>
@@ -70,8 +99,31 @@ export default function Login() {
                 </Stack>
 
 
+
+
             </Stack>
 
+            <Stack sx={{
+                width: "100%",
+                border: "0px solid",
+                maxWidth: "400px",
+                minWidth: {
+                    sm: "400px",
+                    xs: "300px"
+                }
+            }} justifyContent={"center"}>
+                <Stack
+                    direction={"row"}
+                    spacing={1}
+                    sx={{ py: 1, width: "100%", border: "1px solid #9f9f9f", cursor: "pointer", borderRadius: "5px" }}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                    onClick={handleCGoogleLogin}
+                >
+                    <Image src={GoogleIcon} width={30} alt='google icon' />
+                    <Typography variant="subtitle1">使用google 帳號登入</Typography>
+                </Stack>
+            </Stack>
 
 
         </Stack>
