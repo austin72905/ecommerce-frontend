@@ -11,7 +11,7 @@ import Image from "next/image";
 import { getProducts } from "@/dummy-data/dummy-data";
 import { GetServerSideProps } from "next";
 import { ProductInfomation } from "@/interfaces";
-import { useAlertMsgStore, useCartStore, useSubscribeListStore } from "@/store/store";
+import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -22,6 +22,8 @@ import PurchaseModal from "@/components/products/purchase-modal";
 export default function ProductsPage({ products }: ProductsPageProps) {
 
     const router = useRouter()
+
+    const {query,pathname}=router
 
     const goToProductDetail = (productId: string) => {
         router.push(`/products/${productId}`)
@@ -34,8 +36,15 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     const addToList = useSubscribeListStore((state) => state.addToList)
     const removeFromList = useSubscribeListStore((state) => state.removeFromList)
 
+    const userInfo = userUserInfoStore((state) => state.userInfo)
+
 
     const handeClickSubscribe = (e: ChangeEvent<HTMLInputElement>, product: ProductInfomation) => {
+
+        if(!userInfo){
+            router.push(`/login?redirect=/products?tag=${query.tag}`)
+            return
+        }
 
         if (e.target.checked) {
             addToList(product)

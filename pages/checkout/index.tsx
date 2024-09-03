@@ -40,9 +40,10 @@ import CargoWay from '@/components/checkout/cargo-way';
 import PaymentWay from '@/components/checkout/payment-way';
 import SubscriberInfo from '@/components/checkout/subscriber';
 import RecieverInfomation from '@/components/checkout/reciever';
+import WithAuth from '@/components/auth/with-auth';
 
 
-export default function CheckOut() {
+const CheckOut =()=> {
 
     const theme = useTheme()
     const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
@@ -108,6 +109,8 @@ export default function CheckOut() {
     };
 
     const cartContent = useCartStore(state => state.cartContent);
+
+
 
 
 
@@ -229,5 +232,5 @@ export default function CheckOut() {
 }
 
 
-
+export default  WithAuth(CheckOut);
 

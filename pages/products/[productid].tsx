@@ -21,7 +21,7 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
 import { ProductInfomation, ProductInfomationCount } from "@/interfaces";
-import { useAlertMsgStore, useCartStore, useSubscribeListStore } from "@/store/store";
+import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 import GoToTopButton from "@/components/layout/speed-dial-group";
 import { GridContainer } from "@/components/ui/grid-container";
 
@@ -174,9 +174,16 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     const addProductToCart = () => {
         addToCart({ ...product, selectSize: selectSize, selectColor: selectColor }, itemCount)
     }
-
+    const userInfo = userUserInfoStore((state) => state.userInfo)
     const goToCheckoutDirectly = () => {
         addProductToCart()
+
+        if (!userInfo) {
+            router.push(`/login?redirect=/checkout`)
+            return
+        }
+
+
         router.push("/checkout")
 
     }
@@ -268,7 +275,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                                 </Box>
                             ))}
 
-                            
+
                         </Grid>
                     </Grid>
                 </Grid>
@@ -569,7 +576,8 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
     if (!product) {
         return <p>無商品資訊...</p>
     }
-
+    const router = useRouter()
+    const { query } = router
     const contentxs: number = columns - xs;
     const contentsm: number = columns - sm
     const contentmd: number = columns - md
@@ -580,9 +588,18 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
     const addToList = useSubscribeListStore((state) => state.addToList)
     const removeFromList = useSubscribeListStore((state) => state.removeFromList)
 
-    const setAlertMsg=useAlertMsgStore((state)=>state.setAlertMsg)
+    const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
+
+
+    const userInfo = userUserInfoStore((state) => state.userInfo)
 
     const handeClickSubscribe = (e: ChangeEvent<HTMLInputElement>, product: ProductInfomation) => {
+
+
+        if (!userInfo) {
+            router.push(`/login?redirect=/products/${query.productid}`)
+            return
+        }
 
         if (e.target.checked) {
             addToList(product)
@@ -612,7 +629,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
         })
     }
 
-    const addToCart =()=>{
+    const addToCart = () => {
         addProductToCart()
         setAlertMsg("新增購物車成功")
     }

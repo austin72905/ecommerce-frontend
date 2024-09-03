@@ -26,7 +26,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 
 import ProductImage1 from '/public/images/coat1.jpg'
 import { useRouter } from 'next/router';
-import { useCartStore } from '@/store/store';
+import { useCartStore, userUserInfoStore } from '@/store/store';
 import { it } from 'node:test';
 import { ProductInfomationCount } from '@/interfaces';
 import { Card, CardActions, CardContent, CardMedia, useMediaQuery, useTheme } from '@mui/material';
@@ -43,6 +43,8 @@ export default function Cart() {
 
     const cartContent = useCartStore((state) => state.cartContent)
 
+    const userInfo = userUserInfoStore((state) => state.userInfo)
+
  
 
     const removeFromCart = useCartStore((state) => state.removeFromCart)
@@ -57,6 +59,13 @@ export default function Cart() {
     const addToCheckOutList = () => {
         //setCheckOutContent([...cartContent])
         //setCartContent([])
+
+
+        if(!userInfo){
+            router.push(`/login?redirect=/checkout`)
+            return
+        }
+
         toCheckout()
     }
 
