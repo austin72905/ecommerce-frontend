@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -27,6 +27,22 @@ export default function Login() {
         router.push("/signup")
     }
 
+    //預設Oauth 完之後跳轉的頁面
+    const [redirectAfterAuth,setredirectAfterAuth]=useState("/products")
+
+    useEffect(()=>{
+        if(router.isReady){
+            const query =router.query
+
+            const redirectUrl =query.redirect as string;
+
+            if(redirectUrl){
+                setredirectAfterAuth(redirectUrl)
+            }
+        }
+        
+    },[router.isReady, router.query])
+
     const handleCGoogleLogin = async () => {
 
         const query = new URLSearchParams({
@@ -34,7 +50,7 @@ export default function Login() {
             redirect_uri: "http://localhost:3000/auth",
             response_type: "code",
             scope: "openid profile email",
-            state: "google-login:/products",
+            state: `google-login:${redirectAfterAuth}`,
         }).toString()
 
         const url = `https://accounts.google.com/o/oauth2/v2/auth?${query}`

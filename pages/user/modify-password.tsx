@@ -8,7 +8,7 @@ import styled from '@mui/system/styled';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
-export default function ModifyPasswordPage() {
+const ModifyPasswordPage=()=> {
 
     const initInputData: VerifyPassword = { oldPassword: "", newPassword: "", confirmNewPassword: "" }
     const [inputData, setInputData] = useState<VerifyPassword>(initInputData);
@@ -96,6 +96,9 @@ export default function ModifyPasswordPage() {
         </Container>
     )
 }
+
+
+export default  ModifyPasswordPage;
 
 const ItemWrapper = styled(Box)({
     paddingTop: "8px",

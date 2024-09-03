@@ -18,10 +18,11 @@ import Backdrop from '@mui/material/Backdrop';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { GridContainer } from '@/components/ui/grid-container';
 import { useAlertMsgStore } from '@/store/store';
+import WithAuth from '@/components/auth/with-auth';
 
 
 
-export default function AddressPage() {
+const  AddressPage=()=> {
 
     const initAddress: AddressInfo = { id: 0, name: "", phoneNumber: "", mail: "", recieverAddress: "", isDefaultAddress: false }
 
@@ -198,6 +199,8 @@ export default function AddressPage() {
         </Container>
     )
 }
+
+export default WithAuth(AddressPage);
 
 
 

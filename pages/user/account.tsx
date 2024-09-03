@@ -16,7 +16,13 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import { breadcrumbsClasses } from '@mui/material';
-export default function MyAccountPage() {
+import { userUserInfoStore } from '@/store/store';
+import { useRouter } from 'next/router';
+import WithAuth from '@/components/auth/with-auth';
+
+
+
+const MyAccountPage =()=> {
 
   const initPersonInfo: PersonalInfomation = { userId:"",name: "", email: "", phoneNumber: "", birthday: `${thisYear - 10}/1/1`, sex: "男",type:"web" }
 
@@ -64,6 +70,7 @@ export default function MyAccountPage() {
     })
 
   }
+
 
   return (
     <Container sx={{ border: "0px solid" }} maxWidth='xl'>
@@ -142,6 +149,8 @@ export default function MyAccountPage() {
     </Container>
   )
 }
+
+export default WithAuth(MyAccountPage);
 
 export interface PersonalInfomation {
   userId:string;

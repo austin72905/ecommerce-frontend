@@ -10,10 +10,11 @@ import RecieveAddress from '@/components/user/order-record/recieve-address';
 import CargoInfo from '@/components/user/order-record/cargo-info';
 import OrderStep from '@/components/user/order-record/order-step';
 import OrderInfo from '@/components/user/order-record/order-info';
+import WithAuth from '@/components/auth/with-auth';
 
 
 //訂單細節
-export default function OrderDetailPage() {
+const OrderDetailPage=()=> {
 
     const router = useRouter()
 
@@ -69,6 +70,8 @@ export default function OrderDetailPage() {
     )
 }
 
+
+export default WithAuth(OrderDetailPage) ;
 
 
 

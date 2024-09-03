@@ -37,8 +37,9 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { ProductInfomationCount } from '@/interfaces';
 import { orderInfoList } from '@/dummy-data/order-dummy-data';
+import WithAuth from '@/components/auth/with-auth';
 
-export default function OrderRecordPage() {
+const OrderRecordPage=()=> {
 
     const { pathname } = useRouter();
     //console.log("pathname",pathname)
@@ -57,6 +58,8 @@ export default function OrderRecordPage() {
 
     )
 }
+
+export default WithAuth(OrderRecordPage) ;
 
 const orderStates: string[] = [
     "所有訂單",

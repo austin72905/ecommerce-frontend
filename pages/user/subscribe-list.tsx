@@ -6,8 +6,9 @@ import { useRouter } from "next/router"
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { ChangeEvent } from "react";
 import { ProductInfomation } from "@/interfaces";
+import WithAuth from "@/components/auth/with-auth";
 
-export default function SubscribeListPage() {
+const SubscribeListPage=()=> {
     const router = useRouter()
 
     const goToProductDetail = (productId: string) => {
@@ -93,3 +94,6 @@ export default function SubscribeListPage() {
 
     )
 }
+
+
+export default WithAuth(SubscribeListPage);
