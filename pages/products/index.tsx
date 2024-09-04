@@ -37,11 +37,12 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     const removeFromList = useSubscribeListStore((state) => state.removeFromList)
 
     const userInfo = userUserInfoStore((state) => state.userInfo)
-
+    const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
 
     const handeClickSubscribe = (e: ChangeEvent<HTMLInputElement>, product: ProductInfomation) => {
 
         if(!userInfo){
+            setAlertMsg("請先登入")
             router.push(`/login?redirect=/products?tag=${query.tag}`)
             return
         }

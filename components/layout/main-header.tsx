@@ -152,7 +152,7 @@ export default function MainHeader() {
                                         </IconButton>
                                 }
                                 {
-                                    isLogin && <Typography variant="caption">{userInfo?.name}，Hello</Typography>
+                                    userInfo && <Typography variant="caption">{userInfo?.name}，Hello</Typography>
                                 }
                                 
 

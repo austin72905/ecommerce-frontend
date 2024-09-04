@@ -165,6 +165,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     }
 
     const router = useRouter();
+    const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
 
     const goToProductDetail = (productId: string) => {
         router.push(`/products/${productId}`)
@@ -179,6 +180,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
         addProductToCart()
 
         if (!userInfo) {
+            setAlertMsg("請先登入")
             router.push(`/login?redirect=/checkout`)
             return
         }
@@ -597,6 +599,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
 
 
         if (!userInfo) {
+            setAlertMsg("請先登入")
             router.push(`/login?redirect=/products/${query.productid}`)
             return
         }
@@ -634,6 +637,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
         setAlertMsg("新增購物車成功")
     }
 
+    
 
     return (
         <Grid container alignItems={"center"} columns={columns} rowSpacing={5} sx={{ px: 5, width: "100%" }} >

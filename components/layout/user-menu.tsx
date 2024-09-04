@@ -1,4 +1,5 @@
-import { Menu, MenuItem, Typography } from "@mui/material";
+import { useAlertMsgStore, userUserInfoStore } from "@/store/store";
+import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 
@@ -6,6 +7,19 @@ export default function UserMenu({anchorElement,handleCancelAnchor}:UserMenu) {
 
 
     const userMenuOpen = Boolean(anchorElement)
+
+    const setUserInfo = userUserInfoStore((state) => state.setUserInfo)
+    const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
+
+    const handleLogout=async()=>{
+        console.log("logout")
+        await fetch("http://localhost:5025/User/UserLogout",{
+            method:'GET',
+            credentials:'include'
+        })
+        setAlertMsg("已成功登入")
+        setUserInfo(null)
+    }
 
     return (
         <Menu disableScrollLock sx={{ border: "0px solid" }} anchorEl={anchorElement} open={userMenuOpen} onClick={handleCancelAnchor} onClose={handleCancelAnchor}>
@@ -23,6 +37,9 @@ export default function UserMenu({anchorElement,handleCancelAnchor}:UserMenu) {
             </MenuItem>
             <MenuItem component={Link} href="/user/addressed">
                 <Typography variant='body2'>常用地址</Typography>
+            </MenuItem>
+            <MenuItem component={Link} href="/login" onClick={handleLogout}>
+                <Typography variant='body2'>登出</Typography>
             </MenuItem>
         </Menu>
     )

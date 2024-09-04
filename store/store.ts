@@ -183,7 +183,7 @@ const userUserInfoStore =create<UserInfoStore>((set, get)=>({
 
 interface UserInfoStore{
     userInfo:PersonalInfomation | null;
-    setUserInfo:(info:PersonalInfomation) =>void
+    setUserInfo:(info:PersonalInfomation|null) =>void
 }
 
 export { useCartStore, useSubscribeListStore, useAlertMsgStore,userUserInfoStore }

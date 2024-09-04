@@ -3,6 +3,7 @@ import { useSearchParams } from "next/navigation"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 import { PersonalInfomation } from "../user/account"
+import { Container } from "@mui/material"
 
 
 export default function AuthLogin() {
@@ -88,9 +89,9 @@ export default function AuthLogin() {
     }
 
     return (
-        <>
-            auth
-        </>
+        <Container>
+            驗證中...
+        </Container>
     )
 
 }

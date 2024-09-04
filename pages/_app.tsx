@@ -6,7 +6,6 @@ import { parseCookies } from "nookies";
 import { useEffect } from "react";
 import { PersonalInfomation } from "./user/account";
 
-import Cookies from 'js-cookie';
 
 export default function App({ Component, pageProps }: AppProps) {
 
