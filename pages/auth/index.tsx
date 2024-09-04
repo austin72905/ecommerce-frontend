@@ -75,8 +75,9 @@ export default function AuthLogin() {
     // 跳轉 state
     // redirect_url (從state裡面取)
     const userAuthLogin = async (data: {}) => {
-        const response = await fetch("https://localhost:7234/User/AuthLogin", {
+        const response = await fetch("http://localhost:5025/User/AuthLogin", {
             method: 'POST',
+            credentials:'include',
             headers: {
                 'Content-Type': 'application/json'
             },
