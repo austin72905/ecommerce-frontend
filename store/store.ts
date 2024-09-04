@@ -1,6 +1,7 @@
 import { ProductInfomation, ProductInfomationCount } from '@/interfaces';
 import { PersonalInfomation } from '@/pages/user/account';
 import { userInfo } from 'os';
+import { useEffect } from 'react';
 import { create } from 'zustand'
 
 const useCartStore = create<CartState>((set, get) => ({
@@ -89,6 +90,10 @@ const useCartStore = create<CartState>((set, get) => ({
         })
         return totalPrice
     },
+    // 新增初始化 cartContent 的函數
+    initializeCart: (initialCart: ProductInfomationCount[] | never[]) => set(() => ({
+        cartContent: initialCart
+    }))
 }))
 
 
@@ -99,6 +104,7 @@ interface CartState {
     plusProductCount: (productId: string) => void;
     minusProductCount: (productId: string) => void;
     countTotalPrice: () => number;
+    initializeCart: (initialCart: ProductInfomationCount[] | never[]) => void;
 }
 
 const useSubscribeListStore = create<SubscribeListState>((set, get) => ({
@@ -170,20 +176,22 @@ interface AlertMsgStoreState {
 }
 
 
-const userUserInfoStore =create<UserInfoStore>((set, get)=>({
-    userInfo:null,
-    setUserInfo:(info) => set((state)=>{
+const userUserInfoStore = create<UserInfoStore>((set, get) => ({
+    userInfo: null,
+    setUserInfo: (info) => set((state) => {
 
-        
+
         return {
-            userInfo:info
+            userInfo: info
         }
     })
 }))
 
-interface UserInfoStore{
-    userInfo:PersonalInfomation | null;
-    setUserInfo:(info:PersonalInfomation|null) =>void
+interface UserInfoStore {
+    userInfo: PersonalInfomation | null;
+    setUserInfo: (info: PersonalInfomation | null) => void
 }
 
-export { useCartStore, useSubscribeListStore, useAlertMsgStore,userUserInfoStore }
+
+
+export { useCartStore,useSubscribeListStore, useAlertMsgStore,userUserInfoStore }

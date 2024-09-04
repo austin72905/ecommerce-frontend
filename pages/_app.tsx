@@ -1,5 +1,5 @@
 import Layout from "@/components/layout/layout";
-import { userUserInfoStore } from "@/store/store";
+import { useCartStore, userUserInfoStore } from "@/store/store";
 
 import type { AppProps } from "next/app";
 import { parseCookies } from "nookies";
@@ -12,6 +12,36 @@ export default function App({ Component, pageProps }: AppProps) {
 
   const userInfo = userUserInfoStore((state) => state.userInfo)
   const setUserInfo = userUserInfoStore((state) => state.setUserInfo)
+
+  const initializeCart=useCartStore((state)=>state.initializeCart)
+  const cartContent=useCartStore((state)=>state.cartContent)
+
+
+  //檢查購物車內容
+  useEffect(()=>{
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      initializeCart(JSON.parse(savedCart));
+    }
+  },[])
+
+
+  useEffect(() => {
+    // 定義清理函數
+    const handleBeforeUnload = () => {
+      localStorage.setItem('cart', JSON.stringify(cartContent));
+    };
+
+    // 監聽 "beforeunload" 事件
+    // 當用戶即將離開頁面時，可以將購物車數據或表單數據保存到 localStorage
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // 在卸載或頁面變更時清除事件監聽器
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [cartContent]);
+
   //檢查是否登陸
   useEffect(() => {
 
