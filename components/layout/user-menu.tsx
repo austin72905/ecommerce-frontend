@@ -1,4 +1,4 @@
-import { useAlertMsgStore, userUserInfoStore } from "@/store/store";
+import { useAlertMsgStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
@@ -11,6 +11,8 @@ export default function UserMenu({anchorElement,handleCancelAnchor}:UserMenu) {
     const setUserInfo = userUserInfoStore((state) => state.setUserInfo)
     const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
 
+
+    const clearSubscribeIdList=useSubscribeListStore((state)=>state.clearSubscribeIdList)
     const handleLogout=async()=>{
         console.log("logout")
         await fetch("http://localhost:5025/User/UserLogout",{
@@ -19,6 +21,7 @@ export default function UserMenu({anchorElement,handleCancelAnchor}:UserMenu) {
         })
         setAlertMsg("已成功登入")
         setUserInfo(null)
+        clearSubscribeIdList()
     }
 
     return (

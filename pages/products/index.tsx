@@ -23,7 +23,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
     const router = useRouter()
 
-    const {query,pathname}=router
+    const { query, pathname } = router
 
     const goToProductDetail = (productId: string) => {
         router.push(`/products/${productId}`)
@@ -39,11 +39,19 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     const userInfo = userUserInfoStore((state) => state.userInfo)
     const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
 
+
+    //計時器 
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
     const handeClickSubscribe = (e: ChangeEvent<HTMLInputElement>, product: ProductInfomation) => {
 
-        if(!userInfo){
+        if (!userInfo) {
             setAlertMsg("請先登入")
-            router.push(`/login?redirect=/products?tag=${query.tag}`)
+
+
+            timeoutId = setTimeout(() => {
+                router.push(`/login?redirect=/products?tag=${query.tag}`)
+            }, 1000);
             return
         }
 
@@ -53,6 +61,19 @@ export default function ProductsPage({ products }: ProductsPageProps) {
             removeFromList(product.productId)
         }
     }
+
+
+    //清除計時器
+    useEffect(() => {
+
+        return () => {
+            if (timeoutId) {
+                clearTimeout(timeoutId)
+            }
+        }
+    }, [])
+
+
 
     const [selectProduct, setSelectProduct] = useState<ProductInfomation>(initSelectProduct)
 
@@ -72,7 +93,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
         handleModalOpen()
     }
 
-   
+
 
 
 

@@ -142,7 +142,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     };
 
 
-
+    //計時器 
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
     // 監聽scroll，離開頁面時再將監聽去掉
     useEffect(() => {
 
@@ -153,6 +154,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
         window.addEventListener('scroll', onScroll);
         return () => {
             window.removeEventListener('scroll', onScroll);
+
+            //刪除計時器
+            if (timeoutId) {
+                clearTimeout(timeoutId)
+            }
         };
     }, []);
 
@@ -181,7 +187,10 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
         if (!userInfo) {
             setAlertMsg("請先登入")
-            router.push(`/login?redirect=/checkout`)
+
+            timeoutId = setTimeout(() => {
+                router.push(`/login?redirect=/checkout`)
+            }, 1000);
             return
         }
 
@@ -595,12 +604,19 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
 
     const userInfo = userUserInfoStore((state) => state.userInfo)
 
+    //計時器 
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
     const handeClickSubscribe = (e: ChangeEvent<HTMLInputElement>, product: ProductInfomation) => {
 
 
         if (!userInfo) {
             setAlertMsg("請先登入")
-            router.push(`/login?redirect=/products/${query.productid}`)
+
+
+            timeoutId = setTimeout(() => {
+                router.push(`/login?redirect=/products/${query.productid}`)
+            }, 1000);
             return
         }
 
@@ -610,6 +626,17 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
             removeFromList(product.productId)
         }
     }
+
+
+    //清除計時器
+    useEffect(() => {
+
+        return () => {
+            if (timeoutId) {
+                clearTimeout(timeoutId)
+            }
+        }
+    }, [])
 
 
     const handleCountMinus = () => {
@@ -637,7 +664,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, selectSize, selectCo
         setAlertMsg("新增購物車成功")
     }
 
-    
+
 
     return (
         <Grid container alignItems={"center"} columns={columns} rowSpacing={5} sx={{ px: 5, width: "100%" }} >

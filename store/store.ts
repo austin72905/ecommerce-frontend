@@ -148,6 +148,11 @@ const useSubscribeListStore = create<SubscribeListState>((set, get) => ({
             subscribeList: subscribeList,
         }
     }),
+    clearSubscribeIdList:()=>set((state)=>{
+        return {
+            subscribeList:[]
+        }
+    })
 }))
 
 
@@ -156,6 +161,7 @@ interface SubscribeListState {
     subscribeIdList: () => string[];
     addToList: (product: ProductInfomation) => void;
     removeFromList: (productId: string) => void;
+    clearSubscribeIdList:()=>void;
 }
 
 const useAlertMsgStore = create<AlertMsgStoreState>((set, get) => ({

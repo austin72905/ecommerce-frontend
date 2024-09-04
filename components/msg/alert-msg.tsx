@@ -11,7 +11,7 @@ export default function AlertMsg(){
 
         let timer = setTimeout(() => {
             setAlertMsg("")
-        }, 2000);
+        }, 1500);
 
         return () => {
             clearTimeout(timer)
@@ -34,6 +34,7 @@ export default function AlertMsg(){
                         md: "60%",
                         lg: "40%"
                     },
+                    zIndex:9999
 
                 }}
             >

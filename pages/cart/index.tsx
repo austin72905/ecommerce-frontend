@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -26,12 +26,13 @@ import RemoveIcon from '@mui/icons-material/Remove';
 
 import ProductImage1 from '/public/images/coat1.jpg'
 import { useRouter } from 'next/router';
-import { useCartStore, userUserInfoStore } from '@/store/store';
+import { useAlertMsgStore, useCartStore, userUserInfoStore } from '@/store/store';
 import { it } from 'node:test';
 import { ProductInfomationCount } from '@/interfaces';
 import { Card, CardActions, CardContent, CardMedia, useMediaQuery, useTheme } from '@mui/material';
 import Image from 'next/image';
 import { DefaultScreenCartContent, SmallScreenViewCartContent } from '@/components/cart/cart-content';
+
 
 export default function Cart() {
 
@@ -45,7 +46,7 @@ export default function Cart() {
 
     const userInfo = userUserInfoStore((state) => state.userInfo)
 
- 
+    const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
 
     const removeFromCart = useCartStore((state) => state.removeFromCart)
 
@@ -55,19 +56,36 @@ export default function Cart() {
 
     const countTotalPrice = useCartStore((state) => state.countTotalPrice)
 
+    //計時器 
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
 
     const addToCheckOutList = () => {
         //setCheckOutContent([...cartContent])
         //setCartContent([])
 
 
-        if(!userInfo){
-            router.push(`/login?redirect=/checkout`)
+        if (!userInfo) {
+            setAlertMsg("請先登入")
+            timeoutId = setTimeout(() => {
+                router.push(`/login?redirect=/checkout`)
+            }, 1000);
+
             return
         }
 
         toCheckout()
     }
+
+    //清除計時器
+    useEffect(() => {
+
+        return () => {
+            if (timeoutId) {
+                clearTimeout(timeoutId)
+            }
+        }
+    }, [])
 
     const theme = useTheme()
     const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
@@ -115,7 +133,7 @@ export default function Cart() {
 
                 </Grid>
                 <Grid item xs={8}>
-                    {cartContent.length>0 &&
+                    {cartContent.length > 0 &&
                         <Paper sx={{ border: "1px solid #d9d9d9", boxShadow: 'none' }} >
 
                             <Grid container columns={8}>

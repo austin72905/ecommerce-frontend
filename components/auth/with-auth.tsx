@@ -11,6 +11,9 @@ const WithAuth = <P extends object>(Component: ComponentType<P>) => {
         const userInfo = userUserInfoStore((state) => state.userInfo)
 
         const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
+
+        //計時器 
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
         const { query, pathname } = router;
 
         const cookies = parseCookies();
@@ -32,14 +35,26 @@ const WithAuth = <P extends object>(Component: ComponentType<P>) => {
                 console.log("new pathname=", newPath)
                 if(router.isReady){
                     setAlertMsg("請先登入")
-                    router.replace(`/login?redirect=${newPath}`)
+                    
+                    timeoutId = setTimeout(() => {
+                        router.replace(`/login?redirect=${newPath}`)
+                    }, 1000);
                 }
                 
  
             }
 
+            return ()=>{
+                if (timeoutId) {
+                    clearTimeout(timeoutId)
+                }
+            }
+
 
         }, [router.isReady])
+
+
+        
 
         // 如果已經驗證，渲染組件
         if (userInfo) {
