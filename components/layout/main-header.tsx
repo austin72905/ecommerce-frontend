@@ -69,10 +69,12 @@ export default function MainHeader() {
     const userInfo = userUserInfoStore((state) => state.userInfo)
 
     useEffect(() => {
-        if (userInfo) {
-            if (userInfo.userId) {
-                setIsLogin(true)
-            }
+        if (userInfo && userInfo.userId) {
+
+            setIsLogin(true)
+
+        } else {
+            setIsLogin(false)
         }
     }, [userInfo])
 
@@ -152,9 +154,9 @@ export default function MainHeader() {
                                         </IconButton>
                                 }
                                 {
-                                    userInfo && <Typography variant="caption">{userInfo?.name}，Hello</Typography>
+                                    isLogin && <Typography variant="caption">{userInfo?.name}，Hello</Typography>
                                 }
-                                
+
 
 
                             </Box>
