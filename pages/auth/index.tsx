@@ -4,6 +4,8 @@ import { useRouter } from "next/router"
 import { useEffect } from "react"
 import { PersonalInfomation } from "../user/account"
 import { Container } from "@mui/material"
+import { ApiResponse } from "@/interfaces/api/response"
+import { RespCode } from "@/enums/resp-code"
 
 
 export default function AuthLogin() {
@@ -19,17 +21,20 @@ export default function AuthLogin() {
 
         if (router.isReady) {
             const query = router.query
-            console.log("query",query)
+            //console.log("query",query)
+            // 本頁面是提供獲取Oauth驗證碼後，請求後端，如果直接請求本頁面，就返回登入頁面
             if (!query || !query.code || !query.state) {
                 router.replace('/login')
                 return;
             }
+
             const state: string | undefined = query.state as string | undefined
 
             if (!state) {
                 router.replace('/login')
                 return;
             }
+
             // google-login:/跳轉路徑
             const stateArr = state.split(':')
 
@@ -37,24 +42,40 @@ export default function AuthLogin() {
 
             const fetchData = async () => {
                 try {
-                    const result =await userAuthLogin(data) as AuthLoginResp;
-
+                    const result =await userAuthLogin(data) as ApiResponse;
                     console.log("result=", result)
+                    
 
-                    if(result.userInfo){
-                        const user:PersonalInfomation={
-                            userId:result.userInfo.userId,
-                            email:result.userInfo.email,
-                            name:result.userInfo.username,
-                            birthday:result.userInfo.birthday?result.userInfo.birthday:"",
-                            type:result.userInfo.type,
-                            picture:result.userInfo.picture
-                        }
-                        setUserInfo(user)
+                    if(result.code!=RespCode.SUCCESS){
+
+                        router.replace("/login")
+                        return;
                     }
 
-                    if(result.redirectUrl){
-                        router.replace(result.redirectUrl)
+
+                    if(result.data==null){
+                        router.replace("/login")
+                        return;
+                    }
+
+                    
+                    const userData =result.data as AuthLoginResp
+                    
+                    const user:PersonalInfomation={
+                        userId:userData.userInfo.userId,
+                        email:userData.userInfo.email,
+                        name:userData.userInfo.username,
+                        birthday:userData.userInfo.birthday?userData.userInfo.birthday:"",
+                        type:userData.userInfo.type,
+                        picture:userData.userInfo.picture
+                    }
+
+                    
+                    setUserInfo(user)
+                    
+                    //如果有帶跳轉地址就跳轉
+                    if(userData.redirectUrl){
+                        router.replace(userData.redirectUrl)
                     }
                     
                     
@@ -102,7 +123,7 @@ interface AuthProps {
 }
 
 interface AuthLoginResp{
-    redirectUrl:string;
+    redirectUrl:string | null;
     userInfo:UserInfo;
 }
 

@@ -90,18 +90,7 @@ export default function Cart() {
     const theme = useTheme()
     const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
 
-    // const handleFavoriteChecked=(event: React.ChangeEvent<HTMLInputElement>,product:ProductInfomation)=>{
-
-
-    //     //是打勾的
-    //     if(event.target.checked){
-    //       addToCollectionList(product)
-    //     }else{
-    //       removeFromCollectionList(product.productId)
-    //     }
-    // }
-
-
+   
     return (
         <Container sx={{ border: "0px solid" }} maxWidth='xl'>
             <Grid container columns={8} sx={{ border: "0px solid" }} spacing={3}>

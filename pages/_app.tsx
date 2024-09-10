@@ -5,6 +5,8 @@ import type { AppProps } from "next/app";
 import { parseCookies } from "nookies";
 import { useEffect } from "react";
 import { PersonalInfomation } from "./user/account";
+import { ApiResponse } from "@/interfaces/api/response";
+import { RespCode } from "@/enums/resp-code";
 
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -56,21 +58,27 @@ export default function App({ Component, pageProps }: AppProps) {
 
       const fetchData = async () => {
         try {
-          const result = await getUserInfo() as UserInfo;
+          const result = await getUserInfo() as ApiResponse;
 
           console.log("result=", result)
 
-          if (result) {
-            const user: PersonalInfomation = {
-              userId: result.userId,
-              email: result.email,
-              name: result.username,
-              birthday: result.birthday ? result.birthday : "",
-              type: result.type,
-              picture: result.picture
-            }
-            setUserInfo(user)
+          if(result.code!==RespCode.SUCCESS){
+            return;
           }
+
+          const userData = result.data as UserInfo
+
+          
+          const user: PersonalInfomation = {
+            userId: userData.userId,
+            email: userData.email,
+            name: userData.username,
+            birthday: userData.birthday ? userData.birthday : "",
+            type: userData.type,
+            picture: userData.picture
+          }
+          setUserInfo(user)
+          
 
         } catch (error) {
           console.error('Error fetching data:', error)

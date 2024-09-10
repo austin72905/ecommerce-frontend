@@ -55,16 +55,7 @@ export default function Login() {
 
         const url = `https://accounts.google.com/o/oauth2/v2/auth?${query}`
         window.location.href =url
-        // const response = await fetch(url)
-        // if (!response.ok) {
-        //     throw new Error('Network response was not ok ' + response.statusText);
-        // }
-
-        // // 將回應解析為 JSON
-        // const data = await response.json();
-
-        // // 處理 JSON 資料
-        // console.log(data);
+       
     }
 
     return (
