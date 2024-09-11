@@ -15,7 +15,7 @@ export interface ProductInfomation {
     colorDescription?: string[];
     images?: any[];
     coverImg?: any;
-    varients?:ProductVarient[];
+    variants:ProductVariant[];
 }
 
 
@@ -37,7 +37,7 @@ export interface Size {
 }
 
 
-export interface ProductVarient{
+export interface ProductVariant{
     variantID:number;
     color:string;
     size:string;

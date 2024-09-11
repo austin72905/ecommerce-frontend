@@ -46,7 +46,7 @@ const fakeProducts: ProductInfomation[] = [
         features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
         images: imgList,
         coverImg:ProductImage1,
-        varients:[
+        variants:[
             {
                 variantID:1,
                 color:"黑",
@@ -103,7 +103,7 @@ const fakeProducts: ProductInfomation[] = [
         features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
         images: imgList,
         coverImg:ProductImage4,
-        varients:[
+        variants:[
             {
                 variantID:1,
                 color:"黑",
@@ -160,7 +160,7 @@ const fakeProducts: ProductInfomation[] = [
         features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
         images: imgList,
         coverImg:ProductImage3,
-        varients:[
+        variants:[
             {
                 variantID:1,
                 color:"黑",
@@ -217,7 +217,7 @@ const fakeProducts: ProductInfomation[] = [
         features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
         images: imgList,
         coverImg:ProductImage,
-        varients:[
+        variants:[
             {
                 variantID:1,
                 color:"黑",
@@ -274,7 +274,7 @@ const fakeProducts: ProductInfomation[] = [
         features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
         images: imgList,
         coverImg:ProductImage5,
-        varients:[
+        variants:[
             {
                 variantID:1,
                 color:"黑",

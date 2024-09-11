@@ -2,7 +2,7 @@ import { Box, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Con
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { ProductInfomation } from "@/interfaces";
+import { ProductInfomation, ProductVariant } from "@/interfaces";
 import Image from "next/image";
 import { useState } from "react";
 import { useAlertMsgStore, useCartStore } from "@/store/store";
@@ -58,6 +58,24 @@ export default function PurchaseModal({ product, modalOpen,handleModalOpen, hand
             return i + 1
         })
     }
+
+    //顏色與規格
+    const groupByColor = product.variants.reduce((acc:any,variant:ProductVariant)=>{
+
+        if(!acc[variant.color]){
+            acc[variant.color]=[];
+        }
+        acc[variant.color].push(variant);
+        return acc;
+    },{});
+
+    const sizes = product.variants.reduce((acc:any, variant:ProductVariant) => {
+        // 如果acc中沒有該size，則將其加入
+        if (!acc.includes(variant.size)) {
+            acc.push(variant.size);
+        }
+        return acc;
+    }, []);
 
     return (
         <Modal open={modalOpen}>

@@ -176,7 +176,8 @@ const initSelectProduct: ProductInfomation = {
     howToWash: "",
     features: "",
     images: undefined,
-    coverImg: undefined
+    coverImg: undefined,
+    variants:[]
 
 }
 
