@@ -9,9 +9,9 @@ import { useRouter } from "next/router";
 
 interface TableViewCartContentProps {
     cartContent: ProductInfomationCount[] | never[];
-    plusProductCount: (productId: string) => void;
-    minusProductCount: (productId: string) => void;
-    removeFromCart: (productId: string) => void;
+    plusProductCount: (productId: number) => void;
+    minusProductCount: (productId: number) => void;
+    removeFromCart: (productId: number) => void;
 }
 
 const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductCount, removeFromCart }: TableViewCartContentProps) => {
@@ -22,7 +22,7 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
 
     const router = useRouter()
 
-    const goToProductDetail = (productId: string) => {
+    const goToProductDetail = (productId: number) => {
         router.push(`/products/${productId}`)
     }
 
@@ -108,9 +108,9 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
 
 interface SmallScreenViewCartContentProps {
     cartContent: ProductInfomationCount[] | never[];
-    plusProductCount: (productId: string) => void;
-    minusProductCount: (productId: string) => void;
-    removeFromCart: (productId: string) => void;
+    plusProductCount: (productId: number) => void;
+    minusProductCount: (productId: number) => void;
+    removeFromCart: (productId: number) => void;
 }
 
 const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProductCount, removeFromCart }: SmallScreenViewCartContentProps) => {

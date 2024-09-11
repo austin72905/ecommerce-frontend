@@ -12,11 +12,11 @@ export interface OrderStepInfomation {
 export interface OrderInfomation {
     recordCode: string;
     productList: ProductInfomationCount[];
-    productName: string;
-    prouctPrice: number;
+    //productName: string;
+    //prouctPrice: number;
     orderPrice: number;
-    size: string;
-    count: number;
+    //size: string;
+    //count: number;
     address: OrderAddress;
     status: string;
     cargoPrice: number;
@@ -51,3 +51,5 @@ export interface RecievePlaceInfo {
     recieveStore: string;
     recieveAddress: string;
 }
+
+

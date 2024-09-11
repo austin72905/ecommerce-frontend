@@ -17,7 +17,7 @@ const imgList = [
 ]
 
 
-const getProdcctById = (productId: string | undefined): ProductInfomation | null => {
+const getProdcctById = (productId: number | undefined): ProductInfomation | null => {
     
     const result =fakeProducts.find(product => product.productId === productId)
     if(!result){
@@ -35,7 +35,7 @@ export { getProdcctById, getProducts,fakeProducts }
 const fakeProducts: ProductInfomation[] = [
     {
         title: "超時尚流蘇几皮外套",
-        productId: "26790367",
+        productId: 26790367,
         stock: 60,
         price: 100,
         size: ["S", "M", "L", "XL", "2XL", "3XL"],
@@ -45,12 +45,54 @@ const fakeProducts: ProductInfomation[] = [
         howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",
         features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
         images: imgList,
-        coverImg:ProductImage1
+        coverImg:ProductImage1,
+        varients:[
+            {
+                variantID:1,
+                color:"黑",
+                size:"S",
+                sku:"BLACK-S",
+                stock:2,
+                price:99
+            },
+            {
+                variantID:2,
+                color:"黑",
+                size:"L",
+                sku:"BLACK-L",
+                stock:16,
+                price:283
+            },
+            {
+                variantID:3,
+                color:"米",
+                size:"L",
+                sku:"WHEAT-L",
+                stock:3,
+                price:150
+            },
+            {
+                variantID:4,
+                color:"咖啡",
+                size:"M",
+                sku:"BROWN-M",
+                stock:17,
+                price:199
+            },
+            {
+                variantID:5,
+                color:"咖啡",
+                size:"L",
+                sku:"BROWN-L",
+                stock:2,
+                price:99
+            }
+        ]
 
     },
     {
         title: "紫色格紋大衣",
-        productId: "26790368",
+        productId: 26790368,
         stock: 5,
         price: 598,
         size: ["S", "M", "L", "XL", "2XL"],
@@ -60,12 +102,54 @@ const fakeProducts: ProductInfomation[] = [
         howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",
         features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
         images: imgList,
-        coverImg:ProductImage4
+        coverImg:ProductImage4,
+        varients:[
+            {
+                variantID:1,
+                color:"黑",
+                size:"S",
+                sku:"BLACK-S",
+                stock:2,
+                price:99
+            },
+            {
+                variantID:2,
+                color:"黑",
+                size:"L",
+                sku:"BLACK-L",
+                stock:16,
+                price:283
+            },
+            {
+                variantID:3,
+                color:"米",
+                size:"L",
+                sku:"WHEAT-L",
+                stock:3,
+                price:150
+            },
+            {
+                variantID:4,
+                color:"咖啡",
+                size:"M",
+                sku:"BROWN-M",
+                stock:17,
+                price:199
+            },
+            {
+                variantID:5,
+                color:"咖啡",
+                size:"L",
+                sku:"BROWN-L",
+                stock:2,
+                price:99
+            }
+        ]
 
     },
     {
         title: "超質感綠色皮衣",
-        productId: "13790367",
+        productId: 13790367,
         stock: 18,
         price: 179,
         size: ["S", "M", "L", "XL", "2XL", "3XL"],
@@ -75,12 +159,54 @@ const fakeProducts: ProductInfomation[] = [
         howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",
         features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
         images: imgList,
-        coverImg:ProductImage3
+        coverImg:ProductImage3,
+        varients:[
+            {
+                variantID:1,
+                color:"黑",
+                size:"S",
+                sku:"BLACK-S",
+                stock:2,
+                price:99
+            },
+            {
+                variantID:2,
+                color:"黑",
+                size:"L",
+                sku:"BLACK-L",
+                stock:16,
+                price:283
+            },
+            {
+                variantID:3,
+                color:"米",
+                size:"L",
+                sku:"WHEAT-L",
+                stock:3,
+                price:150
+            },
+            {
+                variantID:4,
+                color:"咖啡",
+                size:"M",
+                sku:"BROWN-M",
+                stock:17,
+                price:199
+            },
+            {
+                variantID:5,
+                color:"咖啡",
+                size:"L",
+                sku:"BROWN-L",
+                stock:2,
+                price:99
+            }
+        ]
 
     },
     {
         title: "海島風情黑色短袖襯衫",
-        productId: "33790012",
+        productId: 33790012,
         stock: 60,
         price: 100,
         size: ["S", "M", "L", "XL"],
@@ -90,12 +216,54 @@ const fakeProducts: ProductInfomation[] = [
         howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",
         features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
         images: imgList,
-        coverImg:ProductImage
+        coverImg:ProductImage,
+        varients:[
+            {
+                variantID:1,
+                color:"黑",
+                size:"S",
+                sku:"BLACK-S",
+                stock:2,
+                price:99
+            },
+            {
+                variantID:2,
+                color:"黑",
+                size:"L",
+                sku:"BLACK-L",
+                stock:16,
+                price:283
+            },
+            {
+                variantID:3,
+                color:"米",
+                size:"L",
+                sku:"WHEAT-L",
+                stock:3,
+                price:150
+            },
+            {
+                variantID:4,
+                color:"咖啡",
+                size:"M",
+                sku:"BROWN-M",
+                stock:17,
+                price:199
+            },
+            {
+                variantID:5,
+                color:"咖啡",
+                size:"L",
+                sku:"BROWN-L",
+                stock:2,
+                price:99
+            }
+        ]
 
     },
     {
         title: "帥氣單寧",
-        productId: "34690012",
+        productId: 34690012,
         stock: 60,
         price: 799,
         size: ["S", "M", "L", "XL"],
@@ -105,7 +273,49 @@ const fakeProducts: ProductInfomation[] = [
         howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",
         features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
         images: imgList,
-        coverImg:ProductImage5
+        coverImg:ProductImage5,
+        varients:[
+            {
+                variantID:1,
+                color:"黑",
+                size:"S",
+                sku:"BLACK-S",
+                stock:2,
+                price:99
+            },
+            {
+                variantID:2,
+                color:"黑",
+                size:"L",
+                sku:"BLACK-L",
+                stock:16,
+                price:283
+            },
+            {
+                variantID:3,
+                color:"米",
+                size:"L",
+                sku:"WHEAT-L",
+                stock:3,
+                price:150
+            },
+            {
+                variantID:4,
+                color:"咖啡",
+                size:"M",
+                sku:"BROWN-M",
+                stock:17,
+                price:199
+            },
+            {
+                variantID:5,
+                color:"咖啡",
+                size:"L",
+                sku:"BROWN-L",
+                stock:2,
+                price:99
+            }
+        ]
 
     }
 ]

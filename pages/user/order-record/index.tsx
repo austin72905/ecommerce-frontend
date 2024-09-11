@@ -35,7 +35,7 @@ import ProductImage from '/public/images/coat2.jpg'
 import { CardHeader, Divider, useMediaQuery } from '@mui/material';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import { ProductInfomationCount } from '@/interfaces';
+import { OrderInfomation, ProductInfomationCount } from '@/interfaces';
 import { orderInfoList } from '@/dummy-data/order-dummy-data';
 import WithAuth from '@/components/auth/with-auth';
 
@@ -172,33 +172,14 @@ const cargoInfomation: CargoInfomation[] = [
 ]
 
 
-const orderAddress: OrderAddress = {
-    receiver: "王大明",
-    phoneNumber: "(+886)964816276",
-    cargoAddress: "7-11 雅典門市 台中市南區三民西路377號西川一路1號 店號950963"
-}
+
 
 interface PurchaseRecordProps {
     //setOrderInfoDetail: React.Dispatch<React.SetStateAction<OrderInfomation>>;
 }
 
 
-interface OrderInfomation {
-    recordCode: string;
-    productList: ProductInfomationCount[];
-    productName: string;
-    prouctPrice: number;
-    orderPrice: number;
-    size: string;
-    count: number;
-    address: OrderAddress;
-    status: string;
-    cargoPrice: number;
-    payWay: string;
-    cargoInfomation: CargoInfomation[];
-    orderStepInfomation: OrderStepInfomation[];
 
-}
 
 const orderStatus = new Map([
     ["1", "已完成"],
@@ -218,11 +199,7 @@ const orderStatusColor = new Map([
     ["5", "#7E7E7E"]
 ])
 
-interface OrderAddress {
-    receiver: string;
-    phoneNumber: string;
-    cargoAddress: string;
-}
+
 
 
 
@@ -342,8 +319,8 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                                                     <Grid item xs={8} sm={6} sx={{ border: "0px solid" }}>
                                                                                         <Box sx={{ border: "0px solid", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                                                                                             <Typography sx={{ fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goOrderDetail(info) }}>{item.product.title}</Typography>
-                                                                                            <Typography variant='caption'>規格 : {info.size}</Typography>
-                                                                                            <Typography >x {info.count}</Typography>
+                                                                                            <Typography variant='caption'>規格 : {item.product.selectSize}</Typography>
+                                                                                            <Typography >x {item.count}</Typography>
                                                                                         </Box>
                                                                                     </Grid>
                                                                                     <Grid item xs={8} sm={2}>

@@ -100,9 +100,9 @@ const useCartStore = create<CartState>((set, get) => ({
 interface CartState {
     cartContent: ProductInfomationCount[] | never[]; //可能是空數組
     addToCart: (product: ProductInfomation, count: number) => void;
-    removeFromCart: (productId: string) => void;
-    plusProductCount: (productId: string) => void;
-    minusProductCount: (productId: string) => void;
+    removeFromCart: (productId: number) => void;
+    plusProductCount: (productId: number) => void;
+    minusProductCount: (productId: number) => void;
     countTotalPrice: () => number;
     initializeCart: (initialCart: ProductInfomationCount[] | never[]) => void;
 }
@@ -158,9 +158,9 @@ const useSubscribeListStore = create<SubscribeListState>((set, get) => ({
 
 interface SubscribeListState {
     subscribeList: ProductInfomation[] | never[]; //可能是空數組
-    subscribeIdList: () => string[];
+    subscribeIdList: () => number[];
     addToList: (product: ProductInfomation) => void;
-    removeFromList: (productId: string) => void;
+    removeFromList: (productId: number) => void;
     clearSubscribeIdList:()=>void;
 }
 

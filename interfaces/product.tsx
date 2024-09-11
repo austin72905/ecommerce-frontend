@@ -1,7 +1,7 @@
 
 
 export interface ProductInfomation {
-    productId: string;
+    productId: number;
     title: string;
     price: number;
     stock: number;
@@ -15,6 +15,7 @@ export interface ProductInfomation {
     colorDescription?: string[];
     images?: any[];
     coverImg?: any;
+    varients?:ProductVarient[];
 }
 
 
@@ -33,4 +34,14 @@ export interface Size {
     xl: string;
     xxl: string;
     xxxl: string;
+}
+
+
+export interface ProductVarient{
+    variantID:number;
+    color:string;
+    size:string;
+    stock:number;
+    sku:string;
+    price:number;
 }

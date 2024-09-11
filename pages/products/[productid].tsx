@@ -173,7 +173,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     const router = useRouter();
     const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
 
-    const goToProductDetail = (productId: string) => {
+    const goToProductDetail = (productId: number) => {
         router.push(`/products/${productId}`)
     }
 
@@ -384,7 +384,7 @@ export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = as
 
     const { params } = context
 
-    const productId = params?.productid;
+    const productId = params?.productid ;
 
     console.log("productId=", productId)
 
@@ -396,7 +396,7 @@ export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = as
 
     // params   segement  看你目錄怎麼定義的
 
-    const product = getProdcctById(productId)
+    const product = getProdcctById(Number(productId))
 
 
     return {
@@ -820,20 +820,6 @@ function SamplePrevArrow(props: any) {
 }
 
 
-const fakeProductInfomation: ProductInfomation =
-{
-    title: "超時尚流蘇几皮外套",
-    productId: "26790367",
-    stock: 60,
-    price: 100,
-    size: ["S", "M", "L", "XL", "2XL", "3XL"],
-    color: ["black", "wheat", "brown"],
-    colorDescription: ["黑色", "白色", "深藍色", "灰色", "深灰色", "紅色"],
-    material: ["聚酯纖維", "聚氨酯纖維"],
-    howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",
-    features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a"
-
-}
 
 
 
@@ -904,7 +890,7 @@ const TextFieldWrapper = styled(TextField)(
 interface CustomSildeProps {
     product: ProductInfomation;
 
-    goToProductDetail: (productId: string) => void
+    goToProductDetail: (productId: number) => void
 }
 
 /**

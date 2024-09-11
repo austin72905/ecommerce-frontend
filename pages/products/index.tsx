@@ -25,7 +25,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
     const { query, pathname } = router
 
-    const goToProductDetail = (productId: string) => {
+    const goToProductDetail = (productId: number) => {
         router.push(`/products/${productId}`)
     }
 
@@ -166,7 +166,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
 const initSelectProduct: ProductInfomation = {
     title: "",
-    productId: "",
+    productId: 0,
     stock: 0,
     price: 0,
     size: [],
