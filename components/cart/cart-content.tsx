@@ -66,10 +66,10 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                                                 {item.product.title}
                                             </Typography>
                                             <Typography variant='caption'>
-                                                規格 : {item.product.selectSize ? item.product.selectSize : "標準"}
+                                                規格 : {item.product.selectedVariant ? item.product.selectedVariant.size : "標準"}
                                             </Typography>
                                             <Typography variant='caption'>
-                                                顏色 : {item.product.selectColor ? item.product.selectColor : "標準"}
+                                                顏色 : {item.product.selectedVariant ? item.product.selectedVariant.color : "標準"}
                                             </Typography>
                                         </Stack>
 
@@ -161,10 +161,10 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
                                             {item.product.title}
                                         </Typography>
                                         <Typography variant='caption'>
-                                            規格 : {item.product.selectSize ? item.product.selectSize : "標準"}
+                                            規格 : {item.product.selectedVariant ? item.product.selectedVariant.size : "標準"}
                                         </Typography>
                                         <Typography variant='caption'>
-                                            顏色 : {item.product.selectColor ? item.product.selectColor : "標準"}
+                                            顏色 : {item.product.selectedVariant ? item.product.selectedVariant.color : "標準"}
                                         </Typography>
                                     </Stack>
 

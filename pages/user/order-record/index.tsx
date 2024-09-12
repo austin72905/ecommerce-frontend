@@ -319,7 +319,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                                                     <Grid item xs={8} sm={6} sx={{ border: "0px solid" }}>
                                                                                         <Box sx={{ border: "0px solid", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                                                                                             <Typography sx={{ fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goOrderDetail(info) }}>{item.product.title}</Typography>
-                                                                                            <Typography variant='caption'>規格 : {item.product.selectSize}</Typography>
+                                                                                            <Typography variant='caption'>規格 : {item.product.selectedVariant?.size}</Typography>
                                                                                             <Typography >x {item.count}</Typography>
                                                                                         </Box>
                                                                                     </Grid>

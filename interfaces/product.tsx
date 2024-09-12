@@ -5,10 +5,6 @@ export interface ProductInfomation {
     title: string;
     price: number;
     stock: number;
-    color?: string[];
-    size?: string[];
-    selectSize?: string;
-    selectColor?: string;
     howToWash?: string;
     features?: string;
     material?: string[];
@@ -16,6 +12,7 @@ export interface ProductInfomation {
     images?: any[];
     coverImg?: any;
     variants:ProductVariant[];
+    selectedVariant?:ProductVariant;
 }
 
 

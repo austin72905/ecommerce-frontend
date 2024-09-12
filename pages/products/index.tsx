@@ -169,8 +169,6 @@ const initSelectProduct: ProductInfomation = {
     productId: 0,
     stock: 0,
     price: 0,
-    size: [],
-    color: [],
     colorDescription: [],
     material: [],
     howToWash: "",
