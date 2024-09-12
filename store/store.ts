@@ -23,12 +23,12 @@ const useCartStore = create<CartState>((set, get) => ({
 
         // 加入購物車
         // 比較carcontent 裡面是否已經有ProductId? 
-        const item = cartcontent.find(item => item.product.productId === product.productId);
+        const item = cartcontent.find(item => item.product.productId === product.productId && item.product.selectedVariant?.variantID===product.selectedVariant?.variantID);
 
         // 有就 count +1 , 沒有就push product count :1
         if (item) {
             cartcontent.forEach(item => {
-                if (item.product.productId === product.productId)
+                if (item.product.productId === product.productId  && item.product.selectedVariant?.variantID===product.selectedVariant?.variantID)
                     item.count += count;
             })
         }
@@ -43,8 +43,21 @@ const useCartStore = create<CartState>((set, get) => ({
             cartContent: cartcontent
         }
     }),
-    removeFromCart: (productId) => set((state) => {
-        let cartcontent = [...state.cartContent].filter(item => item.product.productId !== productId);
+    removeFromCart: (productId,variantID) => set((state) => {
+        let cartcontent = state.cartContent.filter(item => {
+
+            //不是要被刪除的productId 就返回 true
+            if(item.product.productId !== productId){
+                return true
+            }
+
+            // 剩下要驗證被選重的id，以及選中的variantId
+            if(item.product.selectedVariant?.variantID===variantID){
+                return false
+            }
+
+            return true
+        });
 
         return {
             cartContent: cartcontent
@@ -100,7 +113,7 @@ const useCartStore = create<CartState>((set, get) => ({
 interface CartState {
     cartContent: ProductInfomationCount[] | never[]; //可能是空數組
     addToCart: (product: ProductInfomation, count: number) => void;
-    removeFromCart: (productId: number) => void;
+    removeFromCart: (productId: number,variantID:number|undefined) => void;
     plusProductCount: (productId: number) => void;
     minusProductCount: (productId: number) => void;
     countTotalPrice: () => number;

@@ -31,11 +31,10 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
     const addProductToCart = () => {
         handleModalClose()
         addToCart({ ...product,selectedVariant:selectVariant }, itemCount)
+        setcolorVal("")
+        setsizeVal("")
         setAlertMsg("新增購物車成功")
     }
-
-    const [selectSize, setSelectSize] = useState("")
-    const [selectColor, setSelectColor] = useState("")
 
     const [itemCount, setItemCount] = useState<number>(1)
 

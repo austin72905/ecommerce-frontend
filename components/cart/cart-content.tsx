@@ -11,7 +11,7 @@ interface TableViewCartContentProps {
     cartContent: ProductInfomationCount[] | never[];
     plusProductCount: (productId: number) => void;
     minusProductCount: (productId: number) => void;
-    removeFromCart: (productId: number) => void;
+    removeFromCart: (productId: number,variantID:number|undefined) => void;
 }
 
 const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductCount, removeFromCart }: TableViewCartContentProps) => {
@@ -55,11 +55,11 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                         cartContent.length > 0 &&
                         cartContent.map((item: ProductInfomationCount, index: number) =>
                         (
-                            <TableRow key={index}>
+                            <TableRow key={`${item.product.productId}-${item.product.selectedVariant?.variantID}`}>
                                 <TableCell style={{ width: "50%" }} >
                                     <Stack spacing={"20px"} direction={"row"} alignItems="center">
                                         <Box sx={{ my: "5px" }}>
-                                            <img src={item.product.coverImg.src} style={{ width: "100px", height: "100px", padding: 0, margin: 0 }} />
+                                            <img src={item.product.coverImg.src} style={{ width: "130px", height: "150px", padding: 0, margin: 0 }} />
                                         </Box>
                                         <Stack spacing={"2px"}>
                                             <Typography  sx={{ '&:hover': { cursor: "pointer" } }} onClick={()=>{goToProductDetail(item.product.productId)}}>
@@ -90,7 +90,7 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                                 <TableCell sx={{ border: "0px solid" }} align='center'>
                                     <Stack sx={{ border: "0px solid" }} alignItems="center">
 
-                                        <IconButton onClick={() => { removeFromCart(item.product.productId) }}>
+                                        <IconButton onClick={() => { removeFromCart(item.product.productId,item.product.selectedVariant?.variantID) }}>
                                             <DeleteOutlineOutlinedIcon />
                                         </IconButton>
                                     </Stack>
@@ -110,7 +110,7 @@ interface SmallScreenViewCartContentProps {
     cartContent: ProductInfomationCount[] | never[];
     plusProductCount: (productId: number) => void;
     minusProductCount: (productId: number) => void;
-    removeFromCart: (productId: number) => void;
+    removeFromCart: (productId: number,variantID:number|undefined) => void;
 }
 
 const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProductCount, removeFromCart }: SmallScreenViewCartContentProps) => {
@@ -125,7 +125,7 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
                 cartContent.map((item: ProductInfomationCount, index: number) => (
 
 
-                    <Card key={index} sx={{ border: "1px solid #d9d9d9", boxShadow: "none" }}>
+                    <Card key={`${item.product.productId}-${item.product.selectedVariant?.variantID}`} sx={{ border: "1px solid #d9d9d9", boxShadow: "none" }}>
                         <Stack direction={"row"} spacing={1} sx={{ border: "0px solid black" }}>
 
                             <CardMedia
@@ -151,6 +151,7 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
                                         alt="product information5"
                                         layout="fill"
                                         style={{ objectFit: 'cover' }}
+                                        loading={"eager"}
                                     />
                                 </Box>
                             </CardMedia>
@@ -178,7 +179,7 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
                                         <AddIcon onClick={() => { plusProductCount(item.product.productId) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "25px", width: "25px", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }} />
                                     </Box>
 
-                                    <IconButton onClick={() => { removeFromCart(item.product.productId) }}>
+                                    <IconButton onClick={() => { removeFromCart(item.product.productId,item.product.selectedVariant?.variantID) }}>
                                         <DeleteOutlineOutlinedIcon />
                                     </IconButton>
                                 </CardActions>
