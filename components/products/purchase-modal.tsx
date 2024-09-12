@@ -29,10 +29,18 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
     const setAlertMsg = useAlertMsgStore(state => state.setAlertMsg)
 
     const addProductToCart = () => {
-        handleModalClose()
-        addToCart({ ...product,selectedVariant:selectVariant }, itemCount)
+        //console.log("selectVariant:",selectVariant)
+        //檢驗是否有正確輸入顏色與尺寸
+        if (product.variants) {
+            if (!selectVariant) {
+                setAlertMsg("請選擇顏色與尺寸")
+                return
+            }
+        }
+        addToCart({ ...product }, selectVariant, itemCount)
         setcolorVal("")
         setsizeVal("")
+        handleModalClose()
         setAlertMsg("新增購物車成功")
     }
 
@@ -130,21 +138,36 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
         setsizeVal(newSize)
     }
 
-    const [selectVariant,setselectVariant]=useState<undefined|ProductVariant>(undefined)
+    const [selectVariant, setselectVariant] = useState<undefined | ProductVariant>(undefined)
 
     useEffect(() => {
         //console.log("color:",colorVal,"sizeval:",sizeVal)
-        const selectv =product.variants.find(v=>v.color===colorVal && v.size === sizeVal)
+        const selectv = product.variants.find(v => v.color === colorVal && v.size === sizeVal)
         //console.log("selectv=",selectv)
         setselectVariant(selectv)
 
-    }, [colorVal,sizeVal])
+    }, [colorVal, sizeVal])
 
-    const ModalClose=()=>{
+    const ModalClose = () => {
         handleModalClose()
         setcolorVal("")
         setsizeVal("")
     }
+
+    useEffect(() => {
+
+        if (selectVariant) {
+            if (itemCount > selectVariant.stock) {
+                setItemCount(1)
+            }
+        } else {
+            if (itemCount > product.stock) {
+                setItemCount(1)
+            }
+        }
+
+
+    }, [selectVariant])
 
     return (
         <Modal open={modalOpen}>
@@ -241,7 +264,7 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
                                                                         ?
                                                                         colors.map((c: string) => (
 
-                                                                            <Grid key={c} item xs={2} sm={2.5} md={2} lg={1}>                                                                               
+                                                                            <Grid key={c} item xs={2} sm={2.5} md={2} lg={1}>
                                                                                 <ToggleButton color="primary" disabled={setColorDisabled(c)} fullWidth size="small" disableRipple value={c}>{c}</ToggleButton>
                                                                             </Grid>
 
@@ -281,7 +304,7 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
                                                                         ?
                                                                         sizes.map((s, index) => (
                                                                             <Grid key={s} item xs={2} sm={2.5} md={2} lg={1}>
-                                                                                
+
                                                                                 <ToggleButton color="primary" disabled={setSizeDisabled(s)} fullWidth size="small" disableRipple value={s}>{s}</ToggleButton>
                                                                             </Grid>
 

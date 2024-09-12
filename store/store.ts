@@ -1,4 +1,4 @@
-import { ProductInfomation, ProductInfomationCount } from '@/interfaces';
+import { ProductInfomation, ProductInfomationCount, ProductVariant } from '@/interfaces';
 import { PersonalInfomation } from '@/pages/user/account';
 import { userInfo } from 'os';
 import { useEffect } from 'react';
@@ -6,14 +6,15 @@ import { create } from 'zustand'
 
 const useCartStore = create<CartState>((set, get) => ({
     cartContent: [],
-    addToCart: (product, count) => set((state) => {
-
+    addToCart: (product, selectedVariant, count) => set((state) => {
+        //console.log("selectedVariant in store:",selectedVariant)
         let cartcontent = [...state.cartContent];
 
         if (cartcontent.length === 0) {
             cartcontent.push({
                 product: product,
-                count: count
+                count: count,
+                selectedVariant: selectedVariant
             })
 
             return {
@@ -23,19 +24,20 @@ const useCartStore = create<CartState>((set, get) => ({
 
         // 加入購物車
         // 比較carcontent 裡面是否已經有ProductId? 
-        const item = cartcontent.find(item => item.product.productId === product.productId && item.product.selectedVariant?.variantID===product.selectedVariant?.variantID);
+        const item = cartcontent.find(item => item.product.productId === product.productId && item.selectedVariant?.variantID === selectedVariant?.variantID);
 
         // 有就 count +1 , 沒有就push product count :1
         if (item) {
             cartcontent.forEach(item => {
-                if (item.product.productId === product.productId  && item.product.selectedVariant?.variantID===product.selectedVariant?.variantID)
+                if (item.product.productId === product.productId && item.selectedVariant?.variantID === selectedVariant?.variantID)
                     item.count += count;
             })
         }
         else {
             cartcontent.push({
                 product: product,
-                count: count
+                count: count,
+                selectedVariant: selectedVariant
             })
         }
 
@@ -43,16 +45,16 @@ const useCartStore = create<CartState>((set, get) => ({
             cartContent: cartcontent
         }
     }),
-    removeFromCart: (productId,variantID) => set((state) => {
+    removeFromCart: (productId, variantID) => set((state) => {
         let cartcontent = state.cartContent.filter(item => {
 
             //不是要被刪除的productId 就返回 true
-            if(item.product.productId !== productId){
+            if (item.product.productId !== productId) {
                 return true
             }
 
             // 剩下要驗證被選重的id，以及選中的variantId
-            if(item.product.selectedVariant?.variantID===variantID){
+            if (item.selectedVariant?.variantID === variantID) {
                 return false
             }
 
@@ -87,8 +89,20 @@ const useCartStore = create<CartState>((set, get) => ({
         let cartcontent = [...state.cartContent];
 
         cartcontent.forEach(item => {
-            if (item.product.productId === productId)
-                item.count += 1;
+            if (item.product.productId === productId && item.count < 10 ){
+                if(item.selectedVariant){
+                    //如果比選擇的variant 庫存少就可以+1
+                    if(item.count<item.selectedVariant.stock){
+                        item.count += 1;
+                    }
+                }else{
+                    if(item.count<item.product.stock){
+                        item.count += 1;
+                    }
+                }
+                
+            }
+                
         })
 
         return {
@@ -112,8 +126,8 @@ const useCartStore = create<CartState>((set, get) => ({
 
 interface CartState {
     cartContent: ProductInfomationCount[] | never[]; //可能是空數組
-    addToCart: (product: ProductInfomation, count: number) => void;
-    removeFromCart: (productId: number,variantID:number|undefined) => void;
+    addToCart: (product: ProductInfomation, selectedVariant: ProductVariant | undefined, count: number) => void;
+    removeFromCart: (productId: number, variantID: number | undefined) => void;
     plusProductCount: (productId: number) => void;
     minusProductCount: (productId: number) => void;
     countTotalPrice: () => number;
@@ -161,9 +175,9 @@ const useSubscribeListStore = create<SubscribeListState>((set, get) => ({
             subscribeList: subscribeList,
         }
     }),
-    clearSubscribeIdList:()=>set((state)=>{
+    clearSubscribeIdList: () => set((state) => {
         return {
-            subscribeList:[]
+            subscribeList: []
         }
     })
 }))
@@ -174,7 +188,7 @@ interface SubscribeListState {
     subscribeIdList: () => number[];
     addToList: (product: ProductInfomation) => void;
     removeFromList: (productId: number) => void;
-    clearSubscribeIdList:()=>void;
+    clearSubscribeIdList: () => void;
 }
 
 const useAlertMsgStore = create<AlertMsgStoreState>((set, get) => ({
@@ -213,4 +227,4 @@ interface UserInfoStore {
 
 
 
-export { useCartStore,useSubscribeListStore, useAlertMsgStore,userUserInfoStore }
+export { useCartStore, useSubscribeListStore, useAlertMsgStore, userUserInfoStore }

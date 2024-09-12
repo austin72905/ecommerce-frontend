@@ -182,11 +182,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
     const addProductToCart = () => {
         setAlertMsg("加入購物車成功")
-        addToCart({ ...product,selectedVariant:selectVariant }, itemCount)
+        addToCart({ ...product },selectVariant, itemCount)
     }
     const userInfo = userUserInfoStore((state) => state.userInfo)
     const goToCheckoutDirectly = () => {
-        addToCart({ ...product,selectedVariant:selectVariant }, itemCount)
+        addToCart({ ...product},selectVariant, itemCount)
 
         if (!userInfo) {
             setAlertMsg("請先登入")
@@ -549,7 +549,7 @@ interface PurchaseDetailProps {
     selectVariant: ProductVariant | undefined
     setselectVariant: Dispatch<SetStateAction<ProductVariant | undefined>>
     setItemCount: Dispatch<SetStateAction<number>>;
-    addToCart: (product: ProductInfomation, count: number) => void
+    addToCart: (product: ProductInfomation,selectVariant: ProductVariant | undefined ,count: number) => void
     goToCheckoutDirectly: () => void
 }
 
@@ -637,7 +637,13 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, itemCount,selectVari
     }
 
     const addProductToCart = () => {
-        addToCart({ ...product,selectedVariant:selectVariant }, itemCount)
+        if(product.variants){
+            if(!selectVariant){
+                setAlertMsg("請選擇顏色與尺寸")
+                return
+            }
+        }
+        addToCart({ ...product},selectVariant, itemCount)
         setAlertMsg("新增購物車成功")
     }
 
@@ -714,7 +720,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, itemCount,selectVari
     }
 
 
-
+    //監控選擇並組合成variant
     useEffect(() => {
         //console.log("color:",colorVal,"sizeval:",sizeVal)
         const selectv = product.variants.find(v => v.color === colorVal && v.size === sizeVal)
@@ -722,6 +728,22 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, itemCount,selectVari
         setselectVariant(selectv)
 
     }, [colorVal, sizeVal])
+
+    useEffect(()=>{
+
+        if(selectVariant){
+            if(itemCount>selectVariant.stock){
+                setItemCount(1)
+            }
+        }else{
+            if(itemCount>product.stock){
+                setItemCount(1)
+            }
+        }
+
+
+    },[selectVariant])
+
 
 
     return (

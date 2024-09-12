@@ -26,6 +26,8 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
         router.push(`/products/${productId}`)
     }
 
+    //console.log("cartContent:",cartContent)
+
 
     return (
         <TableContainer component={Paper} sx={{ maxHeight: "480px", border: "1px solid #d9d9d9", boxShadow: 'none' }}>
@@ -55,7 +57,7 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                         cartContent.length > 0 &&
                         cartContent.map((item: ProductInfomationCount, index: number) =>
                         (
-                            <TableRow key={`${item.product.productId}-${item.product.selectedVariant?.variantID}`}>
+                            <TableRow key={`${item.product.productId}-${item.selectedVariant?.variantID}`}>
                                 <TableCell style={{ width: "50%" }} >
                                     <Stack spacing={"20px"} direction={"row"} alignItems="center">
                                         <Box sx={{ my: "5px" }}>
@@ -66,10 +68,10 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                                                 {item.product.title}
                                             </Typography>
                                             <Typography variant='caption'>
-                                                規格 : {item.product.selectedVariant ? item.product.selectedVariant.size : "標準"}
+                                                規格 : {item.selectedVariant ? item.selectedVariant.size : "標準"}
                                             </Typography>
                                             <Typography variant='caption'>
-                                                顏色 : {item.product.selectedVariant ? item.product.selectedVariant.color : "標準"}
+                                                顏色 : {item.selectedVariant ? item.selectedVariant.color : "標準"}
                                             </Typography>
                                         </Stack>
 
@@ -90,7 +92,7 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                                 <TableCell sx={{ border: "0px solid" }} align='center'>
                                     <Stack sx={{ border: "0px solid" }} alignItems="center">
 
-                                        <IconButton onClick={() => { removeFromCart(item.product.productId,item.product.selectedVariant?.variantID) }}>
+                                        <IconButton onClick={() => { removeFromCart(item.product.productId,item.selectedVariant?.variantID) }}>
                                             <DeleteOutlineOutlinedIcon />
                                         </IconButton>
                                     </Stack>
@@ -118,6 +120,9 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
     if (cartContent.length === 0) {
         return <p style={{textAlign:"center"}}>購物車內沒有商品</p>
     }
+
+    
+    //console.log("cartContent:",cartContent)
     return (
         <Stack spacing={1}>
             {
@@ -125,7 +130,7 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
                 cartContent.map((item: ProductInfomationCount, index: number) => (
 
 
-                    <Card key={`${item.product.productId}-${item.product.selectedVariant?.variantID}`} sx={{ border: "1px solid #d9d9d9", boxShadow: "none" }}>
+                    <Card key={`${item.product.productId}-${item.selectedVariant?.variantID}`} sx={{ border: "1px solid #d9d9d9", boxShadow: "none" }}>
                         <Stack direction={"row"} spacing={1} sx={{ border: "0px solid black" }}>
 
                             <CardMedia
@@ -162,10 +167,10 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
                                             {item.product.title}
                                         </Typography>
                                         <Typography variant='caption'>
-                                            規格 : {item.product.selectedVariant ? item.product.selectedVariant.size : "標準"}
+                                            規格 : {item.selectedVariant ? item.selectedVariant.size : "標準"}
                                         </Typography>
                                         <Typography variant='caption'>
-                                            顏色 : {item.product.selectedVariant ? item.product.selectedVariant.color : "標準"}
+                                            顏色 : {item.selectedVariant ? item.selectedVariant.color : "標準"}
                                         </Typography>
                                     </Stack>
 
@@ -179,7 +184,7 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
                                         <AddIcon onClick={() => { plusProductCount(item.product.productId) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "25px", width: "25px", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }} />
                                     </Box>
 
-                                    <IconButton onClick={() => { removeFromCart(item.product.productId,item.product.selectedVariant?.variantID) }}>
+                                    <IconButton onClick={() => { removeFromCart(item.product.productId,item.selectedVariant?.variantID) }}>
                                         <DeleteOutlineOutlinedIcon />
                                     </IconButton>
                                 </CardActions>
