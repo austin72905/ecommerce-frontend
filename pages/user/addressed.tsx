@@ -19,12 +19,14 @@ import { useMediaQuery, useTheme } from '@mui/material';
 import { GridContainer } from '@/components/ui/grid-container';
 import { useAlertMsgStore } from '@/store/store';
 import WithAuth from '@/components/auth/with-auth';
+import { INPUT_FIELD } from '@/constant-value/constant';
+import { validateAddress, validateEmail, validateName, validatePhoneNumber, ValidationErrors } from '@/utils/validation';
 
 
 
-const  AddressPage=()=> {
+const AddressPage = () => {
 
-    const initAddress: AddressInfo = { id: 0, name: "", phoneNumber: "", mail: "", recieverAddress: "", isDefaultAddress: false }
+    const initAddress: AddressInfo = { id: 0, name: "", phoneNumber: "", email: "", recieverAddress: "", isDefaultAddress: false }
 
     const [editedAddress, setEditedAddress] = useState<AddressInfo>(initAddress)
 
@@ -34,12 +36,16 @@ const  AddressPage=()=> {
     const handleClose = () => {
         setEditedAddress(initAddress)
         setOpen(false)
+        setErrors({})
     }
 
     const handleEditModal = (e: React.MouseEvent, content: AddressInfo) => {
         setEditedAddress(content)
         setOpen(true)
     }
+
+    // 紀錄 輸入是否合法
+    const [errors, setErrors] = useState<ValidationErrors>({});
 
     const theme = useTheme()
     const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
@@ -65,6 +71,48 @@ const  AddressPage=()=> {
     // onChange
     const handleEditedAddress = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 
+        let error: string | null
+
+        switch (e.target.name as string) {
+            case INPUT_FIELD.NAME:
+                error = validateName(e.target.value)
+                if (error) {
+                    setErrors(oldError => ({ ...oldError, username: error as string }))
+                } else {
+                    setErrors(oldError => ({ ...oldError, username: undefined }))
+                }
+                break;
+
+            case INPUT_FIELD.PHONE_NUMBER:
+                error = validatePhoneNumber(e.target.value)
+
+                if (error) {
+                    setErrors(oldError => ({ ...oldError, phoneNumber: error as string }))
+                } else {
+
+                    setErrors(oldError => ({ ...oldError, phoneNumber: undefined }))
+                }
+                break;
+
+            case INPUT_FIELD.EMAIL:
+                error = validateEmail(e.target.value)
+                if (error) {
+                    setErrors(oldError => ({ ...oldError, email: error as string }))
+                } else {
+                    setErrors(oldError => ({ ...oldError, email: undefined }))
+                }
+                break;
+
+            case INPUT_FIELD.RECIEVER_ADDRESS:
+                error = validateAddress(e.target.value)
+                if (error) {
+                    setErrors(oldError => ({ ...oldError, shippingAddress: error as string }))
+                } else {
+                    setErrors(oldError => ({ ...oldError, shippingAddress: undefined }))
+                }
+                break;
+        }
+
 
         setEditedAddress(o => {
 
@@ -84,7 +132,7 @@ const  AddressPage=()=> {
     const [defaultAddressList, setDefaultAddressList] = useState(recieverInfoList)
 
 
-    const setAlertMsg =useAlertMsgStore(state=>state.setAlertMsg)
+    const setAlertMsg = useAlertMsgStore(state => state.setAlertMsg)
 
     const changeDefaultAddress = (e: React.MouseEvent, i: number) => {
 
@@ -114,7 +162,7 @@ const  AddressPage=()=> {
         <Container sx={{ border: "0px solid" }} maxWidth='xl'>
 
             <Paper sx={{ border: "1px solid #d9d9d9", boxShadow: "none", mx: 1, mt: 2.5, minHeight: "500px" }}>
-                <Stack spacing={3} sx={{mt:1}}>
+                <Stack spacing={3} sx={{ mt: 1 }}>
                     <Stack sx={{ mt: 4, px: "30px" }}>
                         <Typography variant='h6' sx={{ fontWeight: "bold" }}>常用地址</Typography>
                     </Stack>
@@ -164,24 +212,28 @@ const  AddressPage=()=> {
 
 
 
-                        <Stack spacing={"10px"} sx={{ minHeight: "450px", marginLeft: "10px", marginRight: "10px", my: "10px", border: "1px solid #D9D9D9", borderRadius: "4px", backgroundColor: "white" }}>
+                        <Stack spacing={"10px"} sx={{ minHeight: "450px", marginLeft: "2px", marginRight: "2px", my: "10px", border: "1px solid #D9D9D9", borderRadius: "4px", backgroundColor: "white" }}>
 
 
                             <ItemWrapper sx={{ pt: "20px" }}>
                                 <Typography variant='subtitle2' >收件人</Typography>
-                                <TextField value={editedAddress.name} onChange={handleEditedAddress} name="name" placeholder='不得包含特殊符號 / $ . @ & # @...' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
+                                <TextField value={editedAddress.name} onChange={handleEditedAddress} name={INPUT_FIELD.NAME} placeholder='不得包含特殊符號 / $ . @ & # @...' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
+                                <Typography variant='caption' sx={{ color: "red" }}>{errors.username}</Typography>
                             </ItemWrapper>
                             <ItemWrapper >
                                 <Typography variant='subtitle2' >聯絡電話</Typography>
-                                <TextField value={editedAddress.phoneNumber} onChange={handleEditedAddress} name="phoneNumber" placeholder='ex: 09xxxxxxxx' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
+                                <TextField value={editedAddress.phoneNumber} onChange={handleEditedAddress} name={INPUT_FIELD.PHONE_NUMBER} placeholder='ex: 09xxxxxxxx' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
+                                <Typography variant='caption' sx={{ color: "red" }}>{errors.phoneNumber}</Typography>
                             </ItemWrapper>
                             <ItemWrapper >
                                 <Typography variant='subtitle2' >信箱</Typography>
-                                <TextField value={editedAddress.mail} onChange={handleEditedAddress} name="mail" placeholder='ex: asbc@gmail.com' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
+                                <TextField value={editedAddress.email} onChange={handleEditedAddress} name={INPUT_FIELD.EMAIL} placeholder='ex: asbc@gmail.com' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
+                                <Typography variant='caption' sx={{ color: "red" }}>{errors.email}</Typography>
                             </ItemWrapper>
                             <ItemWrapper >
                                 <Typography variant='subtitle2' >收件地址</Typography>
-                                <TextField value={editedAddress.recieverAddress} onChange={handleEditedAddress} name="recieverAddress" placeholder='收件地址' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
+                                <TextField value={editedAddress.recieverAddress} onChange={handleEditedAddress} name={INPUT_FIELD.RECIEVER_ADDRESS} placeholder='收件地址' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
+                                <Typography variant='caption' sx={{ color: "red" }}>{errors.shippingAddress}</Typography>
                             </ItemWrapper>
 
                             <ItemWrapper sx={{ pt: "40px" }}>
@@ -240,7 +292,7 @@ interface AddressInfo {
     id: number;
     name: string;
     phoneNumber: string;
-    mail: string;
+    email: string;
     recieverAddress: string;
     isDefaultAddress: boolean;
 }
@@ -249,7 +301,7 @@ const aContent: AddressInfo = {
     id: 1,
     name: "王大明",
     phoneNumber: "0945864315",
-    mail: "Laopigu@gmail.com",
+    email: "Laopigu@gmail.com",
     recieverAddress: "台中市南區三民西路377號西川一路1號",
     isDefaultAddress: false
 }
@@ -287,7 +339,7 @@ const RecieverInfo = ({ handleEditModal, changeDefaultAddress, content, isSmallS
                                                 }
                                             />
                                         </Grid>
-                                        
+
                                     </React.Fragment>
                                 )
 

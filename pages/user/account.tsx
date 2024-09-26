@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef, createContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import styled from '@mui/system/styled';
 import Button from '@mui/material/Button';
@@ -11,25 +10,62 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
-import { breadcrumbsClasses } from '@mui/material';
-import { userUserInfoStore } from '@/store/store';
-import { useRouter } from 'next/router';
+
 import WithAuth from '@/components/auth/with-auth';
+import { validateEmail, validateName, validatePhoneNumber, ValidationErrors } from '@/utils/validation';
+import { INPUT_FIELD } from '@/constant-value/constant';
 
 
 
-const MyAccountPage =()=> {
 
-  const initPersonInfo: PersonalInfomation = { userId:"",name: "", email: "", phoneNumber: "", birthday: `${thisYear - 10}/1/1`, sex: "男",type:"web" }
+const MyAccountPage = () => {
+
+  const initPersonInfo: PersonalInfomation = { userId: "", name: "", email: "", phoneNumber: "", birthday: `${thisYear - 10}/1/1`, sex: "男", type: "web" }
 
   const [personalInfo, setPersonalInfo] = useState<PersonalInfomation>(initPersonInfo);
 
-  const handlePersonalInfo = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  // 紀錄 輸入是否合法
+  const [errors, setErrors] = useState<ValidationErrors>({});
 
+  const handlePersonalInfo = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    
+    let error: string | null
+
+    switch (e.target.name as string) {
+      case INPUT_FIELD.NAME:
+        error = validateName(e.target.value)
+        if (error) {
+          setErrors(oldError => ({ ...oldError, username: error as string }))
+        } else {
+          setErrors(oldError => ({ ...oldError, username: undefined }))
+        }
+        break;
+
+      case INPUT_FIELD.PHONE_NUMBER:
+        error = validatePhoneNumber(e.target.value)
+
+        if (error) {
+          setErrors(oldError => ({ ...oldError, phoneNumber: error as string  }))
+        } else {
+
+          setErrors(oldError => ({ ...oldError, phoneNumber: undefined }))
+        }
+        break;
+      
+      case INPUT_FIELD.EMAIL:
+         error = validateEmail(e.target.value)
+      if (error) {
+        setErrors(oldError => ({ ...oldError, email: error as string }))
+      } else {
+        setErrors(oldError => ({ ...oldError, email: undefined }))
+      }
+      break;
+    }
+
+   
 
     setPersonalInfo(o => {
 
@@ -71,6 +107,14 @@ const MyAccountPage =()=> {
 
   }
 
+  //儲存變更
+  const saveChange=()=>{
+    if(Object.entries(errors).length!==0){
+      console.log("data not complete")
+      return
+    }
+  }
+
 
   return (
     <Container sx={{ border: "0px solid" }} maxWidth='xl'>
@@ -80,9 +124,9 @@ const MyAccountPage =()=> {
           <Typography variant='h6' sx={{ fontWeight: "bold" }}>我的帳戶</Typography>
         </ItemWrapper>
 
-        <InputSet label='姓名' placeholder='不得包含特殊符號 / $ . @ & # @...' name="name" value={personalInfo.name} func={handlePersonalInfo} />
-        <InputSet label='電話' placeholder='ex: 09xxxxxxxx' name="phoneNumber" value={personalInfo.phoneNumber} func={handlePersonalInfo} />
-        <InputSet label='信箱' placeholder='ex: asbc@gmail.com' name="email" value={personalInfo.email} func={handlePersonalInfo} />
+        <InputSet label='姓名' placeholder='不得包含特殊符號 / $ . @ & # @...' name={INPUT_FIELD.NAME} value={personalInfo.name} errorMsg={errors.username} func={handlePersonalInfo} />
+        <InputSet label='電話' placeholder='ex: 09xxxxxxxx' name={INPUT_FIELD.PHONE_NUMBER} value={personalInfo.phoneNumber} errorMsg={errors.phoneNumber} func={handlePersonalInfo} />
+        <InputSet label='信箱' placeholder='ex: asbc@gmail.com' name={INPUT_FIELD.EMAIL} value={personalInfo.email} errorMsg={errors.email} func={handlePersonalInfo} />
 
 
         <ItemWrapper>
@@ -115,7 +159,7 @@ const MyAccountPage =()=> {
 
             <FormControl sx={{ width: "33%" }}>
               <InputLabel id="select-year" >年</InputLabel>
-              <Select labelId="select-year" defaultValue={thisYear - 10} onChange={handleBirthday} name="year" value={Number(personalInfo.birthday.split("/")[0])} label="年" inputProps={{ sx: { height: "15px" } }} MenuProps={{ PaperProps: { sx: { maxHeight: 300 } }}} size='small'>
+              <Select labelId="select-year" defaultValue={thisYear - 10} onChange={handleBirthday} name="year" value={Number(personalInfo.birthday.split("/")[0])} label="年" inputProps={{ sx: { height: "15px" } }} MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }} size='small'>
                 {
                   yearList(2023).map(item => (
                     <MenuItem key={item} value={item}>
@@ -143,7 +187,7 @@ const MyAccountPage =()=> {
         </ItemWrapper>
 
         <ItemWrapper sx={{ pt: 3 }}>
-          <Button variant="contained" sx={{ "& .MuiButton-text": { color: "white" } }}>儲存變更</Button>
+          <Button variant="contained" sx={{ "& .MuiButton-text": { color: "white" } }} onClick={saveChange}>儲存變更</Button>
         </ItemWrapper>
       </Stack>
     </Container>
@@ -153,14 +197,14 @@ const MyAccountPage =()=> {
 export default WithAuth(MyAccountPage);
 
 export interface PersonalInfomation {
-  userId:string;
+  userId: string;
   name: string;
   phoneNumber?: string;
   email: string;
   birthday: string;
   sex?: string;
-  picture?:string;
-  type:string;
+  picture?: string;
+  type: string;
 }
 
 interface InputSetProps {
@@ -168,16 +212,19 @@ interface InputSetProps {
   placeholder: string;
   name?: string;
   value?: string;
+  errorMsg?: string;
   func: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+
 }
 
-const InputSet = ({ label, placeholder, name, value, func }: InputSetProps) => {
+const InputSet = ({ label, placeholder, name, value, errorMsg, func }: InputSetProps) => {
 
 
   return (
     <Stack spacing={1} sx={{ pt: 1, px: 4 }}>
       <Typography variant='caption' >{label}</Typography>
       <TextField value={value} placeholder={placeholder} inputProps={{ sx: { height: "15px" } }} name={name} onChange={func} size='small' />
+      <Typography variant='caption' sx={{ color: "red" }}>{errorMsg}</Typography>
     </Stack>
   )
 
