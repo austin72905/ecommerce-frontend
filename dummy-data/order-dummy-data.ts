@@ -101,7 +101,7 @@ const orderStepInfomationList: OrderStepInfomation[] = [
 
 
 
-const imgList = [
+export const imgList = [
     ProductImage,
     ProductImage1,
     ProductImage2,
@@ -117,54 +117,198 @@ const fakeProductsList: ProductInfomationCount[] = [
         count: 1,
         product: {
             title: "超時尚流蘇几皮外套",
-            productId: "26790367",
+            productId: 26790367,
             stock: 60,
             price: 100,
-            size: ["S", "M", "L", "XL", "2XL", "3XL"],
-            color: ["black", "wheat", "brown"],
             colorDescription: ["黑色", "白色", "深藍色", "灰色", "深灰色", "紅色"],
             material: ["聚酯纖維", "聚氨酯纖維"],
             howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",
             features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
             images: imgList,
-            coverImg: ProductImage1
-
-        }
-    },
-    {
-        count: 1,
-        product: {
-            title: "超時尚流蘇几皮外套",
-            productId: "26790367",
-            stock: 60,
-            price: 100,
-            size: ["S", "M", "L", "XL", "2XL", "3XL"],
-            color: ["black", "wheat", "brown"],
-            colorDescription: ["黑色", "白色", "深藍色", "灰色", "深灰色", "紅色"],
-            material: ["聚酯纖維", "聚氨酯纖維"],
-            howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",
-            features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
-            images: imgList,
-            coverImg: ProductImage1
-
+            coverImg:ProductImage1,
+            variants:[
+                {
+                    variantID:1,
+                    color:"黑",
+                    size:"S",
+                    sku:"BLACK-S",
+                    stock:2,
+                    price:99
+                },
+                {
+                    variantID:2,
+                    color:"黑",
+                    size:"L",
+                    sku:"BLACK-L",
+                    stock:16,
+                    price:283
+                },
+                {
+                    variantID:3,
+                    color:"米",
+                    size:"L",
+                    sku:"WHEAT-L",
+                    stock:3,
+                    price:150
+                },
+                {
+                    variantID:4,
+                    color:"咖啡",
+                    size:"M",
+                    sku:"BROWN-M",
+                    stock:17,
+                    price:199
+                },
+                {
+                    variantID:5,
+                    color:"咖啡",
+                    size:"L",
+                    sku:"BROWN-L",
+                    stock:2,
+                    price:99
+                }
+            ]
+    
+        },
+        selectedVariant: {
+            variantID:3,
+            color:"米",
+            size:"L",
+            sku:"WHEAT-L",
+            stock:3,
+            price:150
         }
     },
     {
         count: 1,
         product: {
             title: "紫色格紋大衣",
-            productId: "26790368",
+            productId: 26790368,
             stock: 5,
             price: 598,
-            size: ["S", "M", "L", "XL", "2XL"],
-            color: ["black", "wheat", "purple"],
             colorDescription: ["黑色", "米色", "子色"],
             material: ["聚酯纖維", "聚氨酯纖維"],
             howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",
             features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
             images: imgList,
-            coverImg: ProductImage4
-
+            coverImg:ProductImage4,
+            variants:[
+                {
+                    variantID:1,
+                    color:"黑",
+                    size:"S",
+                    sku:"BLACK-S",
+                    stock:2,
+                    price:99
+                },
+                {
+                    variantID:2,
+                    color:"黑",
+                    size:"L",
+                    sku:"BLACK-L",
+                    stock:16,
+                    price:283
+                },
+                {
+                    variantID:3,
+                    color:"米",
+                    size:"L",
+                    sku:"WHEAT-L",
+                    stock:3,
+                    price:150
+                },
+                {
+                    variantID:4,
+                    color:"咖啡",
+                    size:"M",
+                    sku:"BROWN-M",
+                    stock:17,
+                    price:199
+                },
+                {
+                    variantID:5,
+                    color:"咖啡",
+                    size:"L",
+                    sku:"BROWN-L",
+                    stock:2,
+                    price:99
+                }
+            ]
+    
+        },
+        selectedVariant: {
+            variantID:2,
+            color:"黑",
+            size:"L",
+            sku:"BLACK-L",
+            stock:16,
+            price:283
+        }
+    },
+    {
+        count: 1,
+        product:{
+            title: "超質感綠色皮衣",
+            productId: 13790367,
+            stock: 18,
+            price: 179,
+            colorDescription: ["黑色", "白色", "深藍色", "灰色", "深灰色", "紅色"],
+            material: ["聚酯纖維", "聚氨酯纖維"],
+            howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",
+            features: "其實我也不知道要說什麼...a 其實我也不知道要說什麼...a 其實我也不知道要說什麼...a",
+            images: imgList,
+            coverImg:ProductImage3,
+            variants:[
+                {
+                    variantID:1,
+                    color:"黑",
+                    size:"S",
+                    sku:"BLACK-S",
+                    stock:2,
+                    price:99
+                },
+                {
+                    variantID:2,
+                    color:"黑",
+                    size:"L",
+                    sku:"BLACK-L",
+                    stock:16,
+                    price:283
+                },
+                {
+                    variantID:3,
+                    color:"米",
+                    size:"L",
+                    sku:"WHEAT-L",
+                    stock:3,
+                    price:150
+                },
+                {
+                    variantID:4,
+                    color:"咖啡",
+                    size:"M",
+                    sku:"BROWN-M",
+                    stock:17,
+                    price:199
+                },
+                {
+                    variantID:5,
+                    color:"咖啡",
+                    size:"L",
+                    sku:"BROWN-L",
+                    stock:2,
+                    price:99
+                }
+            ]
+    
+        },
+        selectedVariant:{
+            variantID:1,
+            color:"黑",
+            size:"S",
+            sku:"BLACK-S",
+            stock:2,
+            price:99
         }
     },
 

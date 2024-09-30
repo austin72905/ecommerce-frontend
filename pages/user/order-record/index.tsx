@@ -18,26 +18,30 @@ import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
-import Stepper from '@mui/material/Stepper';
-import MobileStepper from '@mui/material/MobileStepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
 import { StepIconProps } from '@mui/material/StepIcon';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 
+import React, { useEffect, useState } from 'react'
 
-import React, { useState } from 'react'
-
-import ProductImage from '/public/images/coat2.jpg'
 import { CardHeader, Divider, useMediaQuery } from '@mui/material';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { OrderInfomation, ProductInfomationCount } from '@/interfaces';
-import { orderInfoList } from '@/dummy-data/order-dummy-data';
+import { imgList, orderInfoList } from '@/dummy-data/order-dummy-data';
 import WithAuth from '@/components/auth/with-auth';
+import { ApiResponse } from '@/interfaces/api/response';
+import { RespCode } from '@/enums/resp-code';
+
+
+
+import ProductImage from '/public/images/朋朋衛生紙商品圖.jpg'
+import ProductImage1 from '/public/images/coat1.jpg'
+import ProductImage2 from '/public/images/coat2.jpg'
+import ProductImage3 from '/public/images/coat3.jpg'
+import ProductImage4 from '/public/images/coat4.jpg'
+import ProductImage5 from '/public/images/coat5.jpg'
 
 const OrderRecordPage=()=> {
 
@@ -211,6 +215,8 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
     const router = useRouter();
     const [viewValue, setviewValue] = useState<string>("所有訂單")
 
+    const [orderList,setorderList]=useState<OrderInfomation[]>([]);
+
     const handleView = (e: React.SyntheticEvent, newVal: string) => {
         setviewValue(newVal)
     }
@@ -220,6 +226,54 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
         //console.log(orderInfo.recordCode)
         router.push(`/user/order-record/${orderInfo.recordCode}`)
     }
+
+    //請求後端
+    const getOrders = async () => {
+        const response = await fetch("http://localhost:5025/Order/GetOrders", {
+            method: 'GET',
+            credentials:'include',
+        })
+
+        return response.json();
+    }
+
+    // 請求後端
+    useEffect(()=>{
+
+        const fetchData = async () => {
+            try {
+                const result =await getOrders() as ApiResponse;
+                console.log("result=", result)
+                
+
+                if(result.code!=RespCode.SUCCESS){
+
+                    console.log("獲取數據失敗")
+                    return;
+                }
+
+
+                if(result.data==null){
+                    console.log("獲取數據失敗")
+                    return;
+                }
+
+                
+                const ordersData =result.data as OrderInfomation[]
+                
+               
+                
+                setorderList(ordersData)
+                
+        
+            } catch (error) {
+                console.error('Error fetching data:', error)
+            }
+        }
+
+
+        fetchData()
+    },[])
 
     const isSmallScreen = useMediaQuery('(max-width:700px)');
     return (
@@ -253,7 +307,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                             {/*訂單們 */}
                             <List>
                                 {
-                                    orderInfoList.map((info, index) => {
+                                    orderList.map((info, index) => {
 
                                         if (orderStatus.get(info.status) != viewValue && viewValue != "所有訂單") {
                                             return null
@@ -305,7 +359,9 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                                                     }}
                                                                                 >
                                                                                     <Image
-                                                                                        src={item.product.coverImg}
+                                                                                        //src={item.product.coverImg}
+                                                                                        src={randomImg()}
+                                                                                        
                                                                                         alt="product information5"
                                                                                         layout="fill"
                                                                                         style={{ objectFit: 'cover' }}
@@ -386,4 +442,9 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
             </Grid>
         </Grid>
     )
+}
+
+const randomImg = ()=>{
+    const randomIndex = Math.floor(Math.random() * imgList.length);
+    return imgList[randomIndex];
 }

@@ -35,6 +35,8 @@ const OrderDetailPage=()=> {
         router.push("/user/order-record")
     }
 
+    
+
     return (
         <Grid rowSpacing={"20px"} columnSpacing={"20px"} container columns={8} sx={{ border: "0px solid", marginRight: "10px" }}>
 

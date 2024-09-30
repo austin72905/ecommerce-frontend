@@ -12,13 +12,14 @@ export interface ProductInfomation {
     images?: any[];
     coverImg?: any;
     variants:ProductVariant[];
-    selectedVariant?:ProductVariant;
+
 }
 
 
 export interface ProductInfomationCount{
     count: number
     product : ProductInfomation
+    selectedVariant?:ProductVariant;
 }
 
 
