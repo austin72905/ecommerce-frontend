@@ -1,4 +1,4 @@
-import { OrderInfomation, ProductInfomation, ProductInfomationCount } from "@/interfaces";
+import { CargoInfomation, CargoStepInfomation, OrderAddress, OrderInfomation, OrderStepInfo, ProductInfomation, ProductInfomationCount } from "@/interfaces";
 
 import ProductImage from '/public/images/朋朋衛生紙商品圖.jpg'
 import ProductImage1 from '/public/images/coat1.jpg'
@@ -10,53 +10,64 @@ import ProductImage5 from '/public/images/coat5.jpg'
 
 
 const orderStatus = new Map([
-    ["1", "已完成"],
-    ["0", "待取貨"],
-    ["2", "已取消"],
-    ["3", "待付款"],
-    ["4", "待出貨"],
-    ["5", "退貨/款"]
+    [1, "已完成"],
+    [0, "待取貨"],
+    [2, "已取消"],
+    [3, "待付款"],
+    [4, "待出貨"],
+    [5, "退貨/款"]
 ])
 
 const orderStatusColor = new Map([
-    ["1", "#ef6060"],
-    ["0", "#96DB8B"],
-    ["2", "#7E7E7E"],
-    ["3", "#96DB8B"],
-    ["4", "#96DB8B"],
-    ["5", "#7E7E7E"]
+    [1, "#ef6060"],
+    [0, "#96DB8B"],
+    [2, "#7E7E7E"],
+    [3, "#96DB8B"],
+    [4, "#96DB8B"],
+    [5, "#7E7E7E"]
 ])
 
-interface OrderAddress {
-    receiver: string;
-    phoneNumber: string;
-    cargoAddress: string;
-}
 
 
 
 
-interface CargoInfomation {
-    description: string;
-    date: string;
-}
 
-const cargoInfomation: CargoInfomation[] = [
+
+const cargoStepInfomation: CargoStepInfomation[] = [
     {
         description: "買家取件成功",
-        date: "2022-12-20 10:10:09"
+        updatedAt: "2022-12-20 10:10:09"
     },
     {
         description: "包裹已送達",
-        date: "2022-12-18 01:30:33"
+        updatedAt: "2022-12-18 01:30:33"
     },
     {
         description: "包裹寄送中",
-        date: "2022-12-16 08:01:55"
+        updatedAt: "2022-12-16 08:01:55"
     },
     {
         description: "已寄件",
-        date: "2022-12-15 00:10:16"
+        updatedAt: "2022-12-15 00:10:16"
+    },
+]
+
+const cargoInfomation: CargoInfomation[] = [
+    {
+        status: 1,
+        updatedAt: "2022-12-20 10:10:09"
+    },
+    {
+        status: 1,
+        updatedAt: "2022-12-18 01:30:33"
+    },
+    {
+        status: 1,
+        updatedAt: "2022-12-16 08:01:55"
+    },
+    {
+        status: 1,
+        updatedAt: "2022-12-15 00:10:16"
     },
 ]
 
@@ -64,7 +75,7 @@ const cargoInfomation: CargoInfomation[] = [
 const orderAddress: OrderAddress = {
     receiver: "王大明",
     phoneNumber: "(+886)964816276",
-    cargoAddress: "7-11 雅典門市 台中市南區三民西路377號西川一路1號 店號950963"
+    shippingAddress: "7-11 雅典門市 台中市南區三民西路377號西川一路1號 店號950963"
 }
 
 
@@ -96,6 +107,7 @@ const orderStepInfomationList: OrderStepInfomation[] = [
         date: "2022-12-22 10:10:09"
     },
 ]
+
 
 
 
@@ -314,7 +326,7 @@ const fakeProductsList: ProductInfomationCount[] = [
 
 ]
 
-
+const orderStepInfomation:OrderStepInfo[]=[]
 
 const orderInfo: OrderInfomation = {
     recordCode: "TX20230122063253",
@@ -325,10 +337,10 @@ const orderInfo: OrderInfomation = {
     //count: 1,
     //size: "標準規格",
     address: orderAddress,
-    cargoInfomation: cargoInfomation,
-    orderStepInfomation: orderStepInfomationList,
-    status: "1",
-    cargoPrice: 39,
+    shipInfomation: cargoInfomation,
+    orderStepInfomation: orderStepInfomation,
+    status: 1,
+    shippingPrice: 39,
     payWay: "LinePay"
 }
 
@@ -339,9 +351,9 @@ const orderInfo: OrderInfomation = {
 const orderInfoList: OrderInfomation[] = [
     orderInfo,
     { ...orderInfo, recordCode: "TX20230122063254" },
-    { ...orderInfo, status: "4" },
-    { ...orderInfo, status: "2", recordCode: "TX20230122063256" },
-    { ...orderInfo, status: "3", recordCode: "TX20230122063257" }
+    { ...orderInfo, status: 4 },
+    { ...orderInfo, status: 2, recordCode: "TX20230122063256" },
+    { ...orderInfo, status: 3, recordCode: "TX20230122063257" }
 ]
 
 

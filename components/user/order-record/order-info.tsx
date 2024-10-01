@@ -1,4 +1,5 @@
 import { OrderInfomation } from "@/interfaces";
+import { randomImg } from "@/pages/user/order-record";
 import { Box, Card, CardContent, CardMedia, Grid, Paper, Stack, Typography } from "@mui/material";
 import Image from "next/image";
 
@@ -31,7 +32,9 @@ export default function OrderInfo({orderInfo}:OrderInfoProps){
                                                 }}
                                             >
                                                 <Image
-                                                    src={item.product.coverImg}
+                                                    //src={item.product.coverImg}
+                                                    
+                                                    src={randomImg()}
                                                     alt="product information5"
                                                     layout="fill"
                                                     style={{ objectFit: 'cover' }}
@@ -46,7 +49,7 @@ export default function OrderInfo({orderInfo}:OrderInfoProps){
                                                 <Grid item xs={6} sx={{ border: "0px solid" }}>
                                                     <Box sx={{ border: "0px solid", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                                                         <Typography sx={{ fontWeight: "bold", '&:hover': { cursor: "pointer" } }}>{item.product.title}</Typography>
-                                                        <Typography variant='caption'>規格 : {item.product.selectSize}</Typography>
+                                                        <Typography variant='caption'>規格 : {item.selectedVariant?.size} - {item.selectedVariant?.color}</Typography>
                                                         <Typography >x 1</Typography>
                                                     </Box>
                                                 </Grid>
@@ -96,13 +99,13 @@ export default function OrderInfo({orderInfo}:OrderInfoProps){
                                     <Grid item xs={2}>
                                         <Stack spacing={3} sx={{ border: "0px solid", alignItems: "end" }}>
                                             <Typography >
-                                                NT${orderInfo.prouctPrice}
+                                                NT${orderInfo.orderPrice}
                                             </Typography>
                                             <Typography >
-                                                NT${orderInfo.cargoPrice}
+                                                NT${orderInfo.shippingPrice}
                                             </Typography>
                                             <Typography sx={{ color: "#ef6060", fontWeight: "bold" }}>
-                                                NT${orderInfo.orderPrice}
+                                                NT${orderInfo.orderPrice+orderInfo.shippingPrice}
                                             </Typography>
                                             <Typography >
                                                 {orderInfo.payWay}

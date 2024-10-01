@@ -11,7 +11,7 @@ export default function RecieveAddress({address}:RecieveAddressProps){
                             <Typography variant='caption'>{address.receiver}</Typography>
                             <Typography variant='caption'>{address.phoneNumber}</Typography>
                             <Typography variant='caption'>
-                                {address.cargoAddress}
+                                {address.shippingAddress}
                             </Typography>
                         </Stack>
                     </Stack>

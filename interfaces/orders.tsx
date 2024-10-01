@@ -1,8 +1,16 @@
+import { OrderStepStatus } from "@/enums/order-step";
 import { OrderAddress } from "./address";
-import { CargoInfomation } from "./cargo";
+import { CargoInfomation, CargoStepInfomation } from "./cargo";
 import { ProductInfomationCount } from "./product";
 
+export interface OrderStepInfo {
+    status: OrderStepStatus;
+    updatedAt: string;
+
+}
+
 export interface OrderStepInfomation {
+    status:number;
     unachieveDescription: string;
     achieveDescription: string;
     date: string
@@ -18,11 +26,11 @@ export interface OrderInfomation {
     //size: string;
     //count: number;
     address: OrderAddress;
-    status: string;
-    cargoPrice: number;
+    status: number;
+    shippingPrice: number;
     payWay: string;
-    cargoInfomation: CargoInfomation[];
-    orderStepInfomation: OrderStepInfomation[];
+    shipInfomation: CargoInfomation[];
+    orderStepInfomation: OrderStepInfo[];
 
 }
 

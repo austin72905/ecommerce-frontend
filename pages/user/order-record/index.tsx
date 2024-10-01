@@ -42,6 +42,7 @@ import ProductImage2 from '/public/images/coat2.jpg'
 import ProductImage3 from '/public/images/coat3.jpg'
 import ProductImage4 from '/public/images/coat4.jpg'
 import ProductImage5 from '/public/images/coat5.jpg'
+import { OrderStatus, orderStatusMap } from '@/enums/order-status';
 
 const OrderRecordPage=()=> {
 
@@ -65,15 +66,34 @@ const OrderRecordPage=()=> {
 
 export default WithAuth(OrderRecordPage) ;
 
-const orderStates: string[] = [
-    "所有訂單",
-    "待付款",
-    "待出貨",
-    "待取貨",
-    "已完成",
-    "已取消",
-    "退貨/款"
-]
+
+
+interface OrderState {
+    status: OrderStatus;
+    description: string;
+  }
+
+const orderStateList = ()=>{
+    let stateList:OrderState[]=[]
+    orderStatusMap.forEach((value,status)=>{
+
+        if(status===OrderStatus.Created){
+            stateList.push({
+                status:status,
+                description:"所有訂單"
+            })
+        }else{
+            stateList.push({
+                status:status,
+                description:value.description
+            })
+        }
+
+        
+    })
+    return stateList;
+}
+
 
 const StepIcon = (props: StepIconProps) => {
 
@@ -185,35 +205,11 @@ interface PurchaseRecordProps {
 
 
 
-const orderStatus = new Map([
-    ["1", "已完成"],
-    ["0", "待取貨"],
-    ["2", "已取消"],
-    ["3", "待付款"],
-    ["4", "待出貨"],
-    ["5", "退貨/款"]
-])
-
-const orderStatusColor = new Map([
-    ["1", "#ef6060"],
-    ["0", "#96DB8B"],
-    ["2", "#7E7E7E"],
-    ["3", "#96DB8B"],
-    ["4", "#96DB8B"],
-    ["5", "#7E7E7E"]
-])
-
-
-
-
-
-
-
 //訂單頁面
 const PurchaseRecord = ({ }: PurchaseRecordProps) => {
 
     const router = useRouter();
-    const [viewValue, setviewValue] = useState<string>("所有訂單")
+    const [viewValue, setviewValue] = useState<string>(OrderStatus.Created.toString())
 
     const [orderList,setorderList]=useState<OrderInfomation[]>([]);
 
@@ -281,12 +277,12 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
             <Grid item xs={8}>
                 <TabContext value={viewValue}>
                     <TabList variant={isSmallScreen ? 'scrollable' : 'fullWidth'} onChange={handleView} allowScrollButtonsMobile scrollButtons="auto" sx={{ border: "1px solid #D9D9D9", borderRadius: "4px", mr: 1, backgroundColor: "white" }}>
-                        {orderStates.map(orderState => (
-                            <Tab key={orderState} value={orderState} label={orderState} sx={{ border: "0px solid #AFAFAF", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }}></Tab>
+                        {orderStateList().map(orderState => (
+                            <Tab key={orderState.status} value={orderState.status.toString()} label={orderState.description} sx={{ border: "0px solid #AFAFAF", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }}></Tab>
                         ))}
                     </TabList>
-                    {orderStates.map(orderState => (
-                        <TabPanel key={orderState} value={orderState} sx={{ px: 0, mr: 1 }}>
+                    {orderStateList().map(orderState => (
+                        <TabPanel key={orderState.status} value={orderState.status.toString()} sx={{ px: 0, mr: 1 }}>
 
 
                             <Stack direction={"row"} sx={{ justifyContent: "end", my: 3 }}>
@@ -308,8 +304,8 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                             <List>
                                 {
                                     orderList.map((info, index) => {
-
-                                        if (orderStatus.get(info.status) != viewValue && viewValue != "所有訂單") {
+                                        // 不是當前狀態的訂單就不顯示
+                                        if (info.status.toString() != viewValue && viewValue != OrderStatus.Created.toString()) {
                                             return null
                                         }
 
@@ -323,7 +319,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                                 <Typography>訂單號:</Typography>
                                                                 <Typography sx={{ border: "0px solid black", color: "red" }}>{info.recordCode}</Typography>
                                                             </Stack>
-                                                            <Typography variant='caption' sx={{ color: orderStatusColor.get(info.status) }}>{orderStatus.get(info.status)}</Typography>
+                                                            <Typography variant='caption' sx={{ color: orderStatusMap.get(info.status)?.color }}>{orderStatusMap.get(info.status)?.description}</Typography>
 
                                                         </Stack>
 
@@ -375,7 +371,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                                                     <Grid item xs={8} sm={6} sx={{ border: "0px solid" }}>
                                                                                         <Box sx={{ border: "0px solid", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                                                                                             <Typography sx={{ fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goOrderDetail(info) }}>{item.product.title}</Typography>
-                                                                                            <Typography variant='caption'>規格 : {item.selectedVariant?.size}</Typography>
+                                                                                            <Typography variant='caption'>規格 : {item.selectedVariant?.size} - {item.selectedVariant?.color}</Typography>
                                                                                             <Typography >x {item.count}</Typography>
                                                                                         </Box>
                                                                                     </Grid>
@@ -420,7 +416,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
 
 
                                                     <CardActions sx={{ pr: 4, py: 3, display: "flex", flexDirection: "row", justifyContent: "end" }}>
-                                                        {info.status === "3" ? <Button variant="contained" sx={{ backgroundColor: "#EFB878", color: "black", "&:hover": { backgroundColor: "#EFB878" } }}>取消訂單</Button> : null}
+                                                        {info.status === 3 ? <Button variant="contained" sx={{ backgroundColor: "#EFB878", color: "black", "&:hover": { backgroundColor: "#EFB878" } }}>取消訂單</Button> : null}
                                                         <Button variant="outlined" onClick={() => { goOrderDetail(info) }}>訂單詳情</Button>
                                                         <Button variant="contained">重新購買</Button>
                                                     </CardActions>
@@ -444,7 +440,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
     )
 }
 
-const randomImg = ()=>{
+export const randomImg = ()=>{
     const randomIndex = Math.floor(Math.random() * imgList.length);
     return imgList[randomIndex];
 }
