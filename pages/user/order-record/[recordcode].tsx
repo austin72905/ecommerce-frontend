@@ -39,6 +39,12 @@ const OrderDetailPage = () => {
         router.push("/user/order-record")
     }
 
+    const goToProductDetail =(productId:number)=>{
+        router.push(`/products/${productId}`)
+    }
+
+  
+    
     const [orderInfo, setOrderInfo] = useState<OrderInfomation | null>()
 
     //請求後端
@@ -134,6 +140,7 @@ const OrderDetailPage = () => {
             <Grid item xs={8} sx={{ border: "0px solid" }}>
                 <OrderInfo
                     orderInfo={orderInfo}
+                    goToProductDetail={goToProductDetail}
                 />
             </Grid>
         </Grid>

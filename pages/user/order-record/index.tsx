@@ -43,6 +43,7 @@ import ProductImage3 from '/public/images/coat3.jpg'
 import ProductImage4 from '/public/images/coat4.jpg'
 import ProductImage5 from '/public/images/coat5.jpg'
 import { OrderStatus, orderStatusMap } from '@/enums/order-status';
+import { useCartStore } from '@/store/store';
 
 const OrderRecordPage=()=> {
 
@@ -221,6 +222,18 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
         //setOrderInfoDetail(orderInfo)
         //console.log(orderInfo.recordCode)
         router.push(`/user/order-record/${orderInfo.recordCode}`)
+    }
+
+    const addToCart = useCartStore((state) => state.addToCart)
+
+    // 把訂單內的商品再放入購物車
+    // router.push 到購物車
+    const buyAgain = (productList: ProductInfomationCount[])=>{
+        productList.forEach(productCount=>{
+            addToCart(productCount.product,productCount.selectedVariant,productCount.count)
+        })
+        router.push("/cart")
+        
     }
 
     //請求後端
@@ -418,7 +431,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                     <CardActions sx={{ pr: 4, py: 3, display: "flex", flexDirection: "row", justifyContent: "end" }}>
                                                         {info.status === 3 ? <Button variant="contained" sx={{ backgroundColor: "#EFB878", color: "black", "&:hover": { backgroundColor: "#EFB878" } }}>取消訂單</Button> : null}
                                                         <Button variant="outlined" onClick={() => { goOrderDetail(info) }}>訂單詳情</Button>
-                                                        <Button variant="contained">重新購買</Button>
+                                                        <Button variant="contained" onClick={()=>{buyAgain(info.productList)}}>重新購買</Button>
                                                     </CardActions>
                                                 </Card>
 
