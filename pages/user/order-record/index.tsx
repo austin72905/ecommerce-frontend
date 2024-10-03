@@ -368,8 +368,8 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                                                     }}
                                                                                 >
                                                                                     <Image
-                                                                                        //src={item.product.coverImg}
-                                                                                        src={randomImg()}
+                                                                                        src={item.product.coverImg}
+                                                                                        //src={randomImg()}
                                                                                         
                                                                                         alt="product information5"
                                                                                         layout="fill"

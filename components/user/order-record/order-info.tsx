@@ -32,9 +32,9 @@ export default function OrderInfo({ orderInfo,goToProductDetail }: OrderInfoProp
                                         }}
                                     >
                                         <Image
-                                            //src={item.product.coverImg}
+                                            src={item.product.coverImg}
 
-                                            src={randomImg()}
+                                            //src={randomImg()}
                                             alt="product information5"
                                             layout="fill"
                                             style={{ objectFit: 'cover' }}

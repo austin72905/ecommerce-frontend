@@ -30,7 +30,7 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
 
 
     return (
-        <TableContainer component={Paper} sx={{ maxHeight: "480px", border: "1px solid #d9d9d9", boxShadow: 'none' }}>
+        <TableContainer component={Paper} sx={{ maxHeight: "540px", border: "1px solid #d9d9d9", boxShadow: 'none' }}>
 
             <Table stickyHeader size="small">
                 <TableHead>
@@ -61,7 +61,7 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                                 <TableCell style={{ width: "50%" }} >
                                     <Stack spacing={"20px"} direction={"row"} alignItems="center">
                                         <Box sx={{ my: "5px" }}>
-                                            <img src={item.product.coverImg.src} style={{ width: "130px", height: "150px", padding: 0, margin: 0 }} />
+                                            <img src={item.product.coverImg} style={{ width: "130px", height: "150px", padding: 0, margin: 0 }} />
                                         </Box>
                                         <Stack spacing={"2px"}>
                                             <Typography  sx={{ '&:hover': { cursor: "pointer" } }} onClick={()=>{goToProductDetail(item.product.productId)}}>

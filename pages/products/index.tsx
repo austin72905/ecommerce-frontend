@@ -10,12 +10,14 @@ import { ChangeEvent, useEffect, useReducer, useState } from "react";
 import Image from "next/image";
 import { getProducts } from "@/dummy-data/dummy-data";
 import { GetServerSideProps } from "next";
-import { ProductInfomation } from "@/interfaces";
+import { ProductInfomation, ProductInfomationFavoriate } from "@/interfaces";
 import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import PurchaseModal from "@/components/products/purchase-modal";
+import { ApiResponse } from "@/interfaces/api/response";
+import { RespCode } from "@/enums/resp-code";
 
 
 
@@ -96,7 +98,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
 
 
-
+    console.log(products)
 
     return (
         <Box sx={{ p: 2 }}>
@@ -108,9 +110,9 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
 
                 {products.map((product) => (
-                    <Grid item lg={2} md={2} sm={4} xs={4} key={product.productId}>
+                    <Grid item lg={2} md={2} sm={4} xs={4} key={product.product.productId}>
                         <Card sx={{ boxShadow: "none" }}>
-                            <CardMedia onClick={() => { goToProductDetail(product.productId) }} sx={{ '&:hover': { cursor: "pointer" } }}>
+                            <CardMedia onClick={() => { goToProductDetail(product.product.productId) }} sx={{ '&:hover': { cursor: "pointer" } }}>
 
                                 <Box
                                     sx={{
@@ -122,7 +124,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                     }}
                                 >
                                     <Image
-                                        src={product.coverImg}
+                                        src={product.product.coverImg}
                                         alt="product information"
                                         fill
                                         style={{ objectFit: "cover" }}
@@ -134,17 +136,17 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                 maxHeight: "250px"
                             }}>
                                 <Stack spacing={"15px"}>
-                                    <Typography sx={{ minHeight: { xs: "48px", sm: "unset" }, fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.productId) }}>{product.title}</Typography>
-                                    <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.price}</Typography>
-                                    <Typography>NT${product.price}</Typography>
+                                    <Typography sx={{ minHeight: { xs: "48px", sm: "unset" }, fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.product.productId) }}>{product.product.title}</Typography>
+                                    <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.product.price}</Typography>
+                                    <Typography>NT${product.product.price}</Typography>
 
                                 </Stack>
                             </CardContent>
                             <CardActions>
 
-                                <Button sx={{ flexGrow: 1 }} variant="outlined" onClick={() => { handleSelectProduct(product) }}>加入購物車</Button>
+                                <Button sx={{ flexGrow: 1 }} variant="outlined" onClick={() => { handleSelectProduct(product.product) }}>加入購物車</Button>
 
-                                <Checkbox checked={subscribeIdList.includes(product.productId)} icon={<FavoriteBorderIcon />} onChange={(e) => { handeClickSubscribe(e, product) }} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
+                                <Checkbox checked={subscribeIdList.includes(product.product.productId)} icon={<FavoriteBorderIcon />} onChange={(e) => { handeClickSubscribe(e, product.product) }} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
                             </CardActions>
                         </Card>
                     </Grid>
@@ -180,15 +182,68 @@ const initSelectProduct: ProductInfomation = {
 }
 
 interface ProductsPageProps {
-    products: ProductInfomation[]
+    products: ProductInfomationFavoriate[]
+}
+
+
+const getProductsFromBackend =async (kind:string,tag:string)=>{
+
+    const query = new URLSearchParams({
+        tag:tag,
+        kind:kind
+    }).toString()
+
+    console.log(query)
+
+    const response = await fetch(`http://localhost:5025/Product/GetProductList?${query}`, {
+        method: 'GET',
+        credentials:'include',
+        
+    })
+
+    return response.json();
 }
 
 export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (context) => {
+    
+    const { params } =context
+    let kind = params?.kind;
+    let tag = params?.tag;
 
-    const products = getProducts();
+    if(!tag || typeof tag != "string"){
+        tag="new-arrival"
+    }
+
+    if(!kind || typeof kind != "string"){
+        kind=""
+    }
+
+    const response =await getProductsFromBackend(kind,tag) as ApiResponse<ProductInfomationData>
+
+    //console.log(response)
+    
+    //網路錯誤
+    // 可能可以在自定義頁面之類的
+    if(response.code != RespCode.SUCCESS){
+        return {
+            notFound: true
+        }
+    }
+    //console.log("data=",response.data)
+
+
+    const products = response.data.products
+
+    console.log("products=",products)
+
+    //const products = getProducts();
     return {
         props: {
             products
         }
     }
+}
+
+interface ProductInfomationData{
+    products:ProductInfomationFavoriate[]
 }

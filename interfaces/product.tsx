@@ -23,6 +23,12 @@ export interface ProductInfomationCount{
 }
 
 
+export interface ProductInfomationFavoriate{
+    product:ProductInfomation;
+    isFavoriate?:boolean;
+}
+
+
 
 export interface Size {
     xs: string;

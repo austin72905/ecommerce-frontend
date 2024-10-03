@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['lh3.googleusercontent.com'], // 允許的圖像域名
+    domains: ['lh3.googleusercontent.com','localhost'], // 允許的圖像域名
   },
 };
 

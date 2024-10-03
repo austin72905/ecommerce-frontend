@@ -11,7 +11,7 @@ import WithAuth from "@/components/auth/with-auth";
 const SubscribeListPage=()=> {
     const router = useRouter()
 
-    const goToProductDetail = (productId: string) => {
+    const goToProductDetail = (productId: number) => {
         router.push(`/products/${productId}`)
     }
 
@@ -79,7 +79,7 @@ const SubscribeListPage=()=> {
                                 </Stack>
                             </CardContent>
                             <CardActions >
-                                    <Button sx={{ flexGrow: 1 }} variant="outlined" onClick={() => { addToCart(product, 1) }}>加入購物車</Button>
+                                    <Button sx={{ flexGrow: 1 }} variant="outlined" onClick={() => { addToCart(product, undefined,1) }}>加入購物車</Button>
                                     
                                     <IconButton onClick={() => { removeFromList(product.productId) }}>
                                         <DeleteOutlineOutlinedIcon />
