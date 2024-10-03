@@ -4,9 +4,10 @@ import Image from "next/image"
 import { useRouter } from "next/router"
 
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { ProductInfomation } from "@/interfaces";
 import WithAuth from "@/components/auth/with-auth";
+import PurchaseModal from "@/components/products/purchase-modal";
 
 const SubscribeListPage=()=> {
     const router = useRouter()
@@ -31,6 +32,26 @@ const SubscribeListPage=()=> {
             removeFromList(product.productId)
         }
     }
+
+
+    const [selectProduct, setSelectProduct] = useState<ProductInfomation>(initSelectProduct)
+
+    const [modalOpen, setModalOpen] = useState<boolean>(false)
+
+    const handleModalOpen = () => {
+        setModalOpen(true)
+    }
+
+    const handleModalClose = () => {
+        setSelectProduct(initSelectProduct)
+        setModalOpen(false)
+    }
+
+    const handleSelectProduct = (product: ProductInfomation) => {
+        setSelectProduct(product)
+        handleModalOpen()
+    }
+
 
     if(subscribeList.length===0){
         return <p style={{textAlign:"center"}}>目前沒有收藏的商品....</p>
@@ -79,7 +100,7 @@ const SubscribeListPage=()=> {
                                 </Stack>
                             </CardContent>
                             <CardActions >
-                                    <Button sx={{ flexGrow: 1 }} variant="outlined" onClick={() => { addToCart(product, undefined,1) }}>加入購物車</Button>
+                                    <Button sx={{ flexGrow: 1 }} variant="outlined" onClick={() => { handleSelectProduct(product)  }}>加入購物車</Button>
                                     
                                     <IconButton onClick={() => { removeFromList(product.productId) }}>
                                         <DeleteOutlineOutlinedIcon />
@@ -90,6 +111,13 @@ const SubscribeListPage=()=> {
                 ))}
 
             </Grid>
+
+            <PurchaseModal
+                product={selectProduct}
+                handleModalOpen={handleModalOpen}
+                handleModalClose={handleModalClose}
+                modalOpen={modalOpen}
+            />
         </Box>
 
     )
@@ -97,3 +125,19 @@ const SubscribeListPage=()=> {
 
 
 export default WithAuth(SubscribeListPage);
+
+
+const initSelectProduct: ProductInfomation = {
+    title: "",
+    productId: 0,
+    stock: 0,
+    price: 0,
+    colorDescription: [],
+    material: [],
+    howToWash: "",
+    features: "",
+    images: undefined,
+    coverImg: undefined,
+    variants:[]
+
+}

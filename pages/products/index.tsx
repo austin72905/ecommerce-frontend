@@ -96,10 +96,6 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     }
 
 
-
-
-    console.log(products)
-
     return (
         <Box sx={{ p: 2 }}>
             <h1>
