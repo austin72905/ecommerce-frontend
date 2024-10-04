@@ -41,9 +41,10 @@ import PaymentWay from '@/components/checkout/payment-way';
 import SubscriberInfo from '@/components/checkout/subscriber';
 import RecieverInfomation from '@/components/checkout/reciever';
 import WithAuth from '@/components/auth/with-auth';
+import { useRouter } from 'next/router';
 
 
-const CheckOut =()=> {
+const CheckOut = () => {
 
     const theme = useTheme()
     const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
@@ -57,7 +58,7 @@ const CheckOut =()=> {
 
     const [recieverInfo, setRecieverInfo] = useState<RecieverInfo>({ name: "", phoneNumber: "", mail: "" })
 
-    const [recieveStoreInfo, setRecieveStoreInfo] = useState<RecievePlaceInfo>({ recieveWay: "7-11", recieveStore: "雅典", recieveAddress: "台中市南區三民西路377號西川一路1號" })
+    const [recieveStoreInfo, setRecieveStoreInfo] = useState<RecievePlaceInfo>({ recieveWay: "UNIMARTC2C", recieveStore: "雅典", recieveAddress: "台中市南區三民西路377號西川一路1號" })
 
 
     const handleOrderInfo = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -100,10 +101,10 @@ const CheckOut =()=> {
 
     const handleRecieveWay = (e: React.ChangeEvent<HTMLInputElement>) => {
 
-
+        // 切換全家 or 7-11 清空門市地址
         setRecieveStoreInfo(storeInfo => {
 
-            return { ...storeInfo, recieveWay: (e.target as HTMLInputElement).value }
+            return { recieveAddress:"",recieveStore:"", recieveWay: (e.target as HTMLInputElement).value }
         })
 
     };
@@ -122,7 +123,67 @@ const CheckOut =()=> {
 
     const minusProductCount = useCartStore((state) => state.minusProductCount)
 
-    
+
+    const router = useRouter()
+    useEffect(() => {
+        const query = router.query
+        const storeName = query.CVSStoreName as string
+        const storeAddress = query.CVSAddress as string
+        const storeType = query.LogisticsSubType as string
+
+        setRecieveStoreInfo(store => {
+            return { 
+                recieveWay: storeType?storeType:store.recieveWay, 
+                recieveStore: storeName, 
+                recieveAddress: storeAddress 
+            }
+        })
+    }, [router.isReady])
+
+
+    //電子地圖
+    const selectShipmentStoreMap = async () => {
+
+        // 創建表單元素
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'https://logistics-stage.ecpay.com.tw/Express/map'; // 提交的目標URL
+
+        // 添加表單字段
+        const data = {
+            MerchantID: "2000933",      // 廠商編號
+            MerchantTradeNo: "RK45723",  // 廠商交易編號
+            LogisticsType: "CVS",        // 超商取貨
+            LogisticsSubType: recieveStoreInfo.recieveWay,  // C2C
+            IsCollection: "N",           // N：不代收貨款
+            ServerReplyURL: "https://bbe5-1-168-2-213.ngrok-free.app/api/shopmap-callback", // 伺服器回調URL
+            Device: isSmallScreen?"1":"0"                  // 0：PC（預設值） 1：Mobile
+        };
+
+        console.log(data.Device)
+
+        // 將數據轉換為表單輸入
+        for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+                const hiddenField = document.createElement('input');
+                hiddenField.type = 'hidden';
+                hiddenField.name = key;
+                hiddenField.value = data[key as keyof typeof data]; //類型斷言
+                form.appendChild(hiddenField);
+            }
+        }
+
+        // 將表單添加到文檔並提交
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+
+
+
+
+
+
     if (cartContent.length <= 0) {
         return <p style={{ textAlign: 'center' }}>購物車內沒有商品....</p>
     }
@@ -165,6 +226,7 @@ const CheckOut =()=> {
                     <CargoWay
                         recieveStoreInfo={recieveStoreInfo}
                         handleRecieveWay={handleRecieveWay}
+                        selectShipmentStoreMap={selectShipmentStoreMap}
                     />
 
                 </Grid>
@@ -232,5 +294,5 @@ const CheckOut =()=> {
 }
 
 
-export default  WithAuth(CheckOut);
+export default WithAuth(CheckOut);
 

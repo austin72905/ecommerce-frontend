@@ -14,7 +14,7 @@ export function LastConfirm({ recieveStoreInfo, checkoutInfomation, recieverInfo
                 <Stack sx={{ p: "30px" }} spacing={"30px"}>
                     <GridContainer
                         title={<Typography   >寄送方式</Typography>}
-                        content={<Typography  >{recieveStoreInfo.recieveWay}取貨</Typography>}
+                        content={<Typography  >{storeMap.get(recieveStoreInfo.recieveWay)}取貨</Typography>}
                         columns={12}
                         xs={4}
                         sm={3}
@@ -83,3 +83,8 @@ interface LastConfirmProps {
     checkoutInfomation: CheckoutInfomation;
     recieverInfo: RecieverInfo;
 }
+
+const storeMap=new Map<string,string>([
+    ["FAMIC2C","全家"],
+    ["UNIMARTC2C","7-11"],
+])
