@@ -1,37 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react'
-//import { CartContext } from '../../contextStore/context'
-//import { ProductInfomationCount } from '../cart/Cart'
+
 
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import styled from '@mui/system/styled';
 import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
 import { Button, useMediaQuery, useTheme } from '@mui/material';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
 
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-
-import ProductImage from '../../assets/朋朋衛生紙商品圖.jpg'
-import { useCartStore } from '@/store/store';
-import { CheckoutInfomation, ProductInfomation, ProductInfomationCount, RecievePlaceInfo, RecieverInfo } from '@/interfaces';
+import { useAlertMsgStore, useCartStore } from '@/store/store';
+import { CheckoutInfomation, RecievePlaceInfo, RecieverInfo } from '@/interfaces';
 import { DefaultScreenCartContent, SmallScreenViewCartContent } from '@/components/cart/cart-content';
-import { GridContainer } from '@/components/ui/grid-container';
+
 
 import WarningMsg from '@/components/checkout/warning-msg';
 import { LastConfirm } from '@/components/checkout/last-confirm';
@@ -42,6 +21,9 @@ import SubscriberInfo from '@/components/checkout/subscriber';
 import RecieverInfomation from '@/components/checkout/reciever';
 import WithAuth from '@/components/auth/with-auth';
 import { useRouter } from 'next/router';
+import { ApiResponse } from '@/interfaces/api/response';
+import { PaymentRequestData } from '@/interfaces/api/payment-request-data';
+import { RespCode } from '@/enums/resp-code';
 
 
 const CheckOut = () => {
@@ -111,10 +93,6 @@ const CheckOut = () => {
 
     const cartContent = useCartStore(state => state.cartContent);
 
-
-
-
-
     const removeFromCart = useCartStore(state => state.removeFromCart);
 
     const countTotalPrice = useCartStore(state => state.countTotalPrice);
@@ -122,6 +100,9 @@ const CheckOut = () => {
     const plusProductCount = useCartStore((state) => state.plusProductCount)
 
     const minusProductCount = useCartStore((state) => state.minusProductCount)
+
+
+    const setAlertMsg = useAlertMsgStore(state => state.setAlertMsg)
 
 
     const router = useRouter()
@@ -179,8 +160,48 @@ const CheckOut = () => {
     }
 
 
+    //送出訂單
+    const submitOrder =async ()=>{
+        // 之後提交改成傳遞訂單資訊
+        const response = await generateOrder({}) as ApiResponse<PaymentRequestData>;
+
+        if(response.code!==RespCode.SUCCESS || !response.data){
+            setAlertMsg("提交訂單失敗，請稍後再試")
+            return
+        }
+
+        const paymentData: PaymentRequestData={
+            recordNo:response.data.recordNo,
+            paymentUrl:response.data.paymentUrl,
+            payType:response.data.payType,
+            amount:response.data.amount,
+        }
 
 
+        goToPayment(paymentData);
+        
+    }
+
+
+  
+    const generateOrder = async (data: {}) => {
+        const response = await fetch("http://localhost:5025/Order/SubmitOrder", {
+            method: 'POST',
+            credentials:'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+
+        return response.json();
+    }
+
+    //前往支付頁面
+    const goToPayment = (paymentData:PaymentRequestData)=>{
+        const url = `${paymentData.paymentUrl}?RecordNo=${paymentData.recordNo}&Amount=${paymentData.amount}&PayType=${paymentData.payType}`
+        window.location.href =url
+    }
 
 
 
@@ -281,7 +302,7 @@ const CheckOut = () => {
                 </Grid>
                 <Grid item xs={8} >
                     <Stack direction={"row"} justifyContent="end">
-                        <Button variant='contained'>送出訂單</Button>
+                        <Button variant='contained' onClick={submitOrder}>送出訂單</Button>
                     </Stack>
 
                 </Grid>
