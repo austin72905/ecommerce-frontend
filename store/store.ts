@@ -89,20 +89,20 @@ const useCartStore = create<CartState>((set, get) => ({
         let cartcontent = [...state.cartContent];
 
         cartcontent.forEach(item => {
-            if (item.product.productId === productId && item.count < 10 ){
-                if(item.selectedVariant){
+            if (item.product.productId === productId && item.count < 10) {
+                if (item.selectedVariant) {
                     //如果比選擇的variant 庫存少就可以+1
-                    if(item.count<item.selectedVariant.stock){
+                    if (item.count < item.selectedVariant.stock) {
                         item.count += 1;
                     }
-                }else{
-                    if(item.count<item.product.stock){
+                } else {
+                    if (item.count < item.product.stock) {
                         item.count += 1;
                     }
                 }
-                
+
             }
-                
+
         })
 
         return {
@@ -113,7 +113,20 @@ const useCartStore = create<CartState>((set, get) => ({
         const state = get()
         let totalPrice = 0;
         state.cartContent.forEach(item => {
-            totalPrice += item.product.price * item.count
+            if (item.selectedVariant) {
+                if (item.selectedVariant.discountPrice)
+                    totalPrice += item.selectedVariant.discountPrice * item.count
+                else
+                    totalPrice += item.selectedVariant.price * item.count
+
+            } else {
+                if (item.product.discountPrice)
+                    totalPrice += item.product.discountPrice * item.count
+                else
+                    totalPrice += item.product.price * item.count
+
+            }
+
         })
         return totalPrice
     },

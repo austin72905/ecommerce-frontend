@@ -11,13 +11,13 @@ interface TableViewCartContentProps {
     cartContent: ProductInfomationCount[] | never[];
     plusProductCount: (productId: number) => void;
     minusProductCount: (productId: number) => void;
-    removeFromCart: (productId: number,variantID:number|undefined) => void;
+    removeFromCart: (productId: number, variantID: number | undefined) => void;
 }
 
 const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductCount, removeFromCart }: TableViewCartContentProps) => {
     //console.log(cartContent)
     if (cartContent.length === 0) {
-        return <p style={{textAlign:"center"}}>購物車內沒有商品</p>
+        return <p style={{ textAlign: "center" }}>購物車內沒有商品</p>
     }
 
     const router = useRouter()
@@ -27,6 +27,24 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
     }
 
     //console.log("cartContent:",cartContent)
+
+    const showPrice = (item: ProductInfomationCount)=>{
+        if(item.selectedVariant){
+            if(item.selectedVariant.discountPrice)
+                return item.selectedVariant.discountPrice
+            else
+                return item.selectedVariant.price
+        }else{
+            if(item.product.discountPrice)
+                return item.product.discountPrice
+            else
+                return item.product.price
+        }
+    }
+    //總計
+    const showItemTotalPrice = (item: ProductInfomationCount)=>{
+        return showPrice(item)*item.count
+    }
 
 
     return (
@@ -64,7 +82,7 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                                             <img src={item.product.coverImg} style={{ width: "130px", height: "150px", padding: 0, margin: 0 }} />
                                         </Box>
                                         <Stack spacing={"2px"}>
-                                            <Typography  sx={{ '&:hover': { cursor: "pointer" } }} onClick={()=>{goToProductDetail(item.product.productId)}}>
+                                            <Typography sx={{ '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(item.product.productId) }}>
                                                 {item.product.title}
                                             </Typography>
                                             <Typography variant='caption'>
@@ -79,20 +97,20 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                                     </Stack>
 
                                 </TableCell>
-                                <TableCell align='center'>${item.product.price}</TableCell>
+                                <TableCell align='center'>${showPrice(item)}</TableCell>
                                 <TableCell align='center'>
                                     {/*數量框 */}
-                                    <Box sx={{ display: "flex",  border: "0px solid",justifyContent:"center" }}>
+                                    <Box sx={{ display: "flex", border: "0px solid", justifyContent: "center" }}>
                                         <RemoveIcon onClick={() => { minusProductCount(item.product.productId) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }} />
                                         <TextFieldWrapper value={item.count} size='small' inputProps={{ style: { textAlign: "center", height: "15px" } }} ></TextFieldWrapper>
                                         <AddIcon onClick={() => { plusProductCount(item.product.productId) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }} />
                                     </Box>
                                 </TableCell>
-                                <TableCell align='center'>${item.product.price * item.count}</TableCell>
+                                <TableCell align='center'>${showItemTotalPrice(item)}</TableCell>
                                 <TableCell sx={{ border: "0px solid" }} align='center'>
                                     <Stack sx={{ border: "0px solid" }} alignItems="center">
 
-                                        <IconButton onClick={() => { removeFromCart(item.product.productId,item.selectedVariant?.variantID) }}>
+                                        <IconButton onClick={() => { removeFromCart(item.product.productId, item.selectedVariant?.variantID) }}>
                                             <DeleteOutlineOutlinedIcon />
                                         </IconButton>
                                     </Stack>
@@ -112,16 +130,16 @@ interface SmallScreenViewCartContentProps {
     cartContent: ProductInfomationCount[] | never[];
     plusProductCount: (productId: number) => void;
     minusProductCount: (productId: number) => void;
-    removeFromCart: (productId: number,variantID:number|undefined) => void;
+    removeFromCart: (productId: number, variantID: number | undefined) => void;
 }
 
 const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProductCount, removeFromCart }: SmallScreenViewCartContentProps) => {
-    
+
     if (cartContent.length === 0) {
-        return <p style={{textAlign:"center"}}>購物車內沒有商品</p>
+        return <p style={{ textAlign: "center" }}>購物車內沒有商品</p>
     }
 
-    
+
     //console.log("cartContent:",cartContent)
     return (
         <Stack spacing={1}>
@@ -147,7 +165,7 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
                                     sx={{
                                         width: '100%',
                                         height: 0,
-                                        paddingBottom: '120%',
+                                        paddingBottom: '140%',
                                         position: 'relative',
                                     }}
                                 >
@@ -172,6 +190,37 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
                                         <Typography variant='caption'>
                                             顏色 : {item.selectedVariant ? item.selectedVariant.color : "標準"}
                                         </Typography>
+                                        {/*價格 */}
+                                        <Typography variant='subtitle2' sx={{mt:1}}>
+                                            {
+                                                item.selectedVariant ?
+
+                                                    item.selectedVariant?.discountPrice ?
+                                                        <>
+                                                            ${item.selectedVariant.discountPrice}
+                                                        </>
+                                                        :
+                                                        <>
+                                                            ${item.selectedVariant?.price}
+                                                        </>
+                                                    :
+                                                    <>
+                                                        {
+                                                            item.product.discountPrice ?
+                                                                <>
+                                                                    ${item.product.discountPrice}
+                                                                </>
+                                                                :
+                                                                <>
+                                                                    ${item.product.price}
+                                                                </>
+                                                        }
+
+                                                    </>
+
+                                            }
+
+                                        </Typography>
                                     </Stack>
 
                                 </CardContent>
@@ -184,7 +233,7 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
                                         <AddIcon onClick={() => { plusProductCount(item.product.productId) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "25px", width: "25px", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }} />
                                     </Box>
 
-                                    <IconButton onClick={() => { removeFromCart(item.product.productId,item.selectedVariant?.variantID) }}>
+                                    <IconButton onClick={() => { removeFromCart(item.product.productId, item.selectedVariant?.variantID) }}>
                                         <DeleteOutlineOutlinedIcon />
                                     </IconButton>
                                 </CardActions>
