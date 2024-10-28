@@ -238,10 +238,22 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
                                                     alignItems="center"
                                                     title={<Typography variant='body2'>售價</Typography>}
                                                     content={
-                                                        <Stack direction={"row"} sx={{ alignItems: "center" }} spacing={1}>
-                                                            <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "red" }}>${product.price}</Typography>
-                                                            <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>${product.price}</Typography>
-                                                        </Stack>
+                                                        selectVariant ?
+                                                            <Stack direction={"row"} sx={{ alignItems: "center" }} spacing={1}>
+                                                                {
+                                                                    selectVariant.discountPrice ?
+                                                                        <>
+                                                                            <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "red" }}>${selectVariant.price}</Typography>
+                                                                            <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>${selectVariant.discountPrice}</Typography>
+                                                                        </>
+                                                                        :
+                                                                        <Typography variant='subtitle1' >${product.price}</Typography>
+
+                                                                }
+
+                                                            </Stack>
+                                                            :
+                                                            <Typography variant={"subtitle2"} sx={{ color: "gray" }}>還未選擇款式顏色</Typography>
                                                     }
                                                 />
                                             </Grid>

@@ -4,6 +4,7 @@ export interface ProductInfomation {
     productId: number;
     title: string;
     price: number;
+    discountPrice?: number;
     stock: number;
     howToWash?: string;
     features?: string;
@@ -48,4 +49,5 @@ export interface ProductVariant{
     stock:number;
     sku:string;
     price:number;
+    discountPrice?: number;
 }

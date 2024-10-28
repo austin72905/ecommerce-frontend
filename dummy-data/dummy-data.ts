@@ -38,6 +38,7 @@ const fakeProducts: ProductInfomation[] = [
         productId: 26790367,
         stock: 60,
         price: 100,
+        discountPrice:50,
         colorDescription: ["黑色", "白色", "深藍色", "灰色", "深灰色", "紅色"],
         material: ["聚酯纖維", "聚氨酯纖維"],
         howToWash: "洗衣機（水溫40度）, 不可乾洗, 不可烘乾。本商品會在流汗或淋雨弄濕時，或因摩擦而染色到其他衣物上，敬請注意。",

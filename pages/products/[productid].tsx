@@ -182,11 +182,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
     const addProductToCart = () => {
         setAlertMsg("加入購物車成功")
-        addToCart({ ...product },selectVariant, itemCount)
+        addToCart({ ...product }, selectVariant, itemCount)
     }
     const userInfo = userUserInfoStore((state) => state.userInfo)
     const goToCheckoutDirectly = () => {
-        addToCart({ ...product},selectVariant, itemCount)
+        addToCart({ ...product }, selectVariant, itemCount)
 
         if (!userInfo) {
             setAlertMsg("請先登入")
@@ -195,12 +195,12 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                 router.push(`/login?redirect=/checkout`)
             }, 1000);
             return
-        }else{
+        } else {
             router.push("/checkout")
         }
 
 
- 
+
 
     }
 
@@ -549,7 +549,7 @@ interface PurchaseDetailProps {
     selectVariant: ProductVariant | undefined
     setselectVariant: Dispatch<SetStateAction<ProductVariant | undefined>>
     setItemCount: Dispatch<SetStateAction<number>>;
-    addToCart: (product: ProductInfomation,selectVariant: ProductVariant | undefined ,count: number) => void
+    addToCart: (product: ProductInfomation, selectVariant: ProductVariant | undefined, count: number) => void
     goToCheckoutDirectly: () => void
 }
 
@@ -557,7 +557,7 @@ interface PurchaseDetailProps {
  * 購買資訊
  * @component 
  */
-const PurchaseDetail = ({ xs, sm, md, lg, columns, product, itemCount,selectVariant,setselectVariant ,setItemCount, addToCart, goToCheckoutDirectly }: PurchaseDetailProps) => {
+const PurchaseDetail = ({ xs, sm, md, lg, columns, product, itemCount, selectVariant, setselectVariant, setItemCount, addToCart, goToCheckoutDirectly }: PurchaseDetailProps) => {
 
 
     if (!product) {
@@ -637,13 +637,13 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, itemCount,selectVari
     }
 
     const addProductToCart = () => {
-        if(product.variants){
-            if(!selectVariant){
+        if (product.variants) {
+            if (!selectVariant) {
                 setAlertMsg("請選擇顏色與尺寸")
                 return
             }
         }
-        addToCart({ ...product},selectVariant, itemCount)
+        addToCart({ ...product }, selectVariant, itemCount)
         setAlertMsg("新增購物車成功")
     }
 
@@ -729,20 +729,20 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, itemCount,selectVari
 
     }, [colorVal, sizeVal])
 
-    useEffect(()=>{
+    useEffect(() => {
 
-        if(selectVariant){
-            if(itemCount>selectVariant.stock){
+        if (selectVariant) {
+            if (itemCount > selectVariant.stock) {
                 setItemCount(1)
             }
-        }else{
-            if(itemCount>product.stock){
+        } else {
+            if (itemCount > product.stock) {
                 setItemCount(1)
             }
         }
 
 
-    },[selectVariant])
+    }, [selectVariant])
 
 
 
@@ -763,8 +763,25 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, itemCount,selectVari
                     title={<Typography variant='body2'>售價</Typography>}
                     content={
                         <Stack direction={"row"} sx={{ alignItems: "center" }} spacing={1}>
-                            <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "red" }}>${product.price}</Typography>
-                            <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>${product.price}</Typography>
+                            {
+                                selectVariant ?
+                                    selectVariant.discountPrice ?
+                                        <>
+                                            <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "#ef6060" }}>${selectVariant.price}</Typography>
+                                            <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>${selectVariant.discountPrice}</Typography>
+                                        </>
+                                        :
+                                        <Typography variant='subtitle1' >${product.price}</Typography>
+                                    :
+                                    product.discountPrice ?
+                                        <>
+                                            <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "#ef6060" }}>${product.price}</Typography>
+                                            <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>${product.price}</Typography>
+                                        </>
+                                        :
+                                        <Typography variant='subtitle1' >${product.price}</Typography>
+                            }
+
                         </Stack>
                     }
                     alignItems="center"
@@ -833,7 +850,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, product, itemCount,selectVari
                                         sizes.map((s, index) => (
 
                                             <Grid key={s} item xs={2} sm={2.5} md={2} lg={1.5}>
-                                               <ToggleButton color="primary" disabled={setSizeDisabled(s)} fullWidth size="small" disableRipple value={s}>{s}</ToggleButton>
+                                                <ToggleButton color="primary" disabled={setSizeDisabled(s)} fullWidth size="small" disableRipple value={s}>{s}</ToggleButton>
                                             </Grid>
 
 
@@ -1018,8 +1035,16 @@ const CustomSilde = ({ product, goToProductDetail }: CustomSildeProps) => {
                 }}>
                     <Stack spacing={1} sx={{ border: "0px solid black" }}>
                         <Typography sx={{ fontWeight: { md: "bold", xs: "normal" }, fontSize: { xs: "14px" }, '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.productId) }}>{product.title}</Typography>
-                        <Typography>NT${product.price}</Typography>
-                        <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.price}</Typography>
+                        {
+                            product.discountPrice ?
+                                <Stack direction={"row"} spacing={"15px"}>                                   
+                                    <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.price}</Typography>
+                                    <Typography sx={{color:"#ef6060"}}>NT${product.discountPrice}</Typography>
+                                </Stack >
+                                :
+                                <Typography>NT${product.price}</Typography>
+                        }
+
                     </Stack>
                 </CardContent>
 

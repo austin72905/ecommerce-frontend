@@ -133,8 +133,21 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                             }}>
                                 <Stack spacing={"15px"}>
                                     <Typography sx={{ minHeight: { xs: "48px", sm: "unset" }, fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.product.productId) }}>{product.product.title}</Typography>
-                                    <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.product.price}</Typography>
-                                    <Typography>NT${product.product.price}</Typography>
+                                    {
+                                        product.product.discountPrice ?
+                                            <Stack direction={"row"} spacing={"15px"}>
+                                                <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.product.price}</Typography>
+                                                <Typography sx={{color:"#ef6060"}}>${product.product.discountPrice}</Typography>
+                                            </Stack>
+
+                                            :
+                                            <Stack direction={"row"} spacing={"15px"}>
+                                                <Typography variant="subtitle2">定價NT${product.product.price}</Typography>
+                                            </Stack>
+
+                                    }
+
+
 
                                 </Stack>
                             </CardContent>
@@ -173,7 +186,7 @@ const initSelectProduct: ProductInfomation = {
     features: "",
     images: undefined,
     coverImg: undefined,
-    variants:[]
+    variants: []
 
 }
 
@@ -182,45 +195,45 @@ interface ProductsPageProps {
 }
 
 
-const getProductsFromBackend =async (kind:string,tag:string)=>{
+const getProductsFromBackend = async (kind: string, tag: string) => {
 
     const query = new URLSearchParams({
-        tag:tag,
-        kind:kind
+        tag: tag,
+        kind: kind
     }).toString()
 
     console.log(query)
 
     const response = await fetch(`http://localhost:5025/Product/GetProductList?${query}`, {
         method: 'GET',
-        credentials:'include',
-        
+        credentials: 'include',
+
     })
 
     return response.json();
 }
 
 export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (context) => {
-    
-    const { params } =context
+
+    const { params } = context
     let kind = params?.kind;
     let tag = params?.tag;
 
-    if(!tag || typeof tag != "string"){
-        tag="new-arrival"
+    if (!tag || typeof tag != "string") {
+        tag = "new-arrival"
     }
 
-    if(!kind || typeof kind != "string"){
-        kind=""
+    if (!kind || typeof kind != "string") {
+        kind = ""
     }
 
-    const response =await getProductsFromBackend(kind,tag) as ApiResponse<ProductInfomationData>
+    const response = await getProductsFromBackend(kind, tag) as ApiResponse<ProductInfomationData>
 
     //console.log(response)
-    
+
     //網路錯誤
     // 可能可以在自定義頁面之類的
-    if(response.code != RespCode.SUCCESS){
+    if (response.code != RespCode.SUCCESS) {
         return {
             notFound: true
         }
@@ -230,7 +243,7 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
 
     const products = response.data.products
 
-    console.log("products=",products)
+    console.log("products=", products)
 
     //const products = getProducts();
     return {
@@ -240,6 +253,6 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
     }
 }
 
-interface ProductInfomationData{
-    products:ProductInfomationFavoriate[]
+interface ProductInfomationData {
+    products: ProductInfomationFavoriate[]
 }
