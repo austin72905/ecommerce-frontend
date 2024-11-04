@@ -215,16 +215,21 @@ const getProductsFromBackend = async (kind: string, tag: string) => {
 
 export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (context) => {
 
-    const { params } = context
-    let kind = params?.kind;
-    let tag = params?.tag;
+    // querystring
+    const { query  } = context
+    let kind = query?.kind;
+    let tag = query?.tag;
 
+    console.log("tag =",tag)
+    console.log("kind =",kind)
+
+    // 當沒有tag 時，預設 返回新品
     if (!tag || typeof tag != "string") {
         tag = "new-arrival"
     }
 
     if (!kind || typeof kind != "string") {
-        kind = ""
+        kind = "clothes"
     }
 
     const response = await getProductsFromBackend(kind, tag) as ApiResponse<ProductInfomationData>

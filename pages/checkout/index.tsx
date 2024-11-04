@@ -137,7 +137,7 @@ const CheckOut = () => {
             LogisticsType: "CVS",        // 超商取貨
             LogisticsSubType: recieveStoreInfo.recieveWay,  // C2C
             IsCollection: "N",           // N：不代收貨款
-            ServerReplyURL: "https://bbe5-1-168-2-213.ngrok-free.app/api/shopmap-callback", // 伺服器回調URL
+            ServerReplyURL: "https://f53e-1-168-28-221.ngrok-free.app/api/shopmap-callback", // 伺服器回調URL
             Device: isSmallScreen?"1":"0"                  // 0：PC（預設值） 1：Mobile
         };
 
