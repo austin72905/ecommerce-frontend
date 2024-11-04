@@ -20,10 +20,12 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
-import { ProductInfomation, ProductInfomationCount, ProductVariant } from "@/interfaces";
+import { ProductInfomation, ProductInfomationCount, ProductInfomationFavoriate, ProductVariant } from "@/interfaces";
 import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 import GoToTopButton from "@/components/layout/speed-dial-group";
 import { GridContainer } from "@/components/ui/grid-container";
+import { ApiResponse } from "@/interfaces/api/response";
+import { RespCode } from "@/enums/resp-code";
 
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
@@ -32,14 +34,35 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
         return <p>無商品資訊...</p>
     }
 
+    console.log("載入product", product)
 
 
-
-    const [recommendProducts, setrecommendProducts] = useState<ProductInfomation[] | null>(null);
+    const [recommendProducts, setrecommendProducts] = useState<ProductInfomationFavoriate[] | null>(null);
     // 你可能感興趣
     useEffect(() => {
-        const products = getProducts()
-        setrecommendProducts(products)
+        
+        
+
+        const fetchData =async ()=>{
+            try {
+                const response = await getRecommendationFromBackend(product.product.productId.toString()) as ApiResponse<RecommendationData>;
+
+                if (response.code != RespCode.SUCCESS) {
+                    return
+                }
+     
+                const products = response.data.products
+
+                console.log("fetch products",products)
+
+                setrecommendProducts(products)
+                
+              } catch (error) {
+                console.error('Error fetching data:', error);
+              }
+        };
+
+        fetchData();
     }, [])
 
 
@@ -182,11 +205,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
     const addProductToCart = () => {
         setAlertMsg("加入購物車成功")
-        addToCart({ ...product }, selectVariant, itemCount)
+        addToCart({ ...product.product }, selectVariant, itemCount)
     }
     const userInfo = userUserInfoStore((state) => state.userInfo)
     const goToCheckoutDirectly = () => {
-        addToCart({ ...product }, selectVariant, itemCount)
+        addToCart({ ...product.product }, selectVariant, itemCount)
 
         if (!userInfo) {
             setAlertMsg("請先登入")
@@ -212,7 +235,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
             <AnchorNavbar showNavBar={showNavBar} handleLinkClick={handleLinkClick} />
 
             <BottomBar
-                product={product}
+                productFavoritate={product}
                 addProductToCart={addProductToCart}
                 goToCheckoutDirectly={goToCheckoutDirectly}
 
@@ -225,7 +248,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         <Box sx={{ p: 0, m: 2, mb: 1, maxWidth: "400px", maxHeight: "400px", width: '100%', height: 'auto' }}>
 
                             <Slider {...settings} ref={sliderRef} >
-                                {product?.images && product?.images.map((img, index) => (
+                                {product.product?.images && product.product?.images.map((img, index) => (
                                     <Box key={index} sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
                                         <Image src={img} alt={`img${index}`} fill style={{ objectFit: "cover" }} />
                                     </Box>
@@ -245,7 +268,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         sm={2.5}
                         md={2}
                         lg={1.5}
-                        product={product}
+                        productFavoriate={product}
                         itemCount={itemCount}
                         selectVariant={selectVariant}
                         setselectVariant={setselectVariant}
@@ -269,7 +292,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                             <Divider />
                         </Grid>
                         <Grid item xs={8}>
-                            {product.images?.map((img, index) => (
+                            {product.product.images?.map((img, index) => (
                                 <Box
                                     key={index}
                                     sx={{
@@ -298,7 +321,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
                     {/*商品介紹*/}
                     <ProductIntroduce
-                        productInfomation={product}
+                        productFavoritate={product}
                         columns={8}
                         xs={2.5}
                         md={1}
@@ -358,8 +381,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         <Grid item xs={8}>
                             <Box >
                                 <Slider {...settingsYouMayInterested} >
-                                    {recommendProducts && recommendProducts.map((product) => (
-                                        <CustomSilde key={product.productId} product={product} goToProductDetail={goToProductDetail} />
+                                    {recommendProducts && recommendProducts.map((p) => (
+                                        <CustomSilde key={p.product.productId} productFavoriate={p} goToProductDetail={goToProductDetail} />
                                     ))}
                                 </Slider>
                             </Box>
@@ -376,11 +399,48 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     )
 }
 
+const getRecommendationFromBackend = async (productId: string) => {
 
+    const query = new URLSearchParams({ 
+        productId: productId 
+    }).toString()
 
+    //console.log(query)
+
+    const response = await fetch(`http://localhost:5025/Product/GetRecommendationProduct?${query}`, {
+        method: 'GET',
+        credentials: 'include',
+
+    })
+
+    return response.json();
+}
+
+const getProductInfoFromBackend = async (productId: string) => {
+
+    const query = new URLSearchParams({ productId: productId }).toString()
+
+    console.log(query)
+
+    const response = await fetch(`http://localhost:5025/Product/GetProductById?${query}`, {
+        method: 'GET',
+        credentials: 'include',
+
+    })
+
+    return response.json();
+}
+
+interface RecommendationData{
+    products: ProductInfomationFavoriate[]
+}
+
+interface ProductDetailData {
+    product: ProductInfomationFavoriate
+}
 
 interface ProductDetailPageProps {
-    product: ProductInfomation | null
+    product: ProductInfomationFavoriate
 }
 
 export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = async (context) => {
@@ -399,8 +459,17 @@ export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = as
 
     // params   segement  看你目錄怎麼定義的
 
-    const product = getProdcctById(Number(productId))
+    //const product = getProdcctById(Number(productId))
 
+    const response = await getProductInfoFromBackend(productId) as ApiResponse<ProductDetailData>
+
+    if (response.code != RespCode.SUCCESS) {
+        return {
+            notFound: true
+        }
+    }
+
+    const product = response.data.product
 
     return {
         props: {
@@ -461,9 +530,9 @@ const SizeTable = ({ sizeTable }: SizeTableProps) => {
  * 商品介紹
  * @component 
  */
-const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductIntroduceProps) => {
+const ProductIntroduce = ({ productFavoritate, xs, md, columns, id }: ProductIntroduceProps) => {
 
-
+    const { product }=productFavoritate 
     return (
         <Grid id={id} container columns={columns} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
             <Grid item xs={8} sx={{ mb: 1 }}>
@@ -482,7 +551,7 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
                     title={<Typography variant="subtitle1">商品材質</Typography>}
                     content={
                         <Typography variant="subtitle1">
-                            {productInfomation.material?.join(", ")}
+                            {product.material?.join(", ")}
                         </Typography>
                     }
                     xs={xs} md={md}
@@ -496,7 +565,7 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
                     title={<Typography variant="subtitle1">商品編號</Typography>}
                     content={
                         <Typography variant="subtitle1">
-                            {productInfomation.productId}
+                            {product.productId}
                         </Typography>
                     }
                     xs={xs} md={md}
@@ -510,7 +579,7 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
                     title={<Typography variant="subtitle1">洗滌方式</Typography>}
                     content={
                         <Typography variant="subtitle1">
-                            {productInfomation.howToWash}
+                            {product.howToWash}
                         </Typography>
                     }
                     xs={xs} md={md}
@@ -524,7 +593,7 @@ const ProductIntroduce = ({ productInfomation, xs, md, columns, id }: ProductInt
                 <GridContainer
                     title={<Typography variant="subtitle1">商品特色</Typography>}
                     content={<Typography variant="subtitle1">
-                        {productInfomation.features}
+                        {product.features}
                     </Typography>
                     }
                     xs={xs} md={md}
@@ -544,7 +613,7 @@ interface PurchaseDetailProps {
     md: number;
     lg: number;
     columns: number;
-    product: ProductInfomation | null,
+    productFavoriate: ProductInfomationFavoriate,
     itemCount: number;
     selectVariant: ProductVariant | undefined
     setselectVariant: Dispatch<SetStateAction<ProductVariant | undefined>>
@@ -557,12 +626,16 @@ interface PurchaseDetailProps {
  * 購買資訊
  * @component 
  */
-const PurchaseDetail = ({ xs, sm, md, lg, columns, product, itemCount, selectVariant, setselectVariant, setItemCount, addToCart, goToCheckoutDirectly }: PurchaseDetailProps) => {
+const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavoriate, itemCount, selectVariant, setselectVariant, setItemCount, addToCart, goToCheckoutDirectly }: PurchaseDetailProps) => {
 
 
-    if (!product) {
+    if (!productFavoriate) {
         return <p>無商品資訊...</p>
     }
+
+
+    const { product, isFavoriate } = productFavoriate
+
     const router = useRouter()
     const { query } = router
     const contentxs: number = columns - xs;
@@ -930,7 +1003,7 @@ function SamplePrevArrow(props: any) {
 
 
 interface ProductIntroduceProps {
-    productInfomation: ProductInfomation;
+    productFavoritate: ProductInfomationFavoriate;
     xs: number;
     md: number;
     columns: number;
@@ -994,7 +1067,7 @@ const TextFieldWrapper = styled(TextField)(
 
 
 interface CustomSildeProps {
-    product: ProductInfomation;
+    productFavoriate: ProductInfomationFavoriate;
 
     goToProductDetail: (productId: number) => void
 }
@@ -1003,8 +1076,11 @@ interface CustomSildeProps {
  * 你可能也會喜歡
  * @component
  */
-const CustomSilde = ({ product, goToProductDetail }: CustomSildeProps) => {
+const CustomSilde = ({ productFavoriate, goToProductDetail }: CustomSildeProps) => {
 
+    const { product } =productFavoriate
+
+    //console.log("slide product",product)
 
     return (
         <Box style={{ margin: "10px" }}>
@@ -1037,9 +1113,9 @@ const CustomSilde = ({ product, goToProductDetail }: CustomSildeProps) => {
                         <Typography sx={{ fontWeight: { md: "bold", xs: "normal" }, fontSize: { xs: "14px" }, '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.productId) }}>{product.title}</Typography>
                         {
                             product.discountPrice ?
-                                <Stack direction={"row"} spacing={"15px"}>                                   
+                                <Stack direction={"row"} spacing={"15px"}>
                                     <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.price}</Typography>
-                                    <Typography sx={{color:"#ef6060"}}>NT${product.discountPrice}</Typography>
+                                    <Typography sx={{ color: "#ef6060" }}>NT${product.discountPrice}</Typography>
                                 </Stack >
                                 :
                                 <Typography>NT${product.price}</Typography>
@@ -1116,7 +1192,7 @@ interface GoToTopButtonProps {
 }
 
 interface BottomBarProps {
-    product: ProductInfomation,
+    productFavoritate: ProductInfomationFavoriate,
     addProductToCart: () => void
     goToCheckoutDirectly: () => void
 }
@@ -1127,7 +1203,10 @@ interface BottomBarProps {
  * 
  * @component
  */
-const BottomBar = ({ product, addProductToCart, goToCheckoutDirectly }: BottomBarProps) => {
+const BottomBar = ({ productFavoritate, addProductToCart, goToCheckoutDirectly }: BottomBarProps) => {
+
+    const { product } = productFavoritate
+
     return (
         <AppBar
             position="fixed"
