@@ -20,7 +20,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
-import { ProductInfomation, ProductInfomationCount, ProductInfomationFavoriate, ProductVariant } from "@/interfaces";
+import { ProductInfomation, ProductInfomationCount, ProductInfomationFavorite, ProductVariant } from "@/interfaces";
 import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 import GoToTopButton from "@/components/layout/speed-dial-group";
 import { GridContainer } from "@/components/ui/grid-container";
@@ -37,7 +37,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     console.log("載入product", product)
 
 
-    const [recommendProducts, setrecommendProducts] = useState<ProductInfomationFavoriate[] | null>(null);
+    const [recommendProducts, setrecommendProducts] = useState<ProductInfomationFavorite[] | null>(null);
     // 你可能感興趣
     useEffect(() => {
         
@@ -268,7 +268,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         sm={2.5}
                         md={2}
                         lg={1.5}
-                        productFavoriate={product}
+                        productFavorite={product}
                         itemCount={itemCount}
                         selectVariant={selectVariant}
                         setselectVariant={setselectVariant}
@@ -382,7 +382,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                             <Box >
                                 <Slider {...settingsYouMayInterested} >
                                     {recommendProducts && recommendProducts.map((p) => (
-                                        <CustomSilde key={p.product.productId} productFavoriate={p} goToProductDetail={goToProductDetail} />
+                                        <CustomSilde key={p.product.productId} productFavorite={p} goToProductDetail={goToProductDetail} />
                                     ))}
                                 </Slider>
                             </Box>
@@ -432,15 +432,15 @@ const getProductInfoFromBackend = async (productId: string) => {
 }
 
 interface RecommendationData{
-    products: ProductInfomationFavoriate[]
+    products: ProductInfomationFavorite[]
 }
 
 interface ProductDetailData {
-    product: ProductInfomationFavoriate
+    product: ProductInfomationFavorite
 }
 
 interface ProductDetailPageProps {
-    product: ProductInfomationFavoriate
+    product: ProductInfomationFavorite
 }
 
 export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = async (context) => {
@@ -613,7 +613,7 @@ interface PurchaseDetailProps {
     md: number;
     lg: number;
     columns: number;
-    productFavoriate: ProductInfomationFavoriate,
+    productFavorite: ProductInfomationFavorite,
     itemCount: number;
     selectVariant: ProductVariant | undefined
     setselectVariant: Dispatch<SetStateAction<ProductVariant | undefined>>
@@ -626,15 +626,15 @@ interface PurchaseDetailProps {
  * 購買資訊
  * @component 
  */
-const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavoriate, itemCount, selectVariant, setselectVariant, setItemCount, addToCart, goToCheckoutDirectly }: PurchaseDetailProps) => {
+const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavorite, itemCount, selectVariant, setselectVariant, setItemCount, addToCart, goToCheckoutDirectly }: PurchaseDetailProps) => {
 
 
-    if (!productFavoriate) {
+    if (!productFavorite) {
         return <p>無商品資訊...</p>
     }
 
 
-    const { product, isFavoriate } = productFavoriate
+    const { product, isFavorite } = productFavorite
 
     const router = useRouter()
     const { query } = router
@@ -1003,7 +1003,7 @@ function SamplePrevArrow(props: any) {
 
 
 interface ProductIntroduceProps {
-    productFavoritate: ProductInfomationFavoriate;
+    productFavoritate: ProductInfomationFavorite;
     xs: number;
     md: number;
     columns: number;
@@ -1067,7 +1067,7 @@ const TextFieldWrapper = styled(TextField)(
 
 
 interface CustomSildeProps {
-    productFavoriate: ProductInfomationFavoriate;
+    productFavorite: ProductInfomationFavorite;
 
     goToProductDetail: (productId: number) => void
 }
@@ -1076,9 +1076,9 @@ interface CustomSildeProps {
  * 你可能也會喜歡
  * @component
  */
-const CustomSilde = ({ productFavoriate, goToProductDetail }: CustomSildeProps) => {
+const CustomSilde = ({ productFavorite, goToProductDetail }: CustomSildeProps) => {
 
-    const { product } =productFavoriate
+    const { product } =productFavorite
 
     //console.log("slide product",product)
 
@@ -1192,7 +1192,7 @@ interface GoToTopButtonProps {
 }
 
 interface BottomBarProps {
-    productFavoritate: ProductInfomationFavoriate,
+    productFavoritate: ProductInfomationFavorite,
     addProductToCart: () => void
     goToCheckoutDirectly: () => void
 }

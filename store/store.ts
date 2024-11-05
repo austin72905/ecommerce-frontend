@@ -166,7 +166,7 @@ const useSubscribeListStore = create<SubscribeListState>((set, get) => ({
             }
         }
 
-        // 加入購物車
+        // 加入喜愛清單
         // 比較carcontent 裡面是否已經有ProductId? 
         const item = subscribeList.find(item => item.productId === product.productId);
 

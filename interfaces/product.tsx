@@ -24,9 +24,9 @@ export interface ProductInfomationCount{
 }
 
 
-export interface ProductInfomationFavoriate{
+export interface ProductInfomationFavorite{
     product:ProductInfomation;
-    isFavoriate?:boolean;
+    isFavorite?:boolean;
 }
 
 

@@ -10,7 +10,7 @@ import { ChangeEvent, useEffect, useReducer, useState } from "react";
 import Image from "next/image";
 import { getProducts } from "@/dummy-data/dummy-data";
 import { GetServerSideProps } from "next";
-import { ProductInfomation, ProductInfomationFavoriate } from "@/interfaces";
+import { ProductInfomation, ProductInfomationFavorite } from "@/interfaces";
 import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -45,8 +45,8 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     //計時器 
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-    const handeClickSubscribe = (e: ChangeEvent<HTMLInputElement>, product: ProductInfomation) => {
-
+    const handeClickSubscribe =async (e: ChangeEvent<HTMLInputElement>, product: ProductInfomation) => {
+        
         if (!userInfo) {
             setAlertMsg("請先登入")
 
@@ -58,9 +58,11 @@ export default function ProductsPage({ products }: ProductsPageProps) {
         }
 
         if (e.target.checked) {
-            addToList(product)
+            //addToList(product)
+            await addToFavoriteList(product)
         } else {
-            removeFromList(product.productId)
+            //removeFromList(product.productId)
+            await removeFromFavoriteList(product)
         }
     }
 
@@ -74,6 +76,46 @@ export default function ProductsPage({ products }: ProductsPageProps) {
             }
         }
     }, [])
+
+    //將喜愛名單的ID 同步到 subscribeIdList
+    useEffect(() => {
+        //感覺會有多次渲染的問題 addToList 參數改成 array 會好點?
+        console.log("products:",products)
+        products.forEach(p => {
+            console.log("p.isFavorite:",p.isFavorite)
+            if (p.isFavorite) {
+                addToList(p.product)
+            }
+        })
+    }, [])
+
+    //加入喜愛名單方法
+    const addToFavoriteList = async (product: ProductInfomation) => {
+
+        console.log("addToFavoriteList")
+
+        addToList(product)
+
+        try {
+            // 發送請求更新後端數據
+            const response =await addToFavoriteListToBackend(product.productId)
+        } catch (error) {
+            // 若請求失敗，回滾狀態
+            removeFromList(product.productId)
+        }
+    }
+
+    const removeFromFavoriteList =async (product: ProductInfomation) => {
+        removeFromList(product.productId)
+        console.log("removeFromFavoriteList")
+        try {
+            // 發送請求更新後端數據
+            const response =await removeFromFavoriteListToBackend(product.productId)
+        } catch (error) {
+            // 若請求失敗，回滾狀態
+            addToList(product)
+        }
+    }
 
 
 
@@ -137,7 +179,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                         product.product.discountPrice ?
                                             <Stack direction={"row"} spacing={"15px"}>
                                                 <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.product.price}</Typography>
-                                                <Typography sx={{color:"#ef6060"}}>${product.product.discountPrice}</Typography>
+                                                <Typography sx={{ color: "#ef6060" }}>${product.product.discountPrice}</Typography>
                                             </Stack>
 
                                             :
@@ -191,11 +233,50 @@ const initSelectProduct: ProductInfomation = {
 }
 
 interface ProductsPageProps {
-    products: ProductInfomationFavoriate[]
+    products: ProductInfomationFavorite[]
 }
 
 
-const getProductsFromBackend = async (kind: string, tag: string) => {
+const addToFavoriteListToBackend = async (productId: number) => {
+    console.log("productId:",productId)
+    const postBody = {
+        productId: productId,
+    }
+
+    const response = await fetch(`http://localhost:5025/User/AddToFavoriteList`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',  // 設置 Content-Type 為 JSON
+        },
+        body: JSON.stringify(postBody)  // 將 postBody 轉換為 JSON 字串
+    })
+
+    return response.json();
+}
+
+const removeFromFavoriteListToBackend = async (productId: number) => {
+
+    const postBody = {
+        productId: productId,
+    }
+
+
+
+    const response = await fetch(`http://localhost:5025/User/RemoveFromFavoriteList`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',  // 設置 Content-Type 為 JSON
+        },
+        body: JSON.stringify(postBody)  // 將 postBody 轉換為 JSON 字串
+    })
+
+    return response.json();
+}
+
+
+const getProductsFromBackend = async (kind: string, tag: string, cookieHeader?: string) => {
 
     const query = new URLSearchParams({
         tag: tag,
@@ -206,22 +287,25 @@ const getProductsFromBackend = async (kind: string, tag: string) => {
 
     const response = await fetch(`http://localhost:5025/Product/GetProductList?${query}`, {
         method: 'GET',
-        credentials: 'include',
-
+        credentials: 'include', //就算有加也沒用，在getserverprops 調用 cookie 要自己手動加
+        headers: cookieHeader ? { 'Cookie': cookieHeader } : {}
     })
 
     return response.json();
 }
 
+//
 export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (context) => {
 
+
+    const {req } =context
     // querystring
-    const { query  } = context
+    const { query } = context
     let kind = query?.kind;
     let tag = query?.tag;
 
-    console.log("tag =",tag)
-    console.log("kind =",kind)
+    console.log("tag =", tag)
+    console.log("kind =", kind)
 
     // 當沒有tag 時，預設 返回新品
     if (!tag || typeof tag != "string") {
@@ -232,7 +316,11 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
         kind = "clothes"
     }
 
-    const response = await getProductsFromBackend(kind, tag) as ApiResponse<ProductInfomationData>
+
+    // 將 cookies 從請求中提取並傳遞給後端請求
+    const cookieHeader = req.headers.cookie || '';
+
+    const response = await getProductsFromBackend(kind, tag,cookieHeader) as ApiResponse<ProductInfomationData>
 
     //console.log(response)
 
@@ -259,5 +347,5 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
 }
 
 interface ProductInfomationData {
-    products: ProductInfomationFavoriate[]
+    products: ProductInfomationFavorite[]
 }
