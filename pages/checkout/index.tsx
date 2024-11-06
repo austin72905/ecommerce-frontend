@@ -24,6 +24,7 @@ import { useRouter } from 'next/router';
 import { ApiResponse } from '@/interfaces/api/response';
 import { PaymentRequestData } from '@/interfaces/api/payment-request-data';
 import { RespCode } from '@/enums/resp-code';
+import { OrderItem, SubmitOrderReq } from '@/interfaces/api/submit-order-req';
 
 
 const CheckOut = () => {
@@ -162,8 +163,28 @@ const CheckOut = () => {
 
     //送出訂單
     const submitOrder =async ()=>{
+
+        // 從購物車取出 每個商品的 productId、variantId、count
+        const orderItems :OrderItem[]= cartContent.map(productItem=>{
+            const item:OrderItem = {
+                quantity:productItem.count,
+                productId:productItem.product.productId,
+                variantId:productItem.selectedVariant?.variantID
+            }
+            return item
+        })
+
+        const req :SubmitOrderReq= {
+            shippingFee:60,
+            shippingAddress:recieveStoreInfo.recieveAddress,
+            receiverName:recieverInfo.name,
+            receiverPhone:recieverInfo.phoneNumber,
+            items:orderItems
+        }
+
+
         // 之後提交改成傳遞訂單資訊
-        const response = await generateOrder({}) as ApiResponse<PaymentRequestData>;
+        const response = await generateOrder(req) as ApiResponse<PaymentRequestData>;
 
         if(response.code!==RespCode.SUCCESS || !response.data){
             setAlertMsg("提交訂單失敗，請稍後再試")
@@ -184,7 +205,8 @@ const CheckOut = () => {
 
 
   
-    const generateOrder = async (data: {}) => {
+    const generateOrder = async (data: SubmitOrderReq) => {
+        console.log("data:",data)
         const response = await fetch("http://localhost:5025/Order/SubmitOrder", {
             method: 'POST',
             credentials:'include',
