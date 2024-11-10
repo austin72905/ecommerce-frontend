@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -21,6 +21,9 @@ import { useAlertMsgStore } from '@/store/store';
 import WithAuth from '@/components/auth/with-auth';
 import { INPUT_FIELD } from '@/constant-value/constant';
 import { validateAddress, validateEmail, validateName, validatePhoneNumber, validateRecieveStore, ValidationErrors } from '@/utils/validation';
+import { OrderAddress, UserShipAddress } from '@/interfaces';
+import { ApiResponse } from '@/interfaces/api/response';
+import { RespCode } from '@/enums/resp-code';
 
 
 
@@ -65,6 +68,56 @@ const AddressPage = () => {
         py: "20px"
     };
 
+    const [isRenew, setisRenew] = useState<boolean>(false)
+
+    const [defaultAddressList, setDefaultAddressList] = useState(recieverInfoList)
+    // 從後端獲取常用地址
+    useEffect(() => {
+
+        const fetchData = async () => {
+            try {
+                const result = await getUserShippingAddress() as ApiResponse;
+                console.log("result=", result)
+
+
+                if (result.code != RespCode.SUCCESS) {
+
+                    console.log("獲取數據失敗")
+                    return;
+                }
+
+
+                if (result.data == null) {
+                    console.log("獲取數據失敗")
+                    return;
+                }
+
+
+                const data = result.data as UserShipAddress[]
+
+                const addressListData: AddressInfo[] = data.map(ua => {
+                    const userAddress: AddressInfo = {
+                        id: ua.addressId,
+                        name: ua.recipientName,
+                        phoneNumber: ua.phoneNumber,
+                        recieverAddress: ua.addressLine,
+                        recieveWay: ua.recieveWay,
+                        recieveStore: ua.recieveStore,
+                        isDefaultAddress: ua.isDefault
+                    }
+                    return userAddress
+                })
+
+                setDefaultAddressList(addressListData)
+
+
+            } catch (error) {
+                console.error('Error fetching data:', error)
+            }
+        }
+
+        fetchData()
+    }, [isRenew])
 
 
 
@@ -139,7 +192,7 @@ const AddressPage = () => {
         })
     }
 
-    const [defaultAddressList, setDefaultAddressList] = useState(recieverInfoList)
+
 
 
     const setAlertMsg = useAlertMsgStore(state => state.setAlertMsg)
@@ -181,10 +234,78 @@ const AddressPage = () => {
         })
     }
 
-    const addNewAddress = () => {
+    const addNewAddress = async () => {
         console.log(editedAddress)
+
+
+        // 判斷是否都有輸入
+        if (!Object.values(errors).every(value => value === undefined)) {
+            console.log("errors:", errors)
+            return
+        }
+
+        const data: UserShipAddress = {
+            addressId: editedAddress.id,
+            recipientName: editedAddress.name,
+            recieveWay: editedAddress.recieveWay,
+            recieveStore: editedAddress.recieveStore,
+            phoneNumber: editedAddress.phoneNumber,
+            addressLine: editedAddress.recieverAddress,
+            isDefault: false
+        }
+
+        if(editedAddress.id===0){
+            await addShippingAddress(data);
+
+        }else{
+            await modifyShippingAddress(data);
+        }
+  
+
+
         handleClose()
+
+        setisRenew(u => !u)
     }
+
+    const deleteAddress = async (address:AddressInfo)=>{
+
+        console.log(address)
+
+        const data: UserShipAddress = {
+            addressId: address.id,
+            recipientName: address.name,
+            recieveWay: address.recieveWay,
+            recieveStore: address.recieveStore,
+            phoneNumber: address.phoneNumber,
+            addressLine: address.recieverAddress,
+            isDefault: address.isDefaultAddress
+        }
+
+        await deleteShippingAddress(data)
+        setisRenew(u => !u)
+    }
+
+    const setDefaultAddress = async (address:AddressInfo)=>{
+
+        console.log(address)
+
+        const data: UserShipAddress = {
+            addressId: address.id,
+            recipientName: address.name,
+            recieveWay: address.recieveWay,
+            recieveStore: address.recieveStore,
+            phoneNumber: address.phoneNumber,
+            addressLine: address.recieverAddress,
+            isDefault: address.isDefaultAddress
+        }
+
+        await setDefaultShippingAddress(data)
+        setisRenew(u => !u)
+        setAlertMsg("修改預設地址成功")
+    }
+
+    
 
     return (
         <Container sx={{ border: "0px solid" }} maxWidth='xl'>
@@ -206,6 +327,8 @@ const AddressPage = () => {
                                 handleEditModal={handleEditModal}
                                 content={c}
                                 changeDefaultAddress={changeDefaultAddress}
+                                deleteAddress={deleteAddress}
+                                setDefaultAddress={setDefaultAddress}
                                 isSmallScreen={isSmallScreen}
                                 isXSScreen={isXSScreen}
                             />
@@ -253,10 +376,10 @@ const AddressPage = () => {
                                 <TextField value={editedAddress.phoneNumber} onChange={handleEditedAddress} name={INPUT_FIELD.PHONE_NUMBER} placeholder='ex: 09xxxxxxxx' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
                                 <Typography variant='caption' sx={{ color: "red" }}>{errors.phoneNumber}</Typography>
                             </ItemWrapper>
-                            
+
                             <ItemWrapper >
                                 <Typography variant='subtitle2' >取件方式</Typography>
-                                
+
                                 <FormControl fullWidth sx={{ marginTop: "10px" }} >
                                     <Select
                                         value={editedAddress.recieveWay}
@@ -273,7 +396,7 @@ const AddressPage = () => {
                             </ItemWrapper>
                             <ItemWrapper >
                                 <Typography variant='subtitle2' >取件門市</Typography>
-                                <TextField value={editedAddress.recieveStore} onChange={handleEditedAddress} name={INPUT_FIELD.RECIEVE_STORE} placeholder='ex: 台中門市' inputProps={{ sx: { height: "15px" } }}  sx={{ marginTop: "10px" }} size='small' fullWidth />
+                                <TextField value={editedAddress.recieveStore} onChange={handleEditedAddress} name={INPUT_FIELD.RECIEVE_STORE} placeholder='ex: 台中門市' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
                                 <Typography variant='caption' sx={{ color: "red" }}>{errors.recieveStore}</Typography>
                             </ItemWrapper>
                             <ItemWrapper >
@@ -315,6 +438,8 @@ const ItemWrapper = styled(Box)({
 interface RecieverInfoProps {
     handleEditModal: (e: React.MouseEvent, content: AddressInfo) => void;
     changeDefaultAddress: (e: React.MouseEvent, i: number) => void;
+    deleteAddress: (address: AddressInfo) => Promise<void>;
+    setDefaultAddress: (address: AddressInfo) => Promise<void>
     content: AddressInfo;
     isSmallScreen: boolean;
     isXSScreen: boolean;
@@ -364,64 +489,138 @@ const recieverInfoList: AddressInfo[] = [
     { ...aContent, id: 4 },
 ]
 
-const recieveWayMap =new Map<string,string>([
-    ["UNIMARTC2C","7-11"],
-    ["FAMIC2C","全家"],
+const recieveWayMap = new Map<string, string>([
+    ["UNIMARTC2C", "7-11"],
+    ["FAMIC2C", "全家"],
 ])
 
-const RecieverInfo = ({ handleEditModal, changeDefaultAddress, content, isSmallScreen, isXSScreen }: RecieverInfoProps) => {
+// 後端請求
+const addShippingAddress = async (data: UserShipAddress) => {
+    const response = await fetch("http://localhost:5025/User/AddShippingAddress", {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+
+    return response.json();
+}
+
+const modifyShippingAddress = async (data: UserShipAddress) => {
+    const response = await fetch("http://localhost:5025/User/ModifyShippingAddress", {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+
+    return response.json();
+}
+
+const deleteShippingAddress = async (data: UserShipAddress) => {
+    const response = await fetch("http://localhost:5025/User/DeleteShippingAddress", {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+
+    return response.json();
+}
+
+
+const setDefaultShippingAddress = async (data: UserShipAddress) => {
+    const response = await fetch("http://localhost:5025/User/SetDefaultShippingAddress", {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+
+    return response.json();
+}
+
+const getUserShippingAddress = async () => {
+    const response = await fetch("http://localhost:5025/User/GetUserShippingAddress", {
+        method: 'GET',
+        credentials: 'include',
+
+    })
+
+    return response.json();
+}
+
+const RecieverInfo = ({ handleEditModal, changeDefaultAddress,deleteAddress,setDefaultAddress ,content, isSmallScreen, isXSScreen }: RecieverInfoProps) => {
     return (
         <Paper sx={{ mt: 2, boxShadow: "none", border: `1px solid ${content.isDefaultAddress ? "#61D1BD" : "#d9d9d9"}` }}>
 
             <Grid container columns={12} sx={{ p: 4 }} >
                 <Grid item xs={12} sm={9} md={9} >
                     <Grid container columns={12} spacing={1}>
-                        {
-                            Object.getOwnPropertyNames(content).map((n, index) => {
 
-                                if (n === "isDefaultAddress" || n === "id") {
-                                    return null
+                        <Grid item xs={12}>
+                            <GridContainer
+                                xs={5} sm={2}
+                                columns={12}
+                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >收件人</Typography>}
+                                content={
+                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.name}</Typography>
                                 }
+                            />
+                        </Grid>
 
-                                // 寄件方式
-                                if( n ==="recieveWay"){
-                                    return (
-                                        <React.Fragment key={n}>
-                                        <Grid item xs={12}>
-                                            <GridContainer
-                                                xs={5} sm={2}
-                                                columns={12}
-                                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >{addressTitle.get(n)}</Typography>}
-                                                content={
-                                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{recieveWayMap.get(content[n as keyof AddressInfo] as string)}</Typography>
-                                                }
-                                            />
-                                        </Grid>
-
-                                    </React.Fragment>
-                                    )
+                        <Grid item xs={12}>
+                            <GridContainer
+                                xs={5} sm={2}
+                                columns={12}
+                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >連絡電話</Typography>}
+                                content={
+                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.phoneNumber}</Typography>
                                 }
+                            />
+                        </Grid>
 
-                                return (
-                                    <React.Fragment key={n}>
-                                        <Grid item xs={12}>
-                                            <GridContainer
-                                                xs={5} sm={2}
-                                                columns={12}
-                                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >{addressTitle.get(n)}</Typography>}
-                                                content={
-                                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content[n as keyof AddressInfo]}</Typography>
-                                                }
-                                            />
-                                        </Grid>
+                        <Grid item xs={12}>
+                            <GridContainer
+                                xs={5} sm={2}
+                                columns={12}
+                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >取件地址</Typography>}
+                                content={
+                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.recieverAddress}</Typography>
+                                }
+                            />
+                        </Grid>
 
-                                    </React.Fragment>
-                                )
+                        <Grid item xs={12}>
+                            <GridContainer
+                                xs={5} sm={2}
+                                columns={12}
+                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >取件門市</Typography>}
+                                content={
+                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.recieveStore}</Typography>
+                                }
+                            />
+                        </Grid>
 
-                            })
+                        <Grid item xs={12}>
+                            <GridContainer
+                                xs={5} sm={2}
+                                columns={12}
+                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >取件方式</Typography>}
+                                content={
+                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{recieveWayMap.get(content.recieveWay as string)}</Typography>
+                                }
+                            />
+                        </Grid>
 
-
-                        }
                     </Grid>
                 </Grid>
 
@@ -431,7 +630,7 @@ const RecieverInfo = ({ handleEditModal, changeDefaultAddress, content, isSmallS
                         <Stack spacing={0.5} alignItems={"end"} justifyContent={"space-between"} sx={{ border: "0px solid", height: "100%", width: "100%" }}>
                             <Stack spacing={0.5} sx={{ border: "0px solid" }} direction={"row"}>
                                 <Button onClick={(e) => { handleEditModal(e, content) }} variant='outlined' sx={{ border: "1px solid #d9d9d9", color: "#AFAFAF" }}>編輯地址</Button>
-                                <IconButton>
+                                <IconButton onClick={(e)=>{deleteAddress(content)}}>
                                     <DeleteIcon />
                                 </IconButton>
 
@@ -443,7 +642,7 @@ const RecieverInfo = ({ handleEditModal, changeDefaultAddress, content, isSmallS
                                         <Typography variant='button' sx={{ color: "white" }}>預設地址</Typography>
                                     </Stack>
                                     :
-                                    <Button variant='outlined' onClick={(e) => { changeDefaultAddress(e, content.id) }} sx={{ width: "135px" }}>設為預設地址</Button>
+                                    <Button variant='outlined' onClick={(e) => { setDefaultAddress(content) }} sx={{ width: "135px" }}>設為預設地址</Button>
                             }
 
 
@@ -456,7 +655,7 @@ const RecieverInfo = ({ handleEditModal, changeDefaultAddress, content, isSmallS
                             <Stack direction={"row"} spacing={0.5} justifyContent={"space-between"} sx={{ border: "0px solid", }}>
 
                                 <Button onClick={(e) => { handleEditModal(e, content) }} variant='outlined' sx={{ border: "1px solid #d9d9d9", color: "#AFAFAF" }}>編輯地址</Button>
-                                <IconButton>
+                                <IconButton onClick={(e)=>{deleteAddress(content)}}>
                                     <DeleteIcon />
                                 </IconButton>
 
@@ -474,7 +673,7 @@ const RecieverInfo = ({ handleEditModal, changeDefaultAddress, content, isSmallS
                                         <Typography variant='button' sx={{ color: "white" }}>預設地址</Typography>
                                     </Stack>
                                     :
-                                    <Button variant='outlined' onClick={(e) => { changeDefaultAddress(e, content.id) }} sx={{ width: "135px" }}>設為預設地址</Button>
+                                    <Button variant='outlined' onClick={(e) => { setDefaultAddress(content) }} sx={{ width: "135px" }}>設為預設地址</Button>
                             }
                         </Stack>
 
