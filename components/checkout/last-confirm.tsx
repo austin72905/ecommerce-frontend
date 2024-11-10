@@ -47,17 +47,10 @@ export function LastConfirm({ recieveStoreInfo, checkoutInfomation, recieverInfo
                         sm={3}
                         md={2}
                     />
-                    <GridContainer
-                        title={<Typography >信箱</Typography>}
-                        content={<Typography>{recieverInfo.mail}</Typography>}
-                        columns={12}
-                        xs={4}
-                        sm={3}
-                        md={2}
-                    />
+                    
                     <GridContainer
                         title={<Typography  >取件地址</Typography>}
-                        content={<Typography  >{recieveStoreInfo.recieveStore}門市-{recieveStoreInfo.recieveAddress}</Typography>}
+                        content={<Typography  >{recieveStoreInfo.recieveStore}-{recieveStoreInfo.recieveAddress}</Typography>}
                         columns={12}
                         xs={4}
                         sm={3}

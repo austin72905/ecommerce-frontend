@@ -7,13 +7,13 @@ export default function RecieverInfomation({ recieverInfo, handleCheckRecieverIn
             <Typography variant='body1' sx={{ fontWeight: "bold" }}>收件人資訊</Typography>
 
             <Paper sx={{ mt: "15px", boxShadow: "none", border: "1px solid #d9d9d9" }}>
-                <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
+                {/* <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
                     <FormControlLabel control={<Checkbox onChange={handleCheckRecieverInfo} />} label="同訂購人資訊" />
-                </Stack>
+                </Stack> */}
 
                 <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
                     <Typography sx={{ mr: "10px", minWidth: "30px" }} variant='caption' >姓名</Typography>
-                    <TextField value={recieverInfo.name} name="name" onChange={handleRecieverInfo} placeholder='不得包含特殊符號 / $ . @ & # @...' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
+                    <TextField value={recieverInfo.name} name="name" onChange={handleRecieverInfo}  placeholder='不得包含特殊符號 / $ . @ & # @...' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
                 </Stack>
                 <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
                     <Typography sx={{ mr: "10px", minWidth: "30px" }} variant='caption' >電話</Typography>
@@ -21,7 +21,7 @@ export default function RecieverInfomation({ recieverInfo, handleCheckRecieverIn
                 </Stack>
                 <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
                     <Typography sx={{ mr: "10px", minWidth: "30px" }} variant='caption' >信箱</Typography>
-                    <TextField value={recieverInfo.mail} name="mail" onChange={handleRecieverInfo} placeholder='ex: asbc@gmail.com' inputProps={{ sx: { height: "15px" } }} sx={{ my: "10px" }} size='small' fullWidth />
+                    <TextField value={"ladoyymm456@mail.com"} name="mail" disabled inputProps={{ sx: { height: "15px" } }} sx={{ my: "10px" }} size='small' fullWidth />
                 </Stack>
 
 

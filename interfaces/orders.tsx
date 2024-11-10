@@ -28,7 +28,7 @@ export interface OrderInfomation {
     address: OrderAddress;
     status: number;
     shippingPrice: number;
-    payWay: string;
+    payWay: number;
     shipInfomation: CargoInfomation[];
     orderStepInfomation: OrderStepInfo[];
 
@@ -51,7 +51,7 @@ export interface ProductData {
 export interface RecieverInfo {
     name: string;
     phoneNumber: string;
-    mail: string;
+    email:string;
 }
 
 export interface RecievePlaceInfo {

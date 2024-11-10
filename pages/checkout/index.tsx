@@ -32,14 +32,14 @@ const CheckOut = () => {
     const theme = useTheme()
     const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
 
-    const initCheckoutInfomation: CheckoutInfomation = { productPrice: 0, cargoPrice: 0, titlePrice: 0, payWay: "銀行付款" }
+    const initCheckoutInfomation: CheckoutInfomation = { productPrice: 0, cargoPrice: 60, titlePrice: 0, payWay: "銀行付款" }
 
     const [checkoutInfomation, setCheckoutInfomation] = useState<CheckoutInfomation>(initCheckoutInfomation)
 
 
-    const [orderInfo, setOrderInfo] = useState<RecieverInfo>({ name: "王大明", phoneNumber: "0954678111", mail: "LaoD@gmail.com" })
+    const [orderInfo, setOrderInfo] = useState<RecieverInfo>({ name: "王大明", phoneNumber: "0954678111",email:"" })
 
-    const [recieverInfo, setRecieverInfo] = useState<RecieverInfo>({ name: "", phoneNumber: "", mail: "" })
+    const [recieverInfo, setRecieverInfo] = useState<RecieverInfo>({ name: "王大明", phoneNumber: "0954678111",email:"" })
 
     const [recieveStoreInfo, setRecieveStoreInfo] = useState<RecievePlaceInfo>({ recieveWay: "UNIMARTC2C", recieveStore: "雅典", recieveAddress: "台中市南區三民西路377號西川一路1號" })
 
@@ -138,7 +138,7 @@ const CheckOut = () => {
             LogisticsType: "CVS",        // 超商取貨
             LogisticsSubType: recieveStoreInfo.recieveWay,  // C2C
             IsCollection: "N",           // N：不代收貨款
-            ServerReplyURL: "https://f53e-1-168-28-221.ngrok-free.app/api/shopmap-callback", // 伺服器回調URL
+            ServerReplyURL: "https://bdec-1-168-26-39.ngrok-free.app/api/shopmap-callback", // 伺服器回調URL
             Device: isSmallScreen?"1":"0"                  // 0：PC（預設值） 1：Mobile
         };
 
@@ -281,14 +281,14 @@ const CheckOut = () => {
                 </Grid>
 
                 {/*訂購人資訊 */}
-                <Grid item xs={8}>
+                {/* <Grid item xs={8}>
 
                     <SubscriberInfo
                         orderInfo={orderInfo}
                         handleOrderInfo={handleOrderInfo}
                     />
 
-                </Grid>
+                </Grid> */}
                 {/*收件人資訊 */}
                 <Grid item xs={8} >
 
