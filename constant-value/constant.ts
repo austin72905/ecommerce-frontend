@@ -5,5 +5,7 @@ export const INPUT_FIELD={
     DAY:"day",
     MONTH:"month",
     YEAR:"year",
-    RECIEVER_ADDRESS:"recieverAddress"
+    RECIEVER_ADDRESS:"recieverAddress",
+    RECIEVE_STORE:"recieveStore",
+    RECIEVE_WAY:"recieveWay"
 }

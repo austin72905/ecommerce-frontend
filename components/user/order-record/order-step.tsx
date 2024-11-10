@@ -36,7 +36,7 @@ export default function OrderStep({ orderInfo, orderStepInfomationList, achieveS
                                             {achieveStep > index ? step.achieveDescription : step.unachieveDescription}
                                         </Typography>
                                         <Typography variant='caption'>
-                                            {achieveStep > index ? step.date : ""}
+                                            {achieveStep >= index ? step.date : ""}
                                         </Typography>
 
                                     </Stack>

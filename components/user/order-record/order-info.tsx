@@ -4,6 +4,7 @@ import { Box, Card, CardContent, CardMedia, Grid, Paper, Stack, Typography } fro
 import Image from "next/image";
 
 export default function OrderInfo({ orderInfo,goToProductDetail }: OrderInfoProps) {
+    console.log("orderInfo:",orderInfo)
     return (
         <Paper sx={{ boxShadow: "none", border: "1px solid #d9d9d9" }}>
             <Stack spacing={0} >
@@ -108,7 +109,7 @@ export default function OrderInfo({ orderInfo,goToProductDetail }: OrderInfoProp
                                         NT${orderInfo.orderPrice + orderInfo.shippingPrice}
                                     </Typography>
                                     <Typography >
-                                        {orderInfo.payWay}
+                                        {payWayMap.get(orderInfo.payWay)?payWayMap.get(orderInfo.payWay):"銀行轉帳"}
                                     </Typography>
                                 </Stack>
                             </Grid>
@@ -126,3 +127,8 @@ interface OrderInfoProps {
     goToProductDetail :(productId:number)=>void
 
 }
+
+const payWayMap =new Map<number,string>([
+    [0,"綠界支付"],
+    [1,"銀行轉帳"],
+])

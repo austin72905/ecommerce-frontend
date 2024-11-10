@@ -15,18 +15,18 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import Backdrop from '@mui/material/Backdrop';
-import { useMediaQuery, useTheme } from '@mui/material';
+import { FormControl, MenuItem, Select, SelectChangeEvent, useMediaQuery, useTheme } from '@mui/material';
 import { GridContainer } from '@/components/ui/grid-container';
 import { useAlertMsgStore } from '@/store/store';
 import WithAuth from '@/components/auth/with-auth';
 import { INPUT_FIELD } from '@/constant-value/constant';
-import { validateAddress, validateEmail, validateName, validatePhoneNumber, ValidationErrors } from '@/utils/validation';
+import { validateAddress, validateEmail, validateName, validatePhoneNumber, validateRecieveStore, ValidationErrors } from '@/utils/validation';
 
 
 
 const AddressPage = () => {
 
-    const initAddress: AddressInfo = { id: 0, name: "", phoneNumber: "", email: "", recieverAddress: "", isDefaultAddress: false }
+    const initAddress: AddressInfo = { id: 0, name: "", phoneNumber: "", recieverAddress: "", recieveStore: "", recieveWay: "", isDefaultAddress: false }
 
     const [editedAddress, setEditedAddress] = useState<AddressInfo>(initAddress)
 
@@ -103,6 +103,16 @@ const AddressPage = () => {
                 }
                 break;
 
+
+            case INPUT_FIELD.RECIEVE_STORE:
+                error = validateRecieveStore(e.target.value)
+                if (error) {
+                    setErrors(oldError => ({ ...oldError, recieveStore: error as string }))
+                } else {
+                    setErrors(oldError => ({ ...oldError, recieveStore: undefined }))
+                }
+                break;
+
             case INPUT_FIELD.RECIEVER_ADDRESS:
                 error = validateAddress(e.target.value)
                 if (error) {
@@ -154,8 +164,26 @@ const AddressPage = () => {
 
     }
 
+    const handleRecieveWay = (e: SelectChangeEvent) => {
+
+        setEditedAddress(o => {
+
+            let newO: any = { ...o }
+
+            Object.getOwnPropertyNames(o).forEach(ele => {
+                if (ele === e.target.name) {
+
+                    newO[e.target.name as keyof any] = e.target.value
+                }
+            })
+            //console.log("newO ", newO)
+            return newO
+        })
+    }
+
     const addNewAddress = () => {
         console.log(editedAddress)
+        handleClose()
     }
 
     return (
@@ -225,10 +253,28 @@ const AddressPage = () => {
                                 <TextField value={editedAddress.phoneNumber} onChange={handleEditedAddress} name={INPUT_FIELD.PHONE_NUMBER} placeholder='ex: 09xxxxxxxx' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
                                 <Typography variant='caption' sx={{ color: "red" }}>{errors.phoneNumber}</Typography>
                             </ItemWrapper>
+                            
                             <ItemWrapper >
-                                <Typography variant='subtitle2' >信箱</Typography>
-                                <TextField value={editedAddress.email} onChange={handleEditedAddress} name={INPUT_FIELD.EMAIL} placeholder='ex: asbc@gmail.com' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
-                                <Typography variant='caption' sx={{ color: "red" }}>{errors.email}</Typography>
+                                <Typography variant='subtitle2' >取件方式</Typography>
+                                
+                                <FormControl fullWidth sx={{ marginTop: "10px" }} >
+                                    <Select
+                                        value={editedAddress.recieveWay}
+                                        onChange={handleRecieveWay}
+                                        size='small'
+                                        name={INPUT_FIELD.RECIEVE_WAY}
+                                        sx={{ height: "35px" }}
+                                    >
+                                        <MenuItem value="UNIMARTC2C">7-11</MenuItem>
+                                        <MenuItem value="FAMIC2C">全家</MenuItem>
+                                    </Select>
+                                </FormControl>
+
+                            </ItemWrapper>
+                            <ItemWrapper >
+                                <Typography variant='subtitle2' >取件門市</Typography>
+                                <TextField value={editedAddress.recieveStore} onChange={handleEditedAddress} name={INPUT_FIELD.RECIEVE_STORE} placeholder='ex: 台中門市' inputProps={{ sx: { height: "15px" } }}  sx={{ marginTop: "10px" }} size='small' fullWidth />
+                                <Typography variant='caption' sx={{ color: "red" }}>{errors.recieveStore}</Typography>
                             </ItemWrapper>
                             <ItemWrapper >
                                 <Typography variant='subtitle2' >收件地址</Typography>
@@ -236,10 +282,10 @@ const AddressPage = () => {
                                 <Typography variant='caption' sx={{ color: "red" }}>{errors.shippingAddress}</Typography>
                             </ItemWrapper>
 
-                            <ItemWrapper sx={{ pt: "40px" }}>
+                            <ItemWrapper sx={{ pt: "40px", pb: "20px" }}>
                                 <Stack direction={"row"} justifyContent={"space-around"}>
                                     <Button onClick={handleClose} variant='outlined'>取消</Button>
-                                    <Button variant='contained' onClick={addNewAddress}>新增</Button>
+                                    <Button variant='contained' onClick={addNewAddress}>確定</Button>
                                 </Stack>
                             </ItemWrapper>
 
@@ -278,22 +324,26 @@ const addressContent = new Map([
     ["收件人", "王大明"],
     ["連絡電話", "0945864315"],
     ["信箱", "Laopigu@gmail.com"],
+    ["取件門市", "7-11 雅典門市"],
     ["取件地址", "台中市南區三民西路377號西川一路1號"],
 ])
 
 const addressTitle = new Map([
     ["name", "收件人"],
     ["phoneNumber", "連絡電話"],
-    ["mail", "信箱"],
-    ["recieverAddress", "取件地址"],
+    ["email", "信箱"],
+    ["recieveWay", "取件方式"],
+    ["recieveStore", "取件門市"],
+    ["recieverAddress", "取件地址"]
 ])
 
 interface AddressInfo {
     id: number;
     name: string;
     phoneNumber: string;
-    email: string;
     recieverAddress: string;
+    recieveStore: string;
+    recieveWay: string;
     isDefaultAddress: boolean;
 }
 
@@ -301,8 +351,9 @@ const aContent: AddressInfo = {
     id: 1,
     name: "王大明",
     phoneNumber: "0945864315",
-    email: "Laopigu@gmail.com",
     recieverAddress: "台中市南區三民西路377號西川一路1號",
+    recieveStore: "雅典門市",
+    recieveWay: "UNIMARTC2C",
     isDefaultAddress: false
 }
 
@@ -312,6 +363,11 @@ const recieverInfoList: AddressInfo[] = [
     { ...aContent, id: 3 },
     { ...aContent, id: 4 },
 ]
+
+const recieveWayMap =new Map<string,string>([
+    ["UNIMARTC2C","7-11"],
+    ["FAMIC2C","全家"],
+])
 
 const RecieverInfo = ({ handleEditModal, changeDefaultAddress, content, isSmallScreen, isXSScreen }: RecieverInfoProps) => {
     return (
@@ -325,6 +381,25 @@ const RecieverInfo = ({ handleEditModal, changeDefaultAddress, content, isSmallS
 
                                 if (n === "isDefaultAddress" || n === "id") {
                                     return null
+                                }
+
+                                // 寄件方式
+                                if( n ==="recieveWay"){
+                                    return (
+                                        <React.Fragment key={n}>
+                                        <Grid item xs={12}>
+                                            <GridContainer
+                                                xs={5} sm={2}
+                                                columns={12}
+                                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >{addressTitle.get(n)}</Typography>}
+                                                content={
+                                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{recieveWayMap.get(content[n as keyof AddressInfo] as string)}</Typography>
+                                                }
+                                            />
+                                        </Grid>
+
+                                    </React.Fragment>
+                                    )
                                 }
 
                                 return (

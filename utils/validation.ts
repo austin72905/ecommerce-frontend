@@ -44,11 +44,22 @@ const validateAddressBase = (address: string): string | null => {
     return null;
 };
 
+const validateRecieveStoreBase = (recieveStore: string): string | null => {
+
+    const regex = /^[^/$.@&#]+$/.test(recieveStore);
+
+    if (recieveStore.length > 10 || !regex) {
+        return '門市名稱不合法 or 門市名稱不可超過10字';
+    }
+    return null;
+};
+
 const validateName = checkInputPurify(validateNameBase)
 const validateEmail = checkInputPurify(validateEmailBase)
 const validatePassword = checkInputPurify(validatePasswordBase)
 const validatePhoneNumber = checkInputPurify(validatePhoneNumberBase)
 const validateAddress = checkInputPurify(validateAddressBase)
+const validateRecieveStore = checkInputPurify(validateRecieveStoreBase)
 
 function checkInputPurify<T extends (...args: any[]) => any>(fn: T): T {
     return ((...args: Parameters<T>): ReturnType<T> => {
@@ -64,10 +75,11 @@ function checkInputPurify<T extends (...args: any[]) => any>(fn: T): T {
 export interface ValidationErrors {
     username?: string;
     email?: string;
+    recieveStore?:string;
     password?: string;
     phoneNumber?: string;
     shippingAddress?: string;
 }
 
 
-export { validateName, validateEmail, validatePassword, validatePhoneNumber, validateAddress }
+export { validateName, validateEmail, validatePassword, validatePhoneNumber, validateAddress,validateRecieveStore }
