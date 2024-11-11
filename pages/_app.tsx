@@ -70,12 +70,14 @@ export default function App({ Component, pageProps }: AppProps) {
 
           
           const user: PersonalInfomation = {
-            userId: userData.userId,
+            //userId: userData.userId,
             email: userData.email,
-            name: userData.username,
+            name: userData.username?userData.username:userData.nickName,
             birthday: userData.birthday ? userData.birthday : "",
             type: userData.type,
-            picture: userData.picture
+            picture: userData.picture,
+            phoneNumber:userData.phoneNumber,
+            sex:userData.gender
           }
           setUserInfo(user)
           

@@ -62,12 +62,14 @@ export default function AuthLogin() {
                     const userData =result.data as AuthLoginResp
                     
                     const user:PersonalInfomation={
-                        userId:userData.userInfo.userId,
+                        //userId:userData.userInfo.userId,
                         email:userData.userInfo.email,
-                        name:userData.userInfo.username,
+                        name:userData.userInfo.nickName?userData.userInfo.nickName:userData.userInfo.username,  //userData.username?userData.username:userData.nickName
                         birthday:userData.userInfo.birthday?userData.userInfo.birthday:"",
                         type:userData.userInfo.type,
-                        picture:userData.userInfo.picture
+                        picture:userData.userInfo.picture,
+                        sex:userData.userInfo.gender,
+                        phoneNumber:userData.userInfo.phoneNumber,
                     }
 
                     

@@ -1,5 +1,14 @@
 
-const validateNameBase = (username: string): string | null => {
+const validateUserNameBase = (username: string): string | null => {
+    const regex = /^[^/$.@&#]+$/;
+    if (!regex.test(username)) {
+        return '無效的用戶帳號';
+    }
+
+    return null
+}
+
+const validateNickNameBase = (username: string): string | null => {
     const regex = /^[^/$.@&#]+$/;
     if (!regex.test(username)) {
         return '無效的用戶帳號';
@@ -54,7 +63,8 @@ const validateRecieveStoreBase = (recieveStore: string): string | null => {
     return null;
 };
 
-const validateName = checkInputPurify(validateNameBase)
+const validateUserName = checkInputPurify(validateUserNameBase)
+const validateNickName = checkInputPurify(validateNickNameBase)
 const validateEmail = checkInputPurify(validateEmailBase)
 const validatePassword = checkInputPurify(validatePasswordBase)
 const validatePhoneNumber = checkInputPurify(validatePhoneNumberBase)
@@ -74,6 +84,7 @@ function checkInputPurify<T extends (...args: any[]) => any>(fn: T): T {
 
 export interface ValidationErrors {
     username?: string;
+    nickname?:string;
     email?: string;
     recieveStore?:string;
     password?: string;
@@ -82,4 +93,4 @@ export interface ValidationErrors {
 }
 
 
-export { validateName, validateEmail, validatePassword, validatePhoneNumber, validateAddress,validateRecieveStore }
+export { validateUserName,validateNickName, validateEmail, validatePassword, validatePhoneNumber, validateAddress,validateRecieveStore }

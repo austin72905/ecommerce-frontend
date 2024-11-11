@@ -69,7 +69,9 @@ export default function MainHeader() {
     const userInfo = userUserInfoStore((state) => state.userInfo)
 
     useEffect(() => {
-        if (userInfo && userInfo.userId) {
+
+        //console.log("main-header userInfo:",userInfo)
+        if (userInfo!==null) {
 
             setIsLogin(true)
 

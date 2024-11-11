@@ -20,7 +20,7 @@ import { GridContainer } from '@/components/ui/grid-container';
 import { useAlertMsgStore } from '@/store/store';
 import WithAuth from '@/components/auth/with-auth';
 import { INPUT_FIELD } from '@/constant-value/constant';
-import { validateAddress, validateEmail, validateName, validatePhoneNumber, validateRecieveStore, ValidationErrors } from '@/utils/validation';
+import { validateAddress, validateEmail, validateNickName, validatePhoneNumber, validateRecieveStore, ValidationErrors } from '@/utils/validation';
 import { OrderAddress, UserShipAddress } from '@/interfaces';
 import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';
@@ -128,11 +128,11 @@ const AddressPage = () => {
 
         switch (e.target.name as string) {
             case INPUT_FIELD.NAME:
-                error = validateName(e.target.value)
+                error = validateNickName(e.target.value)
                 if (error) {
-                    setErrors(oldError => ({ ...oldError, username: error as string }))
+                    setErrors(oldError => ({ ...oldError, nickname: error as string }))
                 } else {
-                    setErrors(oldError => ({ ...oldError, username: undefined }))
+                    setErrors(oldError => ({ ...oldError, nickname: undefined }))
                 }
                 break;
 

@@ -19,7 +19,7 @@ export default function UserMenu({anchorElement,handleCancelAnchor}:UserMenu) {
             method:'GET',
             credentials:'include'
         })
-        setAlertMsg("已成功登入")
+        setAlertMsg("已成功登出")
         setUserInfo(null)
         clearSubscribeIdList()
     }
