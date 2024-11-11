@@ -26,7 +26,7 @@ import { userUserInfoStore } from '@/store/store';
 
 
 const MyAccountPage = () => {
-
+  console.log("userInfo:","aasdasd")
   // personalInfo 的某些值從 undefined 變成了具體的值，導致非受控組件變成了受控組件
   const userInfo = userUserInfoStore((state) => state.userInfo)
  
@@ -157,14 +157,14 @@ const MyAccountPage = () => {
   // 從後端獲取資料
   useEffect(() => {
 
-    //console.log("userInfo:",userInfo)
+    console.log("userInfo:",userInfo)
     if (userInfo !== null) {
       //console.log("userInfo", userInfo)
       setPersonalInfo(userInfo)
     }
 
     // 如果是第一次渲染，跳過 fetchData 的執行
-    if (isFirstRender.current) {
+    if (isFirstRender.current && userInfo!==null) {
       isFirstRender.current = false;
       return;
     }
@@ -196,7 +196,7 @@ const MyAccountPage = () => {
           phoneNumber: data.phoneNumber === null ? "" : data.phoneNumber,
           birthday: data.birthday === null || data.birthday === undefined ? "2013/1/1" : data.birthday,
           sex: data.gender === null ? "" : data.gender,
-          type: data.type,
+          type: data.type?data.type:"",
           picture: data.picture
         }
 

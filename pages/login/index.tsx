@@ -18,30 +18,44 @@ import Image from 'next/image';
 
 
 import GoogleIcon from '/public/images/google-icon.png'
+import { INPUT_FIELD } from '@/constant-value/constant';
+import { validatePassword, validateUserName, ValidationErrors } from '@/utils/validation';
+import { ApiResponse } from '@/interfaces/api/response';
+import { RespCode } from '@/enums/resp-code';
 
 export default function Login() {
 
+    const [isRenew, setisRenew] = useState<boolean>(false)
     const router = useRouter()
 
     const toSignUp = () => {
         router.push("/signup")
     }
 
+
+    const toUserAccount = ()=>{
+        // router.replace("/user/account").then(()=>{
+        //     console.log("跳轉錄由")
+        // })
+        window.location.href="http://localhost:3000/user/account"
+
+    }
+
     //預設Oauth 完之後跳轉的頁面
-    const [redirectAfterAuth,setredirectAfterAuth]=useState("/products")
+    const [redirectAfterAuth, setredirectAfterAuth] = useState("/products")
 
-    useEffect(()=>{
-        if(router.isReady){
-            const query =router.query
+    useEffect(() => {
+        if (router.isReady) {
+            const query = router.query
 
-            const redirectUrl =query.redirect as string;
+            const redirectUrl = query.redirect as string;
 
-            if(redirectUrl){
+            if (redirectUrl) {
                 setredirectAfterAuth(redirectUrl)
             }
         }
-        
-    },[router.isReady, router.query])
+
+    }, [router.isReady, router.query])
 
     const handleCGoogleLogin = async () => {
 
@@ -54,9 +68,89 @@ export default function Login() {
         }).toString()
 
         const url = `https://accounts.google.com/o/oauth2/v2/auth?${query}`
-        window.location.href =url
-       
+        window.location.href = url
+
     }
+
+    // 驗證輸入
+    const [errors, setErrors] = useState<ValidationErrors>({});
+    const [input, setinput] = useState<Login>({ username: "", password: "" })
+
+    const handleLoginInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+
+        let error: string | null
+
+        console.log("name:", e.target.name)
+
+        switch (e.target.name as string) {
+
+            case INPUT_FIELD.USERNAME:
+                error = validateUserName(e.target.value)
+                if (error) {
+                    setErrors(oldError => ({ ...oldError, username: error as string }))
+                } else {
+                    setErrors(oldError => ({ ...oldError, username: undefined }))
+                }
+                break;
+
+            case INPUT_FIELD.PASSWORD:
+                error = validatePassword(e.target.value)
+                if (error) {
+                    setErrors(oldError => ({ ...oldError, password: error as string }))
+                } else {
+                    setErrors(oldError => ({ ...oldError, password: undefined }))
+                }
+                break;
+
+
+        }
+
+
+        setinput(info => {
+
+            let newInfo: Login = { ...info }
+
+            Object.getOwnPropertyNames(info).forEach(ele => {
+                if (ele === e.target.name) {
+                    newInfo[e.target.name as keyof Login] = e.target.value
+                }
+            })
+            //console.log("now personalInfo ", newO)
+            return newInfo
+        })
+    }
+
+
+    const login = async () => {
+       
+
+        // 判斷是否都有輸入
+        if (!Object.values(errors).every(value => value === undefined)) {
+            console.log("errors:", errors)
+            return
+        }
+
+        const result = await userLogin(input) as ApiResponse;
+
+
+        console.log("result=", result)
+
+
+        if (result.code != RespCode.SUCCESS) {
+
+            console.log(result.message)
+            return;
+        }
+
+
+        toUserAccount()
+    }
+
+    useEffect(()=>{
+        if(isRenew){
+            toUserAccount()
+        }
+    },[isRenew])
 
     return (
 
@@ -77,11 +171,12 @@ export default function Login() {
                     <Typography variant='h6' sx={{ fontWeight: 'bold' }}>會員登入</Typography>
                 </Stack>
 
-                <InputSet label='帳號' placeholder='請輸入帳號' />
+
+                <InputSet label='帳號' placeholder='請輸入帳號' name={INPUT_FIELD.USERNAME} value={input.username} errorMsg={errors.username} func={handleLoginInput} />
+
+                <InputSet label='密碼' placeholder='請輸入密碼' name={INPUT_FIELD.PASSWORD} value={input.password} errorMsg={errors.password} func={handleLoginInput} />
 
                 <Stack spacing={1} sx={{ pt: 1 }}>
-                    <Typography variant='body1' >密碼</Typography>
-                    <TextField placeholder={'請輸入密碼'} autoComplete='off' fullWidth />
                     <Stack sx={{ mt: 1 }} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                         <FormControlLabel
                             sx={{ ml: "1px" }}
@@ -93,7 +188,7 @@ export default function Login() {
                 </Stack>
 
                 <Stack spacing={1} sx={{ pt: 1 }}>
-                    <Button variant='contained' size='large' fullWidth>登入</Button>
+                    <Button variant='contained' size='large' onClick={login} fullWidth>登入</Button>
                 </Stack>
 
 
@@ -149,17 +244,44 @@ const ItemWrapper = styled(Box)({
 
 interface InputSetProps {
     label: string;
-    placeholder: string;
+    placeholder?: string;
+    disabled?: boolean;
+    name?: string;
+    value?: string;
+    errorMsg?: string;
+    func: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
-const InputSet = ({ label, placeholder }: InputSetProps) => {
+const InputSet = ({ label, placeholder, disabled, errorMsg, name, value, func }: InputSetProps) => {
 
 
     return (
         <Stack spacing={1} sx={{ pt: 1 }}>
             <Typography variant='body1' >{label}</Typography>
-            <TextField placeholder={placeholder} autoComplete='off' fullWidth />
+            <TextField value={value} placeholder={placeholder} disabled={disabled} name={name} onChange={func} autoComplete='off' fullWidth />
+            <Typography variant='caption' sx={{ color: "red" }}>{errorMsg}</Typography>
         </Stack>
     )
 
+}
+
+
+interface Login {
+    username: string;
+    password: string;
+}
+
+// 後端
+const userLogin = async (data: Login) => {
+    const response = await fetch("http://localhost:5025/User/UserLogin", {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+
+    })
+
+    return response.json();
 }

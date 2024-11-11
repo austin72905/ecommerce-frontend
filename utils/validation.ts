@@ -11,7 +11,7 @@ const validateUserNameBase = (username: string): string | null => {
 const validateNickNameBase = (username: string): string | null => {
     const regex = /^[^/$.@&#]+$/;
     if (!regex.test(username)) {
-        return '無效的用戶帳號';
+        return '無效的用戶名稱';
     }
 
     return null
@@ -29,6 +29,13 @@ const validateEmailBase = (email: string) => {
 const validatePasswordBase = (password: string): string | null => {
     if (password.length < 6) {
         return '密碼長度不能少於 6 個字符';
+    }
+    return null;
+};
+
+const validatePasswordConfirmBase = (passwordConfirm: string, password: string): string | null => {
+    if (passwordConfirm !== password) {
+        return '與密碼輸入不一致';
     }
     return null;
 };
@@ -67,6 +74,7 @@ const validateUserName = checkInputPurify(validateUserNameBase)
 const validateNickName = checkInputPurify(validateNickNameBase)
 const validateEmail = checkInputPurify(validateEmailBase)
 const validatePassword = checkInputPurify(validatePasswordBase)
+const validatePasswordConfirm = checkInputPurify(validatePasswordConfirmBase)
 const validatePhoneNumber = checkInputPurify(validatePhoneNumberBase)
 const validateAddress = checkInputPurify(validateAddressBase)
 const validateRecieveStore = checkInputPurify(validateRecieveStoreBase)
@@ -84,13 +92,14 @@ function checkInputPurify<T extends (...args: any[]) => any>(fn: T): T {
 
 export interface ValidationErrors {
     username?: string;
-    nickname?:string;
+    nickname?: string;
     email?: string;
-    recieveStore?:string;
+    recieveStore?: string;
     password?: string;
+    passowrdConfirm?: string;
     phoneNumber?: string;
     shippingAddress?: string;
 }
 
 
-export { validateUserName,validateNickName, validateEmail, validatePassword, validatePhoneNumber, validateAddress,validateRecieveStore }
+export { validateUserName, validateNickName, validateEmail, validatePassword, validatePasswordConfirm, validatePhoneNumber, validateAddress, validateRecieveStore }

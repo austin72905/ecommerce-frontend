@@ -15,17 +15,17 @@ export default function App({ Component, pageProps }: AppProps) {
   const userInfo = userUserInfoStore((state) => state.userInfo)
   const setUserInfo = userUserInfoStore((state) => state.setUserInfo)
 
-  const initializeCart=useCartStore((state)=>state.initializeCart)
-  const cartContent=useCartStore((state)=>state.cartContent)
+  const initializeCart = useCartStore((state) => state.initializeCart)
+  const cartContent = useCartStore((state) => state.cartContent)
 
 
   //檢查購物車內容
-  useEffect(()=>{
+  useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       initializeCart(JSON.parse(savedCart));
     }
-  },[])
+  }, [])
 
 
   useEffect(() => {
@@ -51,9 +51,9 @@ export default function App({ Component, pageProps }: AppProps) {
     //const hasSessionId =Cookies.get("has-session-id")
 
     const hasSessionId = cookies["has-session-id"] || null;
-    console.log('hasSessionId:',hasSessionId);
+    console.log('hasSessionId:', hasSessionId);
     if (hasSessionId) {
-      console.log('hasSessionId:',hasSessionId);
+      console.log('hasSessionId:', hasSessionId);
       //請求後端
 
       const fetchData = async () => {
@@ -62,25 +62,25 @@ export default function App({ Component, pageProps }: AppProps) {
 
           console.log("result=", result)
 
-          if(result.code!==RespCode.SUCCESS){
+          if (result.code !== RespCode.SUCCESS) {
             return;
           }
 
           const userData = result.data as UserInfo
 
-          
+
           const user: PersonalInfomation = {
             //userId: userData.userId,
             email: userData.email,
-            name: userData.username?userData.username:userData.nickName,
+            name: userData.nickName ? userData.nickName : userData.username,
             birthday: userData.birthday ? userData.birthday : "",
             type: userData.type,
             picture: userData.picture,
-            phoneNumber:userData.phoneNumber,
-            sex:userData.gender
+            phoneNumber: userData.phoneNumber ? userData.phoneNumber : "",
+            sex: userData.gender ? userData.gender : ""
           }
           setUserInfo(user)
-          
+
 
         } catch (error) {
           console.error('Error fetching data:', error)
@@ -102,12 +102,12 @@ export default function App({ Component, pageProps }: AppProps) {
   const getUserInfo = async () => {
 
 
-   
+
     const url = `http://localhost:5025/User/GetUserInfo`
 
     const response = await fetch(url, {
       method: 'GET',
-      credentials:'include'
+      credentials: 'include'
     })
 
 
