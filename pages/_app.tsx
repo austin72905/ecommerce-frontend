@@ -7,6 +7,8 @@ import { useEffect } from "react";
 import { PersonalInfomation } from "./user/account";
 import { ApiResponse } from "@/interfaces/api/response";
 import { RespCode } from "@/enums/resp-code";
+import { Cart, CartItem, mergeCartContent } from "./cart";
+import { ProductInfomationCount } from "@/interfaces";
 
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -23,8 +25,12 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
+
       initializeCart(JSON.parse(savedCart));
     }
+
+
+
   }, [])
 
 
@@ -97,6 +103,57 @@ export default function App({ Component, pageProps }: AppProps) {
 
   }, [])
 
+
+  useEffect(() => {
+    // 登陸狀態
+    if (userInfo) {
+
+
+      const mergeCartenthData = async (content: ProductInfomationCount[]) => {
+        try {
+          //console.log("content:", content)
+          const cartItems = content.map(item => {
+            const cartItem: CartItem = {
+              productVariantId: item.selectedVariant?.variantID,
+              quantity: item.count
+            }
+
+            return cartItem;
+          })
+          const cart: Cart = {
+            items: cartItems
+          }
+          const result = await mergeCartContent(cart) as ApiResponse;
+
+          //console.log("mergeCartContent _app result=", result)
+
+          if (result.code !== RespCode.SUCCESS) {
+            return;
+          }
+
+          const data =result.data as ProductInfomationCount[]          
+
+          // 同步到 store
+          if(data){
+            initializeCart(data)
+          }
+        
+
+        } catch (error) {
+          console.error('Error fetching data:', error)
+        }
+      }
+
+
+      const savedCart = localStorage.getItem('cart');
+
+      if (savedCart) {
+
+        mergeCartenthData(JSON.parse(savedCart));
+      }
+
+    }
+  }, [userInfo])
 
 
   const getUserInfo = async () => {

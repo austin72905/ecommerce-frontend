@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -32,6 +32,8 @@ import { ProductInfomationCount } from '@/interfaces';
 import { Card, CardActions, CardContent, CardMedia, useMediaQuery, useTheme } from '@mui/material';
 import Image from 'next/image';
 import { DefaultScreenCartContent, SmallScreenViewCartContent } from '@/components/cart/cart-content';
+import { ApiResponse } from '@/interfaces/api/response';
+import { RespCode } from '@/enums/resp-code';
 
 
 export default function Cart() {
@@ -45,6 +47,8 @@ export default function Cart() {
     const cartContent = useCartStore((state) => state.cartContent)
 
     const userInfo = userUserInfoStore((state) => state.userInfo)
+
+    const initializeCart = useCartStore((state) => state.initializeCart)
 
     const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
 
@@ -77,20 +81,91 @@ export default function Cart() {
         toCheckout()
     }
 
-    //清除計時器
+    //清除計時器 
     useEffect(() => {
 
         return () => {
             if (timeoutId) {
                 clearTimeout(timeoutId)
             }
+
         }
     }, [])
+
+
+    // 將本地資料同步到資料庫
+    /*
+    
+
+    cartContent  取的是它在 useEffect 初次掛載時的值。即使後來更新了 cartContent，這段 useEffect 的返回函數仍會使用其掛載時的 cartContent 值，因為 useEffect 中沒有依賴項。
+    
+    */
+
+
+    // 使用 useRef 持續追踪最新的 cartContent
+    const cartContentRef = useRef(cartContent);
+
+    // 每次 cartContent 變化時更新 cartContentRef
+    useEffect(() => {
+        cartContentRef.current = cartContent;
+    }, [cartContent]);
+
+
+    useEffect(() => {
+
+        return () => {
+            //console.log("content:cartContent", cartContent) // 確實，會發現cartcontent 會保持初次掛載時拿到的值
+            if (userInfo) {
+
+                const mergeCartenthData = async (content: ProductInfomationCount[]) => {
+                    try {
+                        //console.log("content:", content)
+                        const cartItems = content.map(item => {
+                            const cartItem: CartItem = {
+                                productVariantId: item.selectedVariant?.variantID,
+                                quantity: item.count
+                            }
+
+                            return cartItem;
+                        })
+                        const cart: Cart = {
+                            items: cartItems,
+                            isCover: true
+                        }
+                        const result = await mergeCartContent(cart) as ApiResponse;
+
+                        //console.log("mergeCartContent result=", result)
+
+                        if (result.code !== RespCode.SUCCESS) {
+                            return;
+                        }
+
+                        const data = result.data as ProductInfomationCount[]
+
+
+
+
+                    } catch (error) {
+                        console.error('Error fetching data:', error)
+                    }
+                }
+
+
+
+
+                mergeCartenthData(cartContentRef.current);
+
+            }
+
+        }
+    }, [])
+
+
 
     const theme = useTheme()
     const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
 
-   
+
     return (
         <Container sx={{ border: "0px solid" }} maxWidth='xl'>
             <Grid container columns={8} sx={{ border: "0px solid" }} spacing={3}>
@@ -186,3 +261,29 @@ export interface ProductData {
     name: string;
     price: number;
 }
+
+export interface CartItem {
+    productVariantId?: number;
+    quantity: number;
+}
+
+export interface Cart {
+    items: CartItem[];
+    isCover?: boolean;
+}
+
+//後端請求
+export const mergeCartContent = async (data: Cart) => {
+    const response = await fetch("http://localhost:5025/Cart/MergeCartContent", {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+
+    return response.json();
+}
+
+

@@ -1,4 +1,4 @@
-import { useAlertMsgStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
+import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
@@ -10,6 +10,7 @@ export default function UserMenu({anchorElement,handleCancelAnchor}:UserMenu) {
 
     const setUserInfo = userUserInfoStore((state) => state.setUserInfo)
     const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
+    const initializeCart = useCartStore((state) => state.initializeCart)
 
 
     const clearSubscribeIdList=useSubscribeListStore((state)=>state.clearSubscribeIdList)
@@ -22,6 +23,9 @@ export default function UserMenu({anchorElement,handleCancelAnchor}:UserMenu) {
         setAlertMsg("已成功登出")
         setUserInfo(null)
         clearSubscribeIdList()
+        // 登出時將 購物車清掉，因為登入時，已經加入的購物車
+        localStorage.removeItem('cart');
+        initializeCart([])
     }
 
     return (

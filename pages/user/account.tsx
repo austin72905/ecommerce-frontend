@@ -26,7 +26,7 @@ import { userUserInfoStore } from '@/store/store';
 
 
 const MyAccountPage = () => {
-  console.log("userInfo:","aasdasd")
+
   // personalInfo 的某些值從 undefined 變成了具體的值，導致非受控組件變成了受控組件
   const userInfo = userUserInfoStore((state) => state.userInfo)
  
