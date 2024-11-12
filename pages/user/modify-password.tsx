@@ -7,23 +7,61 @@ import Typography from '@mui/material/Typography';
 import styled from '@mui/system/styled';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import { validatePassword, validatePasswordConfirm, ValidationErrors } from '@/utils/validation';
+import { INPUT_FIELD } from '@/constant-value/constant';
+import { ApiResponse } from '@/interfaces/api/response';
+import { RespCode } from '@/enums/resp-code';
+import { useAlertMsgStore } from '@/store/store';
 
-const ModifyPasswordPage=()=> {
+const ModifyPasswordPage = () => {
 
-    const initInputData: VerifyPassword = { oldPassword: "", newPassword: "", confirmNewPassword: "" }
-    const [inputData, setInputData] = useState<VerifyPassword>(initInputData);
+    const initInputData: ModifyPassword = { oldPassword: "", password: "", passwordConfirm: "" }
+    const [inputData, setInputData] = useState<ModifyPassword>(initInputData);
 
+
+    const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
+
+
+    // 紀錄 輸入是否合法
+    const [errors, setErrors] = useState<ValidationErrors>({});
 
     const handleInputData = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 
 
+
+        let error: string | null
+
+        switch (e.target.name as string) {
+
+
+            case INPUT_FIELD.PASSWORD:
+                error = validatePassword(e.target.value)
+
+                if (error) {
+                    setErrors(oldError => ({ ...oldError, password: error as string }))
+                } else {
+
+                    setErrors(oldError => ({ ...oldError, password: undefined }))
+                }
+                break;
+
+            case INPUT_FIELD.PASSWORD_CONFIRM:
+                error = validatePasswordConfirm(e.target.value, inputData.password)
+                if (error) {
+                    setErrors(oldError => ({ ...oldError, passowrdConfirm: error as string }))
+                } else {
+                    setErrors(oldError => ({ ...oldError, passowrdConfirm: undefined }))
+                }
+                break;
+        }
+
         setInputData(o => {
 
-            let newO: VerifyPassword = { ...o }
+            let newO: ModifyPassword = { ...o }
 
             Object.getOwnPropertyNames(o).forEach(ele => {
                 if (ele === e.target.name) {
-                    newO[e.target.name as keyof VerifyPassword] = e.target.value
+                    newO[e.target.name as keyof ModifyPassword] = e.target.value
                 }
             })
             //console.log("newO ", newO)
@@ -31,48 +69,24 @@ const ModifyPasswordPage=()=> {
         })
     }
 
-    const verifyInput = () => {
-        Object.getOwnPropertyNames(inputData).forEach(ele => {
-            if (!inputData[ele as keyof VerifyPassword]) {
-                console.log(`${ele} 輸入值不可為空`)
-            }
-        })
-        let regu = "^[ ]+$"
-        let re=new RegExp(regu)
-        
-        if(inputData.oldPassword==="" || re.test(inputData.oldPassword)){
-            console.log("舊密碼不得為空")
-            return
-        }
-        if(inputData.newPassword==="" || re.test(inputData.newPassword)){
-            console.log("新密碼不得為空")
-            return
-        }
-        if(inputData.confirmNewPassword==="" || re.test(inputData.confirmNewPassword)){
-            console.log("確認密碼不得為空")
-            return
-        }
 
-        if(inputData.oldPassword===inputData.newPassword){
-            console.log("新舊密碼不得相同")
-            return
+
+    const modifyPassword = async () => {
+        console.log("inputData:", inputData)
+        const result = await modifyPasswordToBackend(inputData) as ApiResponse;
+
+
+
+        if (result == null || result.code != RespCode.SUCCESS) {
+            setAlertMsg(result.message)
+            console.log(result.message)
+            return;
         }
+        setAlertMsg("修改密碼成功")
 
-        if(inputData.newPassword.length<8){
-            console.log("請輸入8個字元以上的英文字母及數字，不可使用特殊符號。")
-            return
-        }
+        // 重製 輸入的密碼
+        setInputData(initInputData)
 
-        if(inputData.newPassword!==inputData.confirmNewPassword){
-            console.log("確認密碼輸入錯誤")
-            return
-        }
-
-        console.log("修改成功")
-    }
-
-    const modifyPassword = () => {
-        verifyInput()
     }
 
 
@@ -85,9 +99,9 @@ const ModifyPasswordPage=()=> {
                     <Typography variant='h6' sx={{ fontWeight: "bold" }}>更改密碼</Typography>
                 </ItemWrapper>
 
-                <InputSet func={handleInputData} name="oldPassword" label='舊密碼' placeholder='請輸入舊密碼' />
-                <InputSet func={handleInputData} name="newPassword" label='新密碼' placeholder='請輸入新密碼' helperText="請輸入8個字元以上的英文字母及數字，不可使用特殊符號。" />
-                <InputSet func={handleInputData} name="confirmNewPassword" label='新密碼確認' placeholder='請再次確認輸入新密碼' />
+                <InputSet func={handleInputData} name="oldPassword" value={inputData.oldPassword} label='舊密碼' placeholder='請輸入舊密碼' />
+                <InputSet func={handleInputData} label='新密碼' placeholder='請輸入新密碼' name={INPUT_FIELD.PASSWORD} value={inputData.password} errorMsg={errors.password} helperText="請輸入8個字元以上的英文字母及數字，不可使用特殊符號。" />
+                <InputSet func={handleInputData} label='新密碼確認' name={INPUT_FIELD.PASSWORD_CONFIRM} value={inputData.passwordConfirm} errorMsg={errors.passowrdConfirm} placeholder='請再次確認輸入新密碼' />
 
                 <ItemWrapper sx={{ pt: 5 }}>
                     <Button onClick={modifyPassword} variant="contained" sx={{ color: "white" }}>確認修改</Button>
@@ -98,7 +112,7 @@ const ModifyPasswordPage=()=> {
 }
 
 
-export default  ModifyPasswordPage;
+export default ModifyPasswordPage;
 
 const ItemWrapper = styled(Box)({
     paddingTop: "8px",
@@ -106,29 +120,47 @@ const ItemWrapper = styled(Box)({
     paddingRight: "32px"
 })
 
-interface VerifyPassword {
+interface ModifyPassword {
     oldPassword: string;
-    newPassword: string;
-    confirmNewPassword: string;
+    password: string;
+    passwordConfirm: string;
 }
 
 interface InputSetProps {
     label: string;
     placeholder: string;
     helperText?: string;
+    errorMsg?: string;
     value?: string;
     name?: string;
     func?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 }
 
-const InputSet = ({ label, placeholder, helperText, name, value, func }: InputSetProps) => {
+const InputSet = ({ label, placeholder, helperText, name, errorMsg, value, func }: InputSetProps) => {
 
 
     return (
         <Stack spacing={1} sx={{ pt: 1, px: 4 }}>
             <Typography variant='caption' >{label}</Typography>
-            <TextField name={name} onChange={func} value={value} helperText={helperText} placeholder={placeholder} inputProps={{ sx: { height: "15px" } }} size='small' />
+            <TextField name={name} onChange={func} value={value} helperText={helperText} placeholder={placeholder} inputProps={{ sx: { height: "15px" } }} size='small' autoComplete='off' />
+            <Typography variant='caption' sx={{ color: "red" }}>{errorMsg}</Typography>
         </Stack>
     )
 
+}
+
+
+// 後端請求
+const modifyPasswordToBackend = async (data: ModifyPassword) => {
+
+    const response = await fetch("http://localhost:5025/User/ModifyPassword", {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+
+    return response.json();
 }
