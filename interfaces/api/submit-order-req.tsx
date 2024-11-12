@@ -4,6 +4,9 @@ export interface SubmitOrderReq {
     shippingAddress: string
     receiverName: string
     receiverPhone: string
+    email?:string
+    recieveStore:string
+    recieveWay:string
 }
 
 

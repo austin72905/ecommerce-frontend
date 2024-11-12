@@ -21,7 +21,7 @@ export default function RecieverInfomation({ recieverInfo, handleCheckRecieverIn
                 </Stack>
                 <Stack sx={{ m: "30px" }} direction={"row"} spacing={"10px"} alignItems={"center"}>
                     <Typography sx={{ mr: "10px", minWidth: "30px" }} variant='caption' >信箱</Typography>
-                    <TextField value={"ladoyymm456@mail.com"} name="mail" disabled inputProps={{ sx: { height: "15px" } }} sx={{ my: "10px" }} size='small' fullWidth />
+                    <TextField value={recieverInfo.email} name="mail" disabled inputProps={{ sx: { height: "15px" } }} sx={{ my: "10px" }} size='small' fullWidth />
                 </Stack>
 
 

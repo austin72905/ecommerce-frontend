@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { Button, useMediaQuery, useTheme } from '@mui/material';
 
-import { useAlertMsgStore, useCartStore } from '@/store/store';
+import { useAlertMsgStore, useCartStore, userUserInfoStore } from '@/store/store';
 import { CheckoutInfomation, RecievePlaceInfo, RecieverInfo } from '@/interfaces';
 import { DefaultScreenCartContent, SmallScreenViewCartContent } from '@/components/cart/cart-content';
 
@@ -42,6 +42,8 @@ const CheckOut = () => {
     const [recieverInfo, setRecieverInfo] = useState<RecieverInfo>({ name: "王大明", phoneNumber: "0954678111",email:"" })
 
     const [recieveStoreInfo, setRecieveStoreInfo] = useState<RecievePlaceInfo>({ recieveWay: "UNIMARTC2C", recieveStore: "雅典", recieveAddress: "台中市南區三民西路377號西川一路1號" })
+
+    const userInfo = userUserInfoStore((state) => state.userInfo)
 
 
     const handleOrderInfo = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -179,6 +181,9 @@ const CheckOut = () => {
             shippingAddress:recieveStoreInfo.recieveAddress,
             receiverName:recieverInfo.name,
             receiverPhone:recieverInfo.phoneNumber,
+            recieveStore:recieveStoreInfo.recieveStore,
+            recieveWay:recieveStoreInfo.recieveWay,
+            email:userInfo?.email,
             items:orderItems
         }
 
