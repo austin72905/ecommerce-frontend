@@ -424,7 +424,10 @@ const AddressPage = () => {
 export default WithAuth(AddressPage);
 
 
-
+const recieveWayMap = new Map<string, string>([
+    ["UNIMARTC2C", "7-11"],
+    ["FAMIC2C", "全家"],
+])
 
 
 const ItemWrapper = styled(Box)({
@@ -489,10 +492,7 @@ const recieverInfoList: AddressInfo[] = [
     { ...aContent, id: 4 },
 ]
 
-const recieveWayMap = new Map<string, string>([
-    ["UNIMARTC2C", "7-11"],
-    ["FAMIC2C", "全家"],
-])
+
 
 // 後端請求
 const addShippingAddress = async (data: UserShipAddress) => {

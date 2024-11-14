@@ -2,7 +2,7 @@ import { RecievePlaceInfo } from "@/interfaces";
 import { Button, FormControl, FormControlLabel, Grid, Paper, Radio, RadioGroup, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 
-export default function CargoWay({ recieveStoreInfo, handleRecieveWay,selectShipmentStoreMap }: CargoWayProps) {
+export default function CargoWay({ recieveStoreInfo, handleRecieveWay,handleAddressDrawerOpen,selectShipmentStoreMap }: CargoWayProps) {
 
 
     return (
@@ -26,8 +26,9 @@ export default function CargoWay({ recieveStoreInfo, handleRecieveWay,selectShip
 
             </Paper>
 
-            <Stack direction={"row"} sx={{ mt: "15px" }}>
+            <Stack direction={"row"} spacing={2} sx={{ mt: "15px" }}>
                 <Button variant='contained' sx={{ backgroundColor: "#EFB878", color: "black", "&:hover": { backgroundColor: "#EFB878" } }} onClick={selectShipmentStoreMap}>選擇門市</Button>
+                <Button variant='outlined' onClick={handleAddressDrawerOpen}>選擇常用地址</Button>
             </Stack>
 
             <Stack spacing={"5px"} sx={{ mt: "15px" }}>
@@ -52,6 +53,7 @@ interface CargoWayProps {
     recieveStoreInfo: RecievePlaceInfo;
     handleRecieveWay: (e: React.ChangeEvent<HTMLInputElement>) => void
     selectShipmentStoreMap: () => Promise<void>
+    handleAddressDrawerOpen:()=>void
 }
 
 

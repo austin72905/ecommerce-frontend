@@ -5,10 +5,10 @@ import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { Button, useMediaQuery, useTheme } from '@mui/material';
+import { Button, Paper, SwipeableDrawer, useMediaQuery, useTheme } from '@mui/material';
 
 import { useAlertMsgStore, useCartStore, userUserInfoStore } from '@/store/store';
-import { CheckoutInfomation, RecievePlaceInfo, RecieverInfo } from '@/interfaces';
+import { CheckoutInfomation, RecievePlaceInfo, RecieverInfo, UserShipAddress } from '@/interfaces';
 import { DefaultScreenCartContent, SmallScreenViewCartContent } from '@/components/cart/cart-content';
 
 
@@ -25,10 +25,12 @@ import { ApiResponse } from '@/interfaces/api/response';
 import { PaymentRequestData } from '@/interfaces/api/payment-request-data';
 import { RespCode } from '@/enums/resp-code';
 import { OrderItem, SubmitOrderReq } from '@/interfaces/api/submit-order-req';
+import { GridContainer } from '@/components/ui/grid-container';
 
 
 const CheckOut = () => {
 
+    const userInfo = userUserInfoStore((state) => state.userInfo)
     const theme = useTheme()
     const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
 
@@ -39,11 +41,45 @@ const CheckOut = () => {
 
     const [orderInfo, setOrderInfo] = useState<RecieverInfo>({ name: "王大明", phoneNumber: "0954678111", email: "" })
 
-    const [recieverInfo, setRecieverInfo] = useState<RecieverInfo>({ name: "王大明", phoneNumber: "0954678111", email: "" })
+    const [recieverInfo, setRecieverInfo] = useState<RecieverInfo>({ name:  userInfo?.name ? userInfo.name : "" , phoneNumber: userInfo?.phoneNumber ? userInfo.phoneNumber : "" , email: userInfo ? userInfo.email : "" })
 
     const [recieveStoreInfo, setRecieveStoreInfo] = useState<RecievePlaceInfo>({ recieveWay: "UNIMARTC2C", recieveStore: "雅典", recieveAddress: "台中市南區三民西路377號西川一路1號" })
 
-    const userInfo = userUserInfoStore((state) => state.userInfo)
+    const [userShippingAddress, setuserShippingAddress] = useState<UserShipAddress[]>([])
+
+    const [addressDrawer, setaddressDrawer] = useState(false)
+    useEffect(() => {
+        console.log("userShippingAddress:", userShippingAddress)
+
+    }, [userShippingAddress])
+
+    const handleAddressDrawerOpen = () => {
+        setaddressDrawer(true)
+    }
+
+    const handleAddressDrawerClose = () => {
+        setaddressDrawer(false)
+    }
+
+    const selectShippingAddress = (addressInfo: UserShipAddress) => {
+        setRecieveStoreInfo(info => {
+            return {
+                ...info,
+                recieveWay: addressInfo.recieveWay,
+                recieveStore: addressInfo.recieveStore,
+                recieveAddress: addressInfo.addressLine
+            }
+        })
+
+        setRecieverInfo(info => {
+            return {
+                ...info,
+                name: addressInfo.recipientName,
+                phoneNumber: addressInfo.phoneNumber
+            }
+        })
+        handleAddressDrawerClose()
+    }
 
 
     const handleOrderInfo = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -109,27 +145,92 @@ const CheckOut = () => {
 
 
     const router = useRouter()
+
     useEffect(() => {
+        if (!router.isReady) return;
+
         const query = router.query
         const storeName = query.CVSStoreName as string
         const storeAddress = query.CVSAddress as string
         const storeType = query.LogisticsSubType as string
 
-        setRecieveStoreInfo(store => {
-            return {
-                recieveWay: storeType ? storeType : store.recieveWay,
-                recieveStore: storeName,
-                recieveAddress: storeAddress
+        // 沒有 querystring
+        if (Object.keys(router.query).length === 0) {
+            const fetchData = async () => {
+                try {
+                    const result = await getUserShippingAddress() as ApiResponse;
+                    console.log("getUserShippingAddress result=", result)
+
+
+                    if (result.code != RespCode.SUCCESS) {
+
+                        console.log("獲取數據失敗")
+                        return;
+                    }
+
+
+                    if (result.data == null) {
+                        console.log("獲取數據失敗")
+                        return;
+                    }
+
+
+                    const data = result.data as UserShipAddress[]
+
+                    console.log("data:", data)
+
+                    // 如果一個常用地址都沒有就跳過了
+                    if (data.length > 0) {
+
+                        setuserShippingAddress(data)
+
+                        const isDefaultAddress = data.find(ua => ua.isDefault == true) ? data.find(ua => ua.isDefault == true) as UserShipAddress : data[0] as UserShipAddress
+
+                        setRecieveStoreInfo(info => {
+                            return {
+                                ...info,
+                                recieveWay: isDefaultAddress.recieveWay,
+                                recieveStore: isDefaultAddress.recieveStore,
+                                recieveAddress: isDefaultAddress.addressLine
+                            }
+                        })
+
+                    }
+
+
+
+
+
+                } catch (error) {
+                    console.error('Error fetching data:', error)
+                }
             }
-        })
+
+            fetchData()
+        } else {
+            setRecieveStoreInfo(store => {
+                return {
+                    recieveWay: storeType ? storeType : store.recieveWay,
+                    recieveStore: storeName,
+                    recieveAddress: storeAddress
+                }
+            })
+        }
+
+
     }, [router.isReady])
+
+
+    useEffect(() => {
+        console.log("recieveStoreInfo:", recieveStoreInfo)
+    }, [recieveStoreInfo])
 
 
     //計算總金額
     useEffect(() => {
 
         let totalPrice = 0
-        console.log("cartContent",cartContent)
+        console.log("cartContent", cartContent)
         cartContent.forEach(cartItem => {
             let price = cartItem.selectedVariant ? cartItem.selectedVariant?.price : 0
             totalPrice += price * cartItem.count
@@ -140,6 +241,9 @@ const CheckOut = () => {
         })
 
     }, [cartContent])
+
+
+
 
 
     //電子地圖
@@ -292,6 +396,7 @@ const CheckOut = () => {
                         recieveStoreInfo={recieveStoreInfo}
                         handleRecieveWay={handleRecieveWay}
                         selectShipmentStoreMap={selectShipmentStoreMap}
+                        handleAddressDrawerOpen={handleAddressDrawerOpen}
                     />
 
                 </Grid>
@@ -352,12 +457,119 @@ const CheckOut = () => {
                 </Grid>
             </Grid>
 
+            <SwipeableDrawer
+                anchor="bottom"
+                open={addressDrawer}
+                onClose={handleAddressDrawerClose}
+                onOpen={handleAddressDrawerOpen}
+            >
+                <Container>
+                    {userShippingAddress.map((content, index) => (
+                        <Paper sx={{ boxShadow: "none", mx: 1 }} key={content.addressId}>
+                            <Grid container columns={12} sx={{ p: 4 }} >
+                                <Grid item xs={12} sm={9} md={9} >
+                                    <Grid container columns={12} spacing={1}>
+
+                                        <Grid item xs={12}>
+                                            <GridContainer
+                                                xs={5} sm={2}
+                                                columns={12}
+                                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >收件人</Typography>}
+                                                content={
+                                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.recipientName}</Typography>
+                                                }
+                                            />
+                                        </Grid>
+
+                                        <Grid item xs={12}>
+                                            <GridContainer
+                                                xs={5} sm={2}
+                                                columns={12}
+                                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >連絡電話</Typography>}
+                                                content={
+                                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.phoneNumber}</Typography>
+                                                }
+                                            />
+                                        </Grid>
+
+                                        <Grid item xs={12}>
+                                            <GridContainer
+                                                xs={5} sm={2}
+                                                columns={12}
+                                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >取件地址</Typography>}
+                                                content={
+                                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.addressLine}</Typography>
+                                                }
+                                            />
+                                        </Grid>
+
+                                        <Grid item xs={12}>
+                                            <GridContainer
+                                                xs={5} sm={2}
+                                                columns={12}
+                                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >取件門市</Typography>}
+                                                content={
+                                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.recieveStore}</Typography>
+                                                }
+                                            />
+                                        </Grid>
+
+                                        <Grid item xs={12}>
+                                            <GridContainer
+                                                xs={5} sm={2}
+                                                columns={12}
+                                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >取件方式</Typography>}
+                                                content={
+                                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{recieveWayMap.get(content.recieveWay as string)}</Typography>
+                                                }
+                                            />
+                                        </Grid>
+
+                                    </Grid>
+                                </Grid>
+
+                                <Grid item xs={12} sm={3} md={3} sx={{ border: "0px solid #d9d9d9" }}>
+                                    <Stack sx={{ mt: 5, border: "1px solid #d9d9d9" }}>
+                                        <Button onClick={() => { selectShippingAddress(content) }}>選擇</Button>
+                                    </Stack>
+
+                                </Grid>
+
+
+
+                            </Grid>
+
+                        </Paper>
+                    ))}
+                </Container>
+
+
+            </SwipeableDrawer>
+
 
         </Container>
 
     )
 }
 
+const recieveWayMap = new Map<string, string>([
+    ["UNIMARTC2C", "7-11"],
+    ["FAMIC2C", "全家"],
+])
+
+
+// 後端
+const getUserShippingAddress = async () => {
+    const response = await fetch("http://localhost:5025/User/GetUserShippingAddress", {
+        method: 'GET',
+        credentials: 'include',
+
+    })
+
+    return response.json();
+}
+
 
 export default WithAuth(CheckOut);
+
 
