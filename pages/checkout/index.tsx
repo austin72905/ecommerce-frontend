@@ -34,7 +34,7 @@ const CheckOut = () => {
     const theme = useTheme()
     const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
 
-    const initCheckoutInfomation: CheckoutInfomation = { productPrice: 0, cargoPrice: 60, totalPrice: 0, payWay: "銀行付款" }
+    const initCheckoutInfomation: CheckoutInfomation = { productPrice: 0, cargoPrice: 60, totalPrice: 0, payWay: "綠界支付" }
 
     const [checkoutInfomation, setCheckoutInfomation] = useState<CheckoutInfomation>(initCheckoutInfomation)
 

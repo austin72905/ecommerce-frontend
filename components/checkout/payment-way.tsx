@@ -11,7 +11,7 @@ export default function PaymentWay() {
                     <Grid item xs={8} >
                         <FormControl sx={{ width: "100%" }}>
                             <RadioGroup sx={{ mx: "0px", my: "0px", border: "0px solid #d9d9d9" }}>
-                                <FormControlLabel sx={{ backgroundColor: "#d9d9d9", mx: "0px", my: "0px", border: "1px solid #d9d9d9" }} value={"銀行匯款"} control={<Radio disabled checked sx={{ color: "#D9D9D9" }} />} label="銀行匯款" />
+                                <FormControlLabel sx={{ backgroundColor: "#d9d9d9", mx: "0px", my: "0px", border: "1px solid #d9d9d9" }} value={"綠界支付"} control={<Radio disabled checked sx={{ color: "#D9D9D9" }} />} label="綠界支付" />
 
 
                             </RadioGroup>
