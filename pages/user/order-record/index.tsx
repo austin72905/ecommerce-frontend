@@ -392,7 +392,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                                                         <Box sx={{ display: "flex", flexDirection: "row"}}>
                                                                                             <Stack sx={{ alignItems: "end" }} spacing={3}>
 
-                                                                                                <Typography>NT${item.product.price}</Typography>
+                                                                                                <Typography>NT${item.selectedVariant?.price}</Typography>
                                                                                             </Stack>
                                                                                         </Box>
 

@@ -3,22 +3,23 @@ import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 
-export default function UserMenu({anchorElement,handleCancelAnchor}:UserMenu) {
+export default function UserMenu({ anchorElement, handleCancelAnchor }: UserMenu) {
 
 
     const userMenuOpen = Boolean(anchorElement)
 
+    const userInfo = userUserInfoStore((state) => state.userInfo)
     const setUserInfo = userUserInfoStore((state) => state.setUserInfo)
     const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
     const initializeCart = useCartStore((state) => state.initializeCart)
 
 
-    const clearSubscribeIdList=useSubscribeListStore((state)=>state.clearSubscribeIdList)
-    const handleLogout=async()=>{
+    const clearSubscribeIdList = useSubscribeListStore((state) => state.clearSubscribeIdList)
+    const handleLogout = async () => {
         console.log("logout")
-        await fetch("http://localhost:5025/User/UserLogout",{
-            method:'GET',
-            credentials:'include'
+        await fetch("http://localhost:5025/User/UserLogout", {
+            method: 'GET',
+            credentials: 'include'
         })
         setAlertMsg("已成功登出")
         setUserInfo(null)
@@ -39,9 +40,16 @@ export default function UserMenu({anchorElement,handleCancelAnchor}:UserMenu) {
             <MenuItem component={Link} href="/user/subscribe-list" sx={{ border: "0px solid black" }}>
                 <Typography variant='body2'>我的收藏</Typography>
             </MenuItem>
-            <MenuItem component={Link} href="/user/modify-password">
-                <Typography variant='body2'>修改密碼</Typography>
-            </MenuItem>
+
+            {
+                userInfo?.type == "google-login" ? null
+                    :
+                    <MenuItem component={Link} href="/user/modify-password">
+                        <Typography variant='body2'>修改密碼</Typography>
+                    </MenuItem>
+
+            }
+
             <MenuItem component={Link} href="/user/addressed">
                 <Typography variant='body2'>常用地址</Typography>
             </MenuItem>
@@ -53,6 +61,6 @@ export default function UserMenu({anchorElement,handleCancelAnchor}:UserMenu) {
 }
 
 interface UserMenu {
-    anchorElement:HTMLElement|null;
-    handleCancelAnchor:()=>void;
+    anchorElement: HTMLElement | null;
+    handleCancelAnchor: () => void;
 }

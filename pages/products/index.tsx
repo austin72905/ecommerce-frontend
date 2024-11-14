@@ -137,6 +137,32 @@ export default function ProductsPage({ products }: ProductsPageProps) {
         handleModalOpen()
     }
 
+    const getLowestPrice = (product: ProductInfomation)=>{
+        const priceList=product.variants.map(v=>v.price).sort((a, b) => a - b)
+        return priceList[0]
+        
+
+    }
+
+    const getHighstPrice = (product: ProductInfomation)=>{
+        const priceList=product.variants.map(v=>v.price).sort((a, b) => a - b)
+        return priceList[priceList.length-1]
+        
+
+    }
+
+
+    const getLowestDiscountPrice = (product: ProductInfomation)=>{
+        const priceList=product.variants
+                .filter(v=>v.discountPrice!==null)
+                .map(v => v.discountPrice as number)
+                .sort((a, b) => a - b)
+
+        console.log("priceList:",priceList)
+        return priceList[0]
+        
+    }
+
 
     return (
         <Box sx={{ p: 2 }}>
@@ -176,15 +202,15 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                 <Stack spacing={"15px"}>
                                     <Typography sx={{ minHeight: { xs: "48px", sm: "unset" }, fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.product.productId) }}>{product.product.title}</Typography>
                                     {
-                                        product.product.discountPrice ?
+                                        product.product.variants.filter(v=>v.discountPrice) ?
                                             <Stack direction={"row"} spacing={"15px"}>
-                                                <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.product.price}</Typography>
-                                                <Typography sx={{ color: "#ef6060" }}>${product.product.discountPrice}</Typography>
+                                                <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${getHighstPrice(product.product)}</Typography>
+                                                <Typography sx={{ color: "#ef6060" }}>${getLowestDiscountPrice(product.product)}</Typography>
                                             </Stack>
 
                                             :
                                             <Stack direction={"row"} spacing={"15px"}>
-                                                <Typography variant="subtitle2">定價NT${product.product.price}</Typography>
+                                                <Typography variant="subtitle2">定價NT${getLowestPrice(product.product)}</Typography>
                                             </Stack>
 
                                     }

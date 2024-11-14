@@ -39,7 +39,7 @@ export interface OrderInfomation {
 export interface CheckoutInfomation {
     productPrice: number;
     cargoPrice: number;
-    titlePrice: number;
+    totalPrice: number;
     payWay: string;
 }
 

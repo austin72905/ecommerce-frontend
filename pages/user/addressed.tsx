@@ -70,7 +70,7 @@ const AddressPage = () => {
 
     const [isRenew, setisRenew] = useState<boolean>(false)
 
-    const [defaultAddressList, setDefaultAddressList] = useState(recieverInfoList)
+    const [defaultAddressList, setDefaultAddressList] = useState<AddressInfo[]>([])
     // 從後端獲取常用地址
     useEffect(() => {
 

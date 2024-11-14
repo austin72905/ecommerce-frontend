@@ -51,13 +51,20 @@ export default function OrderInfo({ orderInfo,goToProductDetail }: OrderInfoProp
                                             <Box sx={{ border: "0px solid", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                                                 <Typography sx={{ fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={()=>goToProductDetail(item.product.productId)}>{item.product.title}</Typography>
                                                 <Typography variant='caption'>規格 : {item.selectedVariant?.size} - {item.selectedVariant?.color}</Typography>
-                                                <Typography >x 1</Typography>
+                                                <Typography >x {item.count}</Typography>
                                             </Box>
                                         </Grid>
                                         <Grid item xs={8} sm={2} >
                                             <Box sx={{ display: "flex", flexDirection: "row" }}>
                                                 <Stack sx={{ alignItems: "end" }} spacing={3}>
-                                                    <Typography>NT${item.product.price}</Typography>
+                                                    <Typography>
+                                                        NT$
+                                                        {
+                                                            item.selectedVariant?.discountPrice?
+                                                            item.selectedVariant?.discountPrice:
+                                                            item.selectedVariant?.price
+                                                        }
+                                                        </Typography>
                                                 </Stack>
                                             </Box>
 

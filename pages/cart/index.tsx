@@ -203,7 +203,7 @@ export default function Cart() {
                             <Grid container columns={8}>
                                 <Grid item xs={0.5} sm={2} md={3} lg={4} sx={{ borderBottom: "1px solid #d9d9d9" }}></Grid>
 
-                                <Grid item xs={7.5} sm={6} md={5} lg={4} sx={{ borderBottom: "1px solid #d9d9d9" }}>
+                                <Grid item xs={7.5} sm={6} md={5} lg={4} sx={{ borderBottom: "1px solid #d9d9d9"}}>
                                     <Stack direction={"row"} justifyContent={"space-between"}>
                                         <Typography sx={{ my: "5px" }}>
                                             目前無使用優惠券

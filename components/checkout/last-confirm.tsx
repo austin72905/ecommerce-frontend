@@ -58,7 +58,7 @@ export function LastConfirm({ recieveStoreInfo, checkoutInfomation, recieverInfo
                     />
                     <GridContainer
                         title={<Typography>總付款金額</Typography>}
-                        content={<Typography sx={{ color: "red" }}  >${checkoutInfomation.titlePrice}</Typography>}
+                        content={<Typography sx={{ color: "red" }}  >${checkoutInfomation.totalPrice}</Typography>}
                         columns={12}
                         xs={4}
                         sm={3}

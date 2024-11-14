@@ -819,6 +819,34 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavorite, itemCount, s
 
 
 
+    const getLowestPrice = (product: ProductInfomation)=>{
+        const priceList=product.variants.map(v=>v.price).sort((a, b) => a - b)
+        return priceList[0]
+        
+
+    }
+
+    const getHighstPrice = (product: ProductInfomation)=>{
+        const priceList=product.variants.map(v=>v.price).sort((a, b) => a - b)
+        return priceList[priceList.length-1]
+        
+
+    }
+
+
+    const getLowestDiscountPrice = (product: ProductInfomation)=>{
+        const priceList=product.variants
+                .filter(v=>v.discountPrice!==null)
+                .map(v => v.discountPrice as number)
+                .sort((a, b) => a - b)
+
+        console.log("priceList:",priceList)
+        return priceList[0]
+        
+    }
+
+
+
     return (
         <Grid container alignItems={"center"} columns={columns} rowSpacing={5} sx={{ px: 5, width: "100%" }} >
             <Grid item xs={8} sx={{ px: 0 }}>
@@ -844,15 +872,9 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavorite, itemCount, s
                                             <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>${selectVariant.discountPrice}</Typography>
                                         </>
                                         :
-                                        <Typography variant='subtitle1' >${product.price}</Typography>
+                                        <Typography variant='subtitle1' >${selectVariant.price}</Typography>
                                     :
-                                    product.discountPrice ?
-                                        <>
-                                            <Typography variant='subtitle1' sx={{ textDecoration: "line-through", color: "#ef6060" }}>${product.price}</Typography>
-                                            <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>${product.price}</Typography>
-                                        </>
-                                        :
-                                        <Typography variant='subtitle1' >${product.price}</Typography>
+                                    <Typography variant={"subtitle2"} sx={{ color: "gray" }}>還未選擇款式顏色</Typography>
                             }
 
                         </Stack>
@@ -1081,6 +1103,7 @@ const CustomSilde = ({ productFavorite, goToProductDetail }: CustomSildeProps) =
     const { product } =productFavorite
 
     //console.log("slide product",product)
+    
 
     return (
         <Box style={{ margin: "10px" }}>

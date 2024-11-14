@@ -32,14 +32,14 @@ const CheckOut = () => {
     const theme = useTheme()
     const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
 
-    const initCheckoutInfomation: CheckoutInfomation = { productPrice: 0, cargoPrice: 60, titlePrice: 0, payWay: "銀行付款" }
+    const initCheckoutInfomation: CheckoutInfomation = { productPrice: 0, cargoPrice: 60, totalPrice: 0, payWay: "銀行付款" }
 
     const [checkoutInfomation, setCheckoutInfomation] = useState<CheckoutInfomation>(initCheckoutInfomation)
 
 
-    const [orderInfo, setOrderInfo] = useState<RecieverInfo>({ name: "王大明", phoneNumber: "0954678111",email:"" })
+    const [orderInfo, setOrderInfo] = useState<RecieverInfo>({ name: "王大明", phoneNumber: "0954678111", email: "" })
 
-    const [recieverInfo, setRecieverInfo] = useState<RecieverInfo>({ name: "王大明", phoneNumber: "0954678111",email:"" })
+    const [recieverInfo, setRecieverInfo] = useState<RecieverInfo>({ name: "王大明", phoneNumber: "0954678111", email: "" })
 
     const [recieveStoreInfo, setRecieveStoreInfo] = useState<RecievePlaceInfo>({ recieveWay: "UNIMARTC2C", recieveStore: "雅典", recieveAddress: "台中市南區三民西路377號西川一路1號" })
 
@@ -89,7 +89,7 @@ const CheckOut = () => {
         // 切換全家 or 7-11 清空門市地址
         setRecieveStoreInfo(storeInfo => {
 
-            return { recieveAddress:"",recieveStore:"", recieveWay: (e.target as HTMLInputElement).value }
+            return { recieveAddress: "", recieveStore: "", recieveWay: (e.target as HTMLInputElement).value }
         })
 
     };
@@ -116,13 +116,30 @@ const CheckOut = () => {
         const storeType = query.LogisticsSubType as string
 
         setRecieveStoreInfo(store => {
-            return { 
-                recieveWay: storeType?storeType:store.recieveWay, 
-                recieveStore: storeName, 
-                recieveAddress: storeAddress 
+            return {
+                recieveWay: storeType ? storeType : store.recieveWay,
+                recieveStore: storeName,
+                recieveAddress: storeAddress
             }
         })
     }, [router.isReady])
+
+
+    //計算總金額
+    useEffect(() => {
+
+        let totalPrice = 0
+        console.log("cartContent",cartContent)
+        cartContent.forEach(cartItem => {
+            let price = cartItem.selectedVariant ? cartItem.selectedVariant?.price : 0
+            totalPrice += price * cartItem.count
+        })
+
+        setCheckoutInfomation(ch => {
+            return { ...ch, totalPrice: totalPrice }
+        })
+
+    }, [cartContent])
 
 
     //電子地圖
@@ -141,7 +158,7 @@ const CheckOut = () => {
             LogisticsSubType: recieveStoreInfo.recieveWay,  // C2C
             IsCollection: "N",           // N：不代收貨款
             ServerReplyURL: "https://bdec-1-168-26-39.ngrok-free.app/api/shopmap-callback", // 伺服器回調URL
-            Device: isSmallScreen?"1":"0"                  // 0：PC（預設值） 1：Mobile
+            Device: isSmallScreen ? "1" : "0"                  // 0：PC（預設值） 1：Mobile
         };
 
         console.log(data.Device)
@@ -164,57 +181,57 @@ const CheckOut = () => {
 
 
     //送出訂單
-    const submitOrder =async ()=>{
+    const submitOrder = async () => {
 
         // 從購物車取出 每個商品的 productId、variantId、count
-        const orderItems :OrderItem[]= cartContent.map(productItem=>{
-            const item:OrderItem = {
-                quantity:productItem.count,
-                productId:productItem.product.productId,
-                variantId:productItem.selectedVariant?.variantID
+        const orderItems: OrderItem[] = cartContent.map(productItem => {
+            const item: OrderItem = {
+                quantity: productItem.count,
+                productId: productItem.product.productId,
+                variantId: productItem.selectedVariant?.variantID
             }
             return item
         })
 
-        const req :SubmitOrderReq= {
-            shippingFee:60,
-            shippingAddress:recieveStoreInfo.recieveAddress,
-            receiverName:recieverInfo.name,
-            receiverPhone:recieverInfo.phoneNumber,
-            recieveStore:recieveStoreInfo.recieveStore,
-            recieveWay:recieveStoreInfo.recieveWay,
-            email:userInfo?.email,
-            items:orderItems
+        const req: SubmitOrderReq = {
+            shippingFee: 60,
+            shippingAddress: recieveStoreInfo.recieveAddress,
+            receiverName: recieverInfo.name,
+            receiverPhone: recieverInfo.phoneNumber,
+            recieveStore: recieveStoreInfo.recieveStore,
+            recieveWay: recieveStoreInfo.recieveWay,
+            email: userInfo?.email,
+            items: orderItems
         }
 
 
         // 之後提交改成傳遞訂單資訊
         const response = await generateOrder(req) as ApiResponse<PaymentRequestData>;
 
-        if(response.code!==RespCode.SUCCESS || !response.data){
+        if (response.code !== RespCode.SUCCESS || !response.data) {
             setAlertMsg("提交訂單失敗，請稍後再試")
             return
         }
 
-        const paymentData: PaymentRequestData={
-            recordNo:response.data.recordNo,
-            paymentUrl:response.data.paymentUrl,
-            payType:response.data.payType,
-            amount:response.data.amount,
+        const paymentData: PaymentRequestData = {
+            recordNo: response.data.recordNo,
+            paymentUrl: response.data.paymentUrl,
+            payType: response.data.payType,
+            amount: response.data.amount,
         }
 
 
         goToPayment(paymentData);
-        
+
     }
 
 
-  
+
     const generateOrder = async (data: SubmitOrderReq) => {
-        console.log("data:",data)
+        console.log("data:", data)
         const response = await fetch("http://localhost:5025/Order/SubmitOrder", {
             method: 'POST',
-            credentials:'include',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -225,9 +242,9 @@ const CheckOut = () => {
     }
 
     //前往支付頁面
-    const goToPayment = (paymentData:PaymentRequestData)=>{
+    const goToPayment = (paymentData: PaymentRequestData) => {
         const url = `${paymentData.paymentUrl}?RecordNo=${paymentData.recordNo}&Amount=${paymentData.amount}&PayType=${paymentData.payType}`
-        window.location.href =url
+        window.location.href = url
     }
 
 

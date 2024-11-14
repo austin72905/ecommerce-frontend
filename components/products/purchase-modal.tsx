@@ -247,7 +247,7 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
                                                                             <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>${selectVariant.discountPrice}</Typography>
                                                                         </>
                                                                         :
-                                                                        <Typography variant='subtitle1' >${product.price}</Typography>
+                                                                        <Typography variant='subtitle1' >${selectVariant.price}</Typography>
 
                                                                 }
 
