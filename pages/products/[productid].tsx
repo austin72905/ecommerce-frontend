@@ -40,26 +40,26 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     const [recommendProducts, setrecommendProducts] = useState<ProductInfomationFavorite[] | null>(null);
     // 你可能感興趣
     useEffect(() => {
-        
-        
 
-        const fetchData =async ()=>{
+
+
+        const fetchData = async () => {
             try {
-                const response = await getRecommendationFromBackend(product.product.productId.toString()) as ApiResponse<RecommendationData>;
+                const response = await getRecommendationFromBackend(product.product.productId.toString()) as ApiResponse<ProductInfomationFavorite[]>;
 
                 if (response.code != RespCode.SUCCESS) {
                     return
                 }
-     
-                const products = response.data.products
 
-                console.log("fetch products",products)
+                const products = response.data
+
+                console.log("fetch products", products)
 
                 setrecommendProducts(products)
-                
-              } catch (error) {
+
+            } catch (error) {
                 console.error('Error fetching data:', error);
-              }
+            }
         };
 
         fetchData();
@@ -401,8 +401,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
 const getRecommendationFromBackend = async (productId: string) => {
 
-    const query = new URLSearchParams({ 
-        productId: productId 
+    const query = new URLSearchParams({
+        productId: productId
     }).toString()
 
     //console.log(query)
@@ -431,7 +431,7 @@ const getProductInfoFromBackend = async (productId: string) => {
     return response.json();
 }
 
-interface RecommendationData{
+interface RecommendationData {
     products: ProductInfomationFavorite[]
 }
 
@@ -461,7 +461,7 @@ export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = as
 
     //const product = getProdcctById(Number(productId))
 
-    const response = await getProductInfoFromBackend(productId) as ApiResponse<ProductDetailData>
+    const response = await getProductInfoFromBackend(productId) as ApiResponse<ProductInfomationFavorite>
 
     if (response.code != RespCode.SUCCESS) {
         return {
@@ -469,7 +469,7 @@ export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = as
         }
     }
 
-    const product = response.data.product
+    const product = response.data
 
     return {
         props: {
@@ -532,7 +532,7 @@ const SizeTable = ({ sizeTable }: SizeTableProps) => {
  */
 const ProductIntroduce = ({ productFavoritate, xs, md, columns, id }: ProductIntroduceProps) => {
 
-    const { product }=productFavoritate 
+    const { product } = productFavoritate
     return (
         <Grid id={id} container columns={columns} rowSpacing={1} sx={{ px: { xs: 3, sm: 10, md: 20 }, width: "100%" }}>
             <Grid item xs={8} sx={{ mb: 1 }}>
@@ -819,30 +819,30 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavorite, itemCount, s
 
 
 
-    const getLowestPrice = (product: ProductInfomation)=>{
-        const priceList=product.variants.map(v=>v.price).sort((a, b) => a - b)
+    const getLowestPrice = (product: ProductInfomation) => {
+        const priceList = product.variants.map(v => v.price).sort((a, b) => a - b)
         return priceList[0]
-        
+
 
     }
 
-    const getHighstPrice = (product: ProductInfomation)=>{
-        const priceList=product.variants.map(v=>v.price).sort((a, b) => a - b)
-        return priceList[priceList.length-1]
-        
+    const getHighstPrice = (product: ProductInfomation) => {
+        const priceList = product.variants.map(v => v.price).sort((a, b) => a - b)
+        return priceList[priceList.length - 1]
+
 
     }
 
 
-    const getLowestDiscountPrice = (product: ProductInfomation)=>{
-        const priceList=product.variants
-                .filter(v=>v.discountPrice!==null)
-                .map(v => v.discountPrice as number)
-                .sort((a, b) => a - b)
+    const getLowestDiscountPrice = (product: ProductInfomation) => {
+        const priceList = product.variants
+            .filter(v => v.discountPrice !== null)
+            .map(v => v.discountPrice as number)
+            .sort((a, b) => a - b)
 
-        console.log("priceList:",priceList)
+        console.log("priceList:", priceList)
         return priceList[0]
-        
+
     }
 
 
@@ -1100,10 +1100,40 @@ interface CustomSildeProps {
  */
 const CustomSilde = ({ productFavorite, goToProductDetail }: CustomSildeProps) => {
 
-    const { product } =productFavorite
+    const { product } = productFavorite
+
+    console.log("CustomSilde product:",product)
+
 
     //console.log("slide product",product)
-    
+
+    const getLowestPrice = (product: ProductInfomation) => {
+        const priceList = product.variants.map(v => v.price).sort((a, b) => a - b)
+        return priceList[0]
+
+
+    }
+
+    const getHighstPrice = (product: ProductInfomation) => {
+        const priceList = product.variants.map(v => v.price).sort((a, b) => a - b)
+        return priceList[priceList.length - 1]
+
+
+    }
+
+
+    const getLowestDiscountPrice = (product: ProductInfomation) => {
+        const priceList = product.variants
+            .filter(v => v.discountPrice !== null)
+            .map(v => v.discountPrice as number)
+            .sort((a, b) => a - b)
+
+        console.log("priceList:", priceList)
+        return priceList[0]
+
+    }
+
+
 
     return (
         <Box style={{ margin: "10px" }}>
@@ -1135,13 +1165,17 @@ const CustomSilde = ({ productFavorite, goToProductDetail }: CustomSildeProps) =
                     <Stack spacing={1} sx={{ border: "0px solid black" }}>
                         <Typography sx={{ fontWeight: { md: "bold", xs: "normal" }, fontSize: { xs: "14px" }, '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.productId) }}>{product.title}</Typography>
                         {
-                            product.discountPrice ?
+                            product.variants.filter(v => v.discountPrice) ?
                                 <Stack direction={"row"} spacing={"15px"}>
-                                    <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.price}</Typography>
-                                    <Typography sx={{ color: "#ef6060" }}>NT${product.discountPrice}</Typography>
-                                </Stack >
+                                    <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${getHighstPrice(product)}</Typography>
+                                    <Typography sx={{ color: "#ef6060" }}>${getLowestDiscountPrice(product)}</Typography>
+                                </Stack>
+
                                 :
-                                <Typography>NT${product.price}</Typography>
+                                <Stack direction={"row"} spacing={"15px"}>
+                                    <Typography variant="subtitle2">定價NT${getLowestPrice(product)}</Typography>
+                                </Stack>
+
                         }
 
                     </Stack>

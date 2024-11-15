@@ -1,11 +1,12 @@
 import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { Dispatch, SetStateAction } from "react";
 
 export default function UserMenu({ anchorElement, handleCancelAnchor }: UserMenu) {
 
-
+    const router=useRouter()
     const userMenuOpen = Boolean(anchorElement)
 
     const userInfo = userUserInfoStore((state) => state.userInfo)
@@ -27,6 +28,12 @@ export default function UserMenu({ anchorElement, handleCancelAnchor }: UserMenu
         // 登出時將 購物車清掉，因為登入時，已經加入的購物車
         localStorage.removeItem('cart');
         initializeCart([])
+        goToLogin()
+
+    }
+
+    const goToLogin=()=>{
+        router.replace("/login")
     }
 
     return (

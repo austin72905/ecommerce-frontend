@@ -346,7 +346,7 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
     // 將 cookies 從請求中提取並傳遞給後端請求
     const cookieHeader = req.headers.cookie || '';
 
-    const response = await getProductsFromBackend(kind, tag,cookieHeader) as ApiResponse<ProductInfomationData>
+    const response = await getProductsFromBackend(kind, tag,cookieHeader) as ApiResponse<ProductInfomationFavorite[]>
 
     //console.log(response)
 
@@ -360,7 +360,7 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
     //console.log("data=",response.data)
 
 
-    const products = response.data.products
+    const products = response.data
 
     console.log("products=", products)
 
