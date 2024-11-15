@@ -20,7 +20,8 @@ import { INPUT_FIELD } from '@/constant-value/constant';
 import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';
 import { UserInfo } from '@/interfaces/user';
-import { userUserInfoStore } from '@/store/store';
+import { useCsrfTokenStore, userUserInfoStore } from '@/store/store';
+import { parseCookies } from 'nookies';
 
 
 
@@ -29,9 +30,12 @@ const MyAccountPage = () => {
 
   // personalInfo 的某些值從 undefined 變成了具體的值，導致非受控組件變成了受控組件
   const userInfo = userUserInfoStore((state) => state.userInfo)
- 
 
   const setUserInfo = userUserInfoStore((state) => state.setUserInfo)
+
+  const csrfToken = useCsrfTokenStore((state) => state.csrfToken)
+
+  const setCsrfToken = useCsrfTokenStore((state) => state.setCsrfToken)
 
   const initPersonInfo: PersonalInfomation = { name: "", email: "", phoneNumber: "", birthday: `${thisYear - 10}/1/1`, sex: "男", type: "web", picture: "" }
 
@@ -142,10 +146,9 @@ const MyAccountPage = () => {
       picture: personalInfo.picture
     }
 
-    await modifyUserInfo(data)
+    await modifyUserInfo(data, csrfToken as string)
 
     setisRenew(u => !u)
-
 
   }
 
@@ -157,14 +160,14 @@ const MyAccountPage = () => {
   // 從後端獲取資料
   useEffect(() => {
 
-    console.log("userInfo:",userInfo)
+    console.log("userInfo:", userInfo)
     if (userInfo !== null) {
       //console.log("userInfo", userInfo)
       setPersonalInfo(userInfo)
     }
 
     // 如果是第一次渲染，跳過 fetchData 的執行
-    if (isFirstRender.current && userInfo!==null) {
+    if (isFirstRender.current && userInfo !== null) {
       isFirstRender.current = false;
       return;
     }
@@ -196,9 +199,63 @@ const MyAccountPage = () => {
           phoneNumber: data.phoneNumber === null ? "" : data.phoneNumber,
           birthday: data.birthday === null || data.birthday === undefined ? "2013/1/1" : data.birthday,
           sex: data.gender === null ? "" : data.gender,
-          type: data.type?data.type:"",
+          type: data.type ? data.type : "",
           picture: data.picture
         }
+
+        const cookies = parseCookies();
+        const sessionCsrfToken = cookies["X-CSRF-Token"] || null;
+        setCsrfToken(sessionCsrfToken)
+
+        //setPersonalInfo(personInfo)
+
+        setUserInfo(personInfo)
+
+
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    
+    const fetchData = async () => {
+      try {
+        const result = await getUserInfo() as ApiResponse;
+        console.log("result=", result)
+
+
+        if (result.code != RespCode.SUCCESS) {
+
+          console.log("獲取數據失敗")
+          return;
+        }
+
+
+        if (result.data == null) {
+          console.log("獲取數據失敗")
+          return;
+        }
+
+
+        const data = result.data as UserInfo
+
+        const personInfo: PersonalInfomation = {
+          name: data.nickName === null ? "" : data.nickName,
+          email: data.email,
+          phoneNumber: data.phoneNumber === null ? "" : data.phoneNumber,
+          birthday: data.birthday === null || data.birthday === undefined ? "2013/1/1" : data.birthday,
+          sex: data.gender === null ? "" : data.gender,
+          type: data.type ? data.type : "",
+          picture: data.picture
+        }
+
+        const cookies = parseCookies();
+        const sessionCsrfToken = cookies["X-CSRF-Token"] || null;
+        setCsrfToken(sessionCsrfToken)
 
         //setPersonalInfo(personInfo)
 
@@ -212,7 +269,6 @@ const MyAccountPage = () => {
 
     fetchData()
   }, [isRenew])
-
 
   return (
     <Container sx={{ border: "0px solid" }} maxWidth='xl'>
@@ -368,12 +424,16 @@ const getUserInfo = async () => {
   return response.json();
 }
 
-const modifyUserInfo = async (data: UserInfo) => {
+const modifyUserInfo = async (data: UserInfo, token: string) => {
+
+  console.log("data:", data, "token:", token)
+
   const response = await fetch("http://localhost:5025/User/ModifyUserInfo", {
     method: 'POST',
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': token
     },
     body: JSON.stringify(data)
   })

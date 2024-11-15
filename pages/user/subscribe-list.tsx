@@ -1,4 +1,4 @@
-import { useCartStore, useSubscribeListStore } from "@/store/store"
+import { useCartStore, useCsrfTokenStore, useSubscribeListStore } from "@/store/store"
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Checkbox, Grid, IconButton, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useRouter } from "next/router"
@@ -54,6 +54,7 @@ const SubscribeListPage = () => {
         handleModalOpen()
     }
 
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken)
 
 
 
@@ -98,7 +99,7 @@ const SubscribeListPage = () => {
         console.log("removeFromFavoriteList")
         try {
             // 發送請求更新後端數據
-            const response =await removeFromFavoriteListToBackend(product.productId)
+            const response =await removeFromFavoriteListToBackend(product.productId,csrfToken as string)
         } catch (error) {
             // 若請求失敗，回滾狀態
             addToList(product)
@@ -195,7 +196,7 @@ const addToFavoriteListToBackend = async (productId: number) => {
     return response.json();
 }
 
-const removeFromFavoriteListToBackend = async (productId: number) => {
+const removeFromFavoriteListToBackend = async (productId: number,token:string) => {
 
     const postBody = {
         productId: productId,
@@ -208,6 +209,7 @@ const removeFromFavoriteListToBackend = async (productId: number) => {
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',  // 設置 Content-Type 為 JSON
+            'X-CSRF-Token': token
         },
         body: JSON.stringify(postBody)  // 將 postBody 轉換為 JSON 字串
     })

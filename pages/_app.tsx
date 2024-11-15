@@ -1,5 +1,5 @@
 import Layout from "@/components/layout/layout";
-import { useCartStore, userUserInfoStore } from "@/store/store";
+import { useCartStore, useCsrfTokenStore, userUserInfoStore } from "@/store/store";
 
 import type { AppProps } from "next/app";
 import { parseCookies } from "nookies";
@@ -16,6 +16,10 @@ export default function App({ Component, pageProps }: AppProps) {
 
   const userInfo = userUserInfoStore((state) => state.userInfo)
   const setUserInfo = userUserInfoStore((state) => state.setUserInfo)
+
+  const csrfToken=useCsrfTokenStore((state)=>state.csrfToken)
+
+  const setCsrfToken=useCsrfTokenStore((state)=>state.setCsrfToken)
 
   const initializeCart = useCartStore((state) => state.initializeCart)
   const cartContent = useCartStore((state) => state.cartContent)
@@ -57,6 +61,7 @@ export default function App({ Component, pageProps }: AppProps) {
     //const hasSessionId =Cookies.get("has-session-id")
 
     const hasSessionId = cookies["has-session-id"] || null;
+    const sessionCsrfToken = cookies["X-CSRF-Token"] || null;
     console.log('hasSessionId:', hasSessionId);
     if (hasSessionId) {
       console.log('hasSessionId:', hasSessionId);
@@ -86,6 +91,8 @@ export default function App({ Component, pageProps }: AppProps) {
             sex: userData.gender ? userData.gender : ""
           }
           setUserInfo(user)
+
+          setCsrfToken(sessionCsrfToken)
 
 
         } catch (error) {

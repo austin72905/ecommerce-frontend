@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { Button, Paper, SwipeableDrawer, useMediaQuery, useTheme } from '@mui/material';
 
-import { useAlertMsgStore, useCartStore, userUserInfoStore } from '@/store/store';
+import { useAlertMsgStore, useCartStore, useCsrfTokenStore, userUserInfoStore } from '@/store/store';
 import { CheckoutInfomation, RecievePlaceInfo, RecieverInfo, UserShipAddress } from '@/interfaces';
 import { DefaultScreenCartContent, SmallScreenViewCartContent } from '@/components/cart/cart-content';
 
@@ -30,6 +30,7 @@ import { GridContainer } from '@/components/ui/grid-container';
 
 const CheckOut = () => {
 
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken)
     const userInfo = userUserInfoStore((state) => state.userInfo)
     const theme = useTheme()
     const isSmallScreen: boolean = useMediaQuery(theme.breakpoints.down('sm'))
@@ -310,7 +311,7 @@ const CheckOut = () => {
 
 
         // 之後提交改成傳遞訂單資訊
-        const response = await generateOrder(req) as ApiResponse<PaymentRequestData>;
+        const response = await generateOrder(req,csrfToken as string) as ApiResponse<PaymentRequestData>;
 
         if (response.code !== RespCode.SUCCESS || !response.data) {
             setAlertMsg("提交訂單失敗，請稍後再試")
@@ -331,15 +332,17 @@ const CheckOut = () => {
 
 
 
-    const generateOrder = async (data: SubmitOrderReq) => {
+    const generateOrder = async (data: SubmitOrderReq,token:string) => {
         console.log("data:", data)
         const response = await fetch("http://localhost:5025/Order/SubmitOrder", {
             method: 'POST',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': token
             },
             body: JSON.stringify(data)
+           
         })
 
         return response.json();

@@ -11,12 +11,14 @@ import { validatePassword, validatePasswordConfirm, ValidationErrors } from '@/u
 import { INPUT_FIELD } from '@/constant-value/constant';
 import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';
-import { useAlertMsgStore } from '@/store/store';
+import { useAlertMsgStore, useCsrfTokenStore } from '@/store/store';
 
 const ModifyPasswordPage = () => {
 
     const initInputData: ModifyPassword = { oldPassword: "", password: "", passwordConfirm: "" }
     const [inputData, setInputData] = useState<ModifyPassword>(initInputData);
+
+    const csrfToken=useCsrfTokenStore((state)=>state.csrfToken)
 
 
     const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
@@ -73,7 +75,7 @@ const ModifyPasswordPage = () => {
 
     const modifyPassword = async () => {
         console.log("inputData:", inputData)
-        const result = await modifyPasswordToBackend(inputData) as ApiResponse;
+        const result = await modifyPasswordToBackend(inputData,csrfToken as string) as ApiResponse;
 
 
 
@@ -151,13 +153,14 @@ const InputSet = ({ label, placeholder, helperText, name, errorMsg, value, func 
 
 
 // 後端請求
-const modifyPasswordToBackend = async (data: ModifyPassword) => {
+const modifyPasswordToBackend = async (data: ModifyPassword,token:string) => {
 
     const response = await fetch("http://localhost:5025/User/ModifyPassword", {
         method: 'POST',
         credentials: 'include',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': token
         },
         body: JSON.stringify(data)
     })

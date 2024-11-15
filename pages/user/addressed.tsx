@@ -17,7 +17,7 @@ import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import Backdrop from '@mui/material/Backdrop';
 import { FormControl, MenuItem, Select, SelectChangeEvent, useMediaQuery, useTheme } from '@mui/material';
 import { GridContainer } from '@/components/ui/grid-container';
-import { useAlertMsgStore } from '@/store/store';
+import { useAlertMsgStore, useCsrfTokenStore } from '@/store/store';
 import WithAuth from '@/components/auth/with-auth';
 import { INPUT_FIELD } from '@/constant-value/constant';
 import { validateAddress, validateEmail, validateNickName, validatePhoneNumber, validateRecieveStore, ValidationErrors } from '@/utils/validation';
@@ -32,6 +32,8 @@ const AddressPage = () => {
     const initAddress: AddressInfo = { id: 0, name: "", phoneNumber: "", recieverAddress: "", recieveStore: "", recieveWay: "", isDefaultAddress: false }
 
     const [editedAddress, setEditedAddress] = useState<AddressInfo>(initAddress)
+
+    const csrfToken=useCsrfTokenStore((state)=>state.csrfToken)
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -255,10 +257,10 @@ const AddressPage = () => {
         }
 
         if(editedAddress.id===0){
-            await addShippingAddress(data);
+            await addShippingAddress(data,csrfToken as string);
 
         }else{
-            await modifyShippingAddress(data);
+            await modifyShippingAddress(data,csrfToken as string);
         }
   
 
@@ -282,7 +284,7 @@ const AddressPage = () => {
             isDefault: address.isDefaultAddress
         }
 
-        await deleteShippingAddress(data)
+        await deleteShippingAddress(data,csrfToken as string)
         setisRenew(u => !u)
     }
 
@@ -300,7 +302,7 @@ const AddressPage = () => {
             isDefault: address.isDefaultAddress
         }
 
-        await setDefaultShippingAddress(data)
+        await setDefaultShippingAddress(data,csrfToken as string)
         setisRenew(u => !u)
         setAlertMsg("修改預設地址成功")
     }
@@ -495,12 +497,13 @@ const recieverInfoList: AddressInfo[] = [
 
 
 // 後端請求
-const addShippingAddress = async (data: UserShipAddress) => {
+const addShippingAddress = async (data: UserShipAddress,token:string) => {
     const response = await fetch("http://localhost:5025/User/AddShippingAddress", {
         method: 'POST',
         credentials: 'include',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': token
         },
         body: JSON.stringify(data)
     })
@@ -508,12 +511,13 @@ const addShippingAddress = async (data: UserShipAddress) => {
     return response.json();
 }
 
-const modifyShippingAddress = async (data: UserShipAddress) => {
+const modifyShippingAddress = async (data: UserShipAddress,token:string) => {
     const response = await fetch("http://localhost:5025/User/ModifyShippingAddress", {
         method: 'POST',
         credentials: 'include',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': token
         },
         body: JSON.stringify(data)
     })
@@ -521,12 +525,13 @@ const modifyShippingAddress = async (data: UserShipAddress) => {
     return response.json();
 }
 
-const deleteShippingAddress = async (data: UserShipAddress) => {
+const deleteShippingAddress = async (data: UserShipAddress,token:string) => {
     const response = await fetch("http://localhost:5025/User/DeleteShippingAddress", {
         method: 'DELETE',
         credentials: 'include',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': token
         },
         body: JSON.stringify(data)
     })
@@ -535,12 +540,13 @@ const deleteShippingAddress = async (data: UserShipAddress) => {
 }
 
 
-const setDefaultShippingAddress = async (data: UserShipAddress) => {
+const setDefaultShippingAddress = async (data: UserShipAddress,token:string) => {
     const response = await fetch("http://localhost:5025/User/SetDefaultShippingAddress", {
         method: 'POST',
         credentials: 'include',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': token
         },
         body: JSON.stringify(data)
     })

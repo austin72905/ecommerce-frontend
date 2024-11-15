@@ -239,5 +239,21 @@ interface UserInfoStore {
 }
 
 
+const useCsrfTokenStore = create<CsrfTokenStore>((set, get) => ({
+    csrfToken: null,
+    setCsrfToken: (token) => set((state) => {
+        return {
+            csrfToken: token
+        }
+    })
+}))
 
-export { useCartStore, useSubscribeListStore, useAlertMsgStore, userUserInfoStore }
+
+interface CsrfTokenStore {
+    csrfToken: string | null;
+    setCsrfToken: (token: string | null) => void
+}
+
+
+
+export { useCartStore, useSubscribeListStore, useAlertMsgStore, userUserInfoStore, useCsrfTokenStore }
