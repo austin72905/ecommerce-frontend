@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 
 
 import Container from '@mui/material/Container';
@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import { Button, Paper, SwipeableDrawer, useMediaQuery, useTheme } from '@mui/material';
 
 import { useAlertMsgStore, useCartStore, useCsrfTokenStore, userUserInfoStore } from '@/store/store';
-import { CheckoutInfomation, RecievePlaceInfo, RecieverInfo, UserShipAddress } from '@/interfaces';
+import { CheckoutInfomation, ProductInfomationCount, RecievePlaceInfo, RecieverInfo, UserShipAddress } from '@/interfaces';
 import { DefaultScreenCartContent, SmallScreenViewCartContent } from '@/components/cart/cart-content';
 
 
@@ -26,6 +26,7 @@ import { PaymentRequestData } from '@/interfaces/api/payment-request-data';
 import { RespCode } from '@/enums/resp-code';
 import { OrderItem, SubmitOrderReq } from '@/interfaces/api/submit-order-req';
 import { GridContainer } from '@/components/ui/grid-container';
+import { Cart, CartItem, mergeCartContent } from '../cart';
 
 
 const CheckOut = () => {
@@ -42,7 +43,7 @@ const CheckOut = () => {
 
     const [orderInfo, setOrderInfo] = useState<RecieverInfo>({ name: "王大明", phoneNumber: "0954678111", email: "" })
 
-    const [recieverInfo, setRecieverInfo] = useState<RecieverInfo>({ name:  userInfo?.name ? userInfo.name : "" , phoneNumber: userInfo?.phoneNumber ? userInfo.phoneNumber : "" , email: userInfo ? userInfo.email : "" })
+    const [recieverInfo, setRecieverInfo] = useState<RecieverInfo>({ name: userInfo?.name ? userInfo.name : "", phoneNumber: userInfo?.phoneNumber ? userInfo.phoneNumber : "", email: userInfo ? userInfo.email : "" })
 
     const [recieveStoreInfo, setRecieveStoreInfo] = useState<RecievePlaceInfo>({ recieveWay: "UNIMARTC2C", recieveStore: "雅典", recieveAddress: "台中市南區三民西路377號西川一路1號" })
 
@@ -140,6 +141,8 @@ const CheckOut = () => {
     const plusProductCount = useCartStore((state) => state.plusProductCount)
 
     const minusProductCount = useCartStore((state) => state.minusProductCount)
+
+    const initializeCart = useCartStore(state => state.initializeCart);
 
 
     const setAlertMsg = useAlertMsgStore(state => state.setAlertMsg)
@@ -244,6 +247,74 @@ const CheckOut = () => {
     }, [cartContent])
 
 
+    // 用 useRef 追蹤是否為初次渲染
+    const isFirstRender = useRef(true);
+
+    // 使用 useRef 持續追踪最新的 cartContent
+    const cartContentRef = useRef(cartContent);
+
+    // 每次 cartContent 變化時更新 cartContentRef
+    useEffect(() => {
+        cartContentRef.current = cartContent;
+    }, [cartContent]);
+
+
+    useEffect(() => {
+
+        return () => {
+            // 如果是第一次渲染，跳過 fetchData 的執行
+            if (isFirstRender.current && userInfo !== null) {
+                isFirstRender.current = false;
+                return;
+            }
+            //console.log("content:cartContent", cartContent) // 確實，會發現cartcontent 會保持初次掛載時拿到的值
+            if (userInfo) {
+
+                const mergeCartenthData = async (content: ProductInfomationCount[]) => {
+                    try {
+                        //console.log("content:", content)
+                        const cartItems = content.map(item => {
+                            const cartItem: CartItem = {
+                                productVariantId: item.selectedVariant?.variantID,
+                                quantity: item.count
+                            }
+
+                            return cartItem;
+                        })
+                        // 用前端覆蓋後端 的資料庫
+                        const cart: Cart = {
+                            items: cartItems,
+                            isCover: true
+                        }
+                        const result = await mergeCartContent(cart) as ApiResponse;
+
+                        //console.log("mergeCartContent result=", result)
+
+                        if (result.code !== RespCode.SUCCESS) {
+                            return;
+                        }
+
+                        const data = result.data as ProductInfomationCount[]
+
+
+
+
+                    } catch (error) {
+                        console.error('Error fetching data:', error)
+                    }
+                }
+
+
+
+
+                mergeCartenthData(cartContentRef.current);
+
+            }
+
+        }
+    }, [])
+
+
 
 
 
@@ -288,6 +359,8 @@ const CheckOut = () => {
     //送出訂單
     const submitOrder = async () => {
 
+
+
         // 從購物車取出 每個商品的 productId、variantId、count
         const orderItems: OrderItem[] = cartContent.map(productItem => {
             const item: OrderItem = {
@@ -311,7 +384,7 @@ const CheckOut = () => {
 
 
         // 之後提交改成傳遞訂單資訊
-        const response = await generateOrder(req,csrfToken as string) as ApiResponse<PaymentRequestData>;
+        const response = await generateOrder(req, csrfToken as string) as ApiResponse<PaymentRequestData>;
 
         if (response.code !== RespCode.SUCCESS || !response.data) {
             setAlertMsg("提交訂單失敗，請稍後再試")
@@ -325,6 +398,24 @@ const CheckOut = () => {
             amount: response.data.amount,
         }
 
+        // 清除購物車
+        // 確保在提交訂單前，同步購物車內容
+        try {
+            
+            // 用前端覆蓋後端 的資料庫
+            const cart: Cart = {
+                items: [],
+                isCover: true
+            }
+            initializeCart([])
+            await mergeCartContent(cart);
+
+        } catch (error) {
+            console.error('Error merging cart content before submitting order:', error);
+        }
+
+
+
 
         goToPayment(paymentData);
 
@@ -332,7 +423,7 @@ const CheckOut = () => {
 
 
 
-    const generateOrder = async (data: SubmitOrderReq,token:string) => {
+    const generateOrder = async (data: SubmitOrderReq, token: string) => {
         console.log("data:", data)
         const response = await fetch("http://localhost:5025/Order/SubmitOrder", {
             method: 'POST',
@@ -342,7 +433,7 @@ const CheckOut = () => {
                 'X-CSRF-Token': token
             },
             body: JSON.stringify(data)
-           
+
         })
 
         return response.json();
@@ -571,6 +662,9 @@ const getUserShippingAddress = async () => {
 
     return response.json();
 }
+
+
+
 
 
 export default WithAuth(CheckOut);
