@@ -236,7 +236,7 @@ const CheckOut = () => {
         let totalPrice = 0
         console.log("cartContent", cartContent)
         cartContent.forEach(cartItem => {
-            let price = cartItem.selectedVariant ? cartItem.selectedVariant?.price : 0
+            let price = cartItem.selectedVariant?.discountPrice ? cartItem.selectedVariant?.discountPrice:cartItem.selectedVariant?.price as number
             totalPrice += price * cartItem.count
         })
 

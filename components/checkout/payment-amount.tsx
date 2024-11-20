@@ -33,7 +33,7 @@ export default function PaymentAmount({checkoutInfomation,countTotalPrice}:Payme
 
                     <GridContainer
                         title={<Typography >總計</Typography>}
-                        content={<Typography sx={{ color: "red" }}  >${countTotalPrice()}</Typography>}
+                        content={<Typography sx={{ color: "red" }}  >${countTotalPrice()+checkoutInfomation.cargoPrice}</Typography>}
                         columns={12}
                         xs={4}
                         sm={3}
