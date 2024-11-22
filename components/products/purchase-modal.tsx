@@ -52,6 +52,8 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
                 return 0
             }
 
+            
+
             return i - 1
         })
     }
@@ -60,6 +62,13 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
         setItemCount(i => {
             if (i + 1 > 10) {
                 return 10
+            }
+
+            // 不能超過stock
+            if(selectVariant){
+                if(i===selectVariant.stock){
+                    return i
+                }
             }
 
             return i + 1

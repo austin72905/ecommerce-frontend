@@ -348,7 +348,7 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
 
     const response = await getProductsFromBackend(kind, tag,cookieHeader) as ApiResponse<ProductInfomationFavorite[]>
 
-    //console.log(response)
+    console.log(response)
 
     //網路錯誤
     // 可能可以在自定義頁面之類的
