@@ -52,7 +52,12 @@ const enum OrderStatus {
     /// <summary>
     /// 退貨/款
     /// </summary>
-    Refund = 6
+    Refund = 6,
+
+    /// <summary>
+    /// 運送中
+    /// </summary>
+    InTransit = 7
 }
 
 
@@ -64,6 +69,7 @@ const orderStatusMap = new Map([
     [OrderStatus.Completed, { description: "已完成", color: "#ef6060" }],
     [OrderStatus.Canceled, { description: "已取消", color: "#7E7E7E" }],
     [OrderStatus.Refund, { description: "已退貨/款", color: "#7E7E7E" }],
+    [OrderStatus.InTransit, { description: "運送中", color: "#96DB8B" }],
 ])
 
 

@@ -425,6 +425,7 @@ const CheckOut = () => {
 
     const generateOrder = async (data: SubmitOrderReq, token: string) => {
         console.log("data:", data)
+        console.log("token:", token)
         const response = await fetch("http://localhost:5025/Order/SubmitOrder", {
             method: 'POST',
             credentials: 'include',
