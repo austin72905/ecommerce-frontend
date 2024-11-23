@@ -1,5 +1,5 @@
-# 使用Node.js的LTS版本作為基礎映像
-FROM node:16 AS builder
+# 使用支援 Next.js 的 Node.js 版本
+FROM node:18.17.0 AS builder
 
 # 設置工作目錄
 WORKDIR /usr/src/app
@@ -16,8 +16,8 @@ COPY . .
 # 構建應用
 RUN npm run build
 
-# 第二階段：運行階段
-FROM node:16 AS runner
+# （可選）使用更小的映像檔來運行應用程式
+FROM node:18.17.0 AS runner
 
 # 設置環境變數（可選，視需求調整）
 ENV NODE_ENV=production
