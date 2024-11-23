@@ -18,7 +18,9 @@ export default function UserMenu({ anchorElement, handleCancelAnchor }: UserMenu
     const clearSubscribeIdList = useSubscribeListStore((state) => state.clearSubscribeIdList)
     const handleLogout = async () => {
         console.log("logout")
-        await fetch("http://localhost:5025/User/UserLogout", {
+
+        const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+        await fetch(`${apiUrl}/User/UserLogout`, {
             method: 'GET',
             credentials: 'include'
         })
