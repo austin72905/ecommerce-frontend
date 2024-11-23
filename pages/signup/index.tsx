@@ -28,7 +28,8 @@ export default function SignUp() {
     }
 
     const toUserAccount = ()=>{
-        window.location.href="http://localhost:3000/user/account"
+        const apiUrl =process.env.NEXT_PUBLIC_FRONTEND_URL
+        window.location.href=`${apiUrl}/user/account`
     }
 
     // 紀錄 輸入是否合法
@@ -40,7 +41,7 @@ export default function SignUp() {
 
         let error: string | null
 
-        console.log("name:", e.target.name)
+        //console.log("name:", e.target.name)
 
         switch (e.target.name as string) {
             case INPUT_FIELD.NICKNAME:
@@ -231,7 +232,8 @@ const InputSet = ({ label, placeholder, disabled, name, value, errorMsg, func }:
 
 // 後端方法
 const userRegister = async (data: SignUp) => {
-    const response = await fetch("http://localhost:5025/User/UserRegister", {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/User/UserRegister`, {
         method: 'POST',
         credentials: 'include',
         headers: {

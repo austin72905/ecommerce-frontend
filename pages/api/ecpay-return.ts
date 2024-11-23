@@ -15,9 +15,11 @@ export default async  function handler(req: NextApiRequest, res: NextApiResponse
             formData.append(key, value.toString());
         });
 
+        const apiUrl =process.env.NEXT_PUBLIC_BACKEND_URL
+
         try {
             // 發送 POST 請求到目標 URL
-            const response = await fetch("http://localhost:5025/Payment/ECPayReturn", {
+            const response = await fetch(`${apiUrl}/Payment/ECPayReturn`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded", // 使用 form-data 格式

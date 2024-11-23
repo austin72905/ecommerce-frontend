@@ -268,8 +268,8 @@ const addToFavoriteListToBackend = async (productId: number) => {
     const postBody = {
         productId: productId,
     }
-
-    const response = await fetch(`http://localhost:5025/User/AddToFavoriteList`, {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/User/AddToFavoriteList`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -288,8 +288,8 @@ const removeFromFavoriteListToBackend = async (productId: number) => {
     }
 
 
-
-    const response = await fetch(`http://localhost:5025/User/RemoveFromFavoriteList`, {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/User/RemoveFromFavoriteList`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -310,8 +310,8 @@ const getProductsFromBackend = async (kind: string, tag: string, cookieHeader?: 
     }).toString()
 
     console.log(query)
-
-    const response = await fetch(`http://localhost:5025/Product/GetProductList?${query}`, {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/Product/GetProductList?${query}`, {
         method: 'GET',
         credentials: 'include', //就算有加也沒用，在getserverprops 調用 cookie 要自己手動加
         headers: cookieHeader ? { 'Cookie': cookieHeader } : {}

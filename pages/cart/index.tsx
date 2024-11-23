@@ -274,7 +274,9 @@ export interface Cart {
 
 //後端請求
 export const mergeCartContent = async (data: Cart) => {
-    const response = await fetch("http://localhost:5025/Cart/MergeCartContent", {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+
+    const response = await fetch(`${apiUrl}/Cart/MergeCartContent`, {
         method: 'POST',
         credentials: 'include',
         headers: {

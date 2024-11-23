@@ -37,7 +37,8 @@ export default function Login() {
         // router.replace("/user/account").then(()=>{
         //     console.log("跳轉錄由")
         // })
-        window.location.href="http://localhost:3000/user/account"
+        const apiUrl =process.env.NEXT_PUBLIC_FRONTEND_URL
+        window.location.href=`${apiUrl}/user/account`
 
     }
 
@@ -59,9 +60,11 @@ export default function Login() {
 
     const handleCGoogleLogin = async () => {
 
+        const apiUrl =process.env.NEXT_PUBLIC_FRONTEND_URL
+
         const query = new URLSearchParams({
             client_id: "88199731036-4ve6gh6a0vdj63j41r4gnhd7cf8s8kpr.apps.googleusercontent.com",
-            redirect_uri: "http://localhost:3000/auth",
+            redirect_uri: `${apiUrl}/auth`,
             response_type: "code",
             scope: "openid profile email",
             state: `google-login:${redirectAfterAuth}`,
@@ -273,7 +276,11 @@ interface Login {
 
 // 後端
 const userLogin = async (data: Login) => {
-    const response = await fetch("http://localhost:5025/User/UserLogin", {
+
+
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+
+    const response = await fetch(`${apiUrl}/User/UserLogin`, {
         method: 'POST',
         credentials: 'include',
         headers: {

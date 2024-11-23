@@ -498,7 +498,8 @@ const recieverInfoList: AddressInfo[] = [
 
 // 後端請求
 const addShippingAddress = async (data: UserShipAddress,token:string) => {
-    const response = await fetch("http://localhost:5025/User/AddShippingAddress", {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/User/AddShippingAddress`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -512,7 +513,8 @@ const addShippingAddress = async (data: UserShipAddress,token:string) => {
 }
 
 const modifyShippingAddress = async (data: UserShipAddress,token:string) => {
-    const response = await fetch("http://localhost:5025/User/ModifyShippingAddress", {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/User/ModifyShippingAddress`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -526,7 +528,8 @@ const modifyShippingAddress = async (data: UserShipAddress,token:string) => {
 }
 
 const deleteShippingAddress = async (data: UserShipAddress,token:string) => {
-    const response = await fetch("http://localhost:5025/User/DeleteShippingAddress", {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/User/DeleteShippingAddress`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -541,7 +544,8 @@ const deleteShippingAddress = async (data: UserShipAddress,token:string) => {
 
 
 const setDefaultShippingAddress = async (data: UserShipAddress,token:string) => {
-    const response = await fetch("http://localhost:5025/User/SetDefaultShippingAddress", {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/User/SetDefaultShippingAddress`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -555,7 +559,8 @@ const setDefaultShippingAddress = async (data: UserShipAddress,token:string) => 
 }
 
 const getUserShippingAddress = async () => {
-    const response = await fetch("http://localhost:5025/User/GetUserShippingAddress", {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/User/GetUserShippingAddress`, {
         method: 'GET',
         credentials: 'include',
 

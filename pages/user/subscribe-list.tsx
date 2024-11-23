@@ -203,8 +203,8 @@ const removeFromFavoriteListToBackend = async (productId: number,token:string) =
     }
 
 
-
-    const response = await fetch(`http://localhost:5025/User/RemoveFromFavoriteList`, {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/User/RemoveFromFavoriteList`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -219,9 +219,9 @@ const removeFromFavoriteListToBackend = async (productId: number,token:string) =
 
 
 const getFavoriteProductsFromBackend = async () => {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
 
-
-    const response = await fetch(`http://localhost:5025/Product/GetfavoriteList`, {
+    const response = await fetch(`${apiUrl}/Product/GetfavoriteList`, {
         method: 'GET',
         credentials: 'include', //就算有加也沒用，在getserverprops 調用 cookie 要自己手動加
     })

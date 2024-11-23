@@ -154,8 +154,8 @@ const InputSet = ({ label, placeholder, helperText, name, errorMsg, value, func 
 
 // 後端請求
 const modifyPasswordToBackend = async (data: ModifyPassword,token:string) => {
-
-    const response = await fetch("http://localhost:5025/User/ModifyPassword", {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/User/ModifyPassword`, {
         method: 'POST',
         credentials: 'include',
         headers: {

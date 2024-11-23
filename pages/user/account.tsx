@@ -431,7 +431,8 @@ const yearList = (thisYear: number) => {
 
 //後端方法
 const getUserInfo = async () => {
-  const response = await fetch("http://localhost:5025/User/GetUserInfo", {
+  const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+  const response = await fetch(`${apiUrl}/User/GetUserInfo`, {
     method: 'GET',
     credentials: 'include',
 
@@ -444,7 +445,8 @@ const modifyUserInfo = async (data: UserInfo, token: string) => {
 
   console.log("data:", data, "token:", token)
 
-  const response = await fetch("http://localhost:5025/User/ModifyUserInfo", {
+  const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+  const response = await fetch(`${apiUrl}/User/ModifyUserInfo`, {
     method: 'POST',
     credentials: 'include',
     headers: {

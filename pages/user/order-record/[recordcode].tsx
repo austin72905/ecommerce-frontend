@@ -49,8 +49,8 @@ const OrderDetailPage = () => {
 
     //請求後端
     const getOrderInfo = async (query: string) => {
-
-        const response = await fetch(`http://localhost:5025/Order/GetOrderInfo?${query}`, {
+        const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+        const response = await fetch(`${apiUrl}/Order/GetOrderInfo?${query}`, {
             method: 'GET',
             credentials: 'include',
         })

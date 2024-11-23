@@ -165,9 +165,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
   const getUserInfo = async () => {
 
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
 
-
-    const url = `http://localhost:5025/User/GetUserInfo`
+    const url = `${apiUrl}/User/GetUserInfo`
 
     const response = await fetch(url, {
       method: 'GET',

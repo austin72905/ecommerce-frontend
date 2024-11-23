@@ -238,7 +238,9 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
 
     //請求後端
     const getOrders = async () => {
-        const response = await fetch("http://localhost:5025/Order/GetOrders", {
+        const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+
+        const response = await fetch(`${apiUrl}/Order/GetOrders`, {
             method: 'GET',
             credentials:'include',
         })

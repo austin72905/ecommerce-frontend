@@ -34,8 +34,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
         return <p>無商品資訊...</p>
     }
 
-    console.log("載入product", product)
-
+    
 
     const [recommendProducts, setrecommendProducts] = useState<ProductInfomationFavorite[] | null>(null);
     // 你可能感興趣
@@ -406,8 +405,8 @@ const getRecommendationFromBackend = async (productId: string) => {
     }).toString()
 
     //console.log(query)
-
-    const response = await fetch(`http://localhost:5025/Product/GetRecommendationProduct?${query}`, {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/Product/GetRecommendationProduct?${query}`, {
         method: 'GET',
         credentials: 'include',
 
@@ -422,7 +421,9 @@ const getProductInfoFromBackend = async (productId: string) => {
 
     console.log(query)
 
-    const response = await fetch(`http://localhost:5025/Product/GetProductById?${query}`, {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+
+    const response = await fetch(`${apiUrl}/Product/GetProductById?${query}`, {
         method: 'GET',
         credentials: 'include',
 
@@ -840,7 +841,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavorite, itemCount, s
             .map(v => v.discountPrice as number)
             .sort((a, b) => a - b)
 
-        console.log("priceList:", priceList)
+        //console.log("priceList:", priceList)
         return priceList[0]
 
     }
@@ -1102,7 +1103,7 @@ const CustomSilde = ({ productFavorite, goToProductDetail }: CustomSildeProps) =
 
     const { product } = productFavorite
 
-    console.log("CustomSilde product:",product)
+    //console.log("CustomSilde product:",product)
 
 
     //console.log("slide product",product)

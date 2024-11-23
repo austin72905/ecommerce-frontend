@@ -326,6 +326,9 @@ const CheckOut = () => {
         form.method = 'POST';
         form.action = 'https://logistics-stage.ecpay.com.tw/Express/map'; // 提交的目標URL
 
+
+        const replyUrl= process.env.NEXT_PUBLIC_MAP_RETURN_URL
+
         // 添加表單字段
         const data = {
             MerchantID: "2000933",      // 廠商編號
@@ -333,7 +336,7 @@ const CheckOut = () => {
             LogisticsType: "CVS",        // 超商取貨
             LogisticsSubType: recieveStoreInfo.recieveWay,  // C2C
             IsCollection: "N",           // N：不代收貨款
-            ServerReplyURL: "https://bdec-1-168-26-39.ngrok-free.app/api/shopmap-callback", // 伺服器回調URL
+            ServerReplyURL: `${replyUrl}/api/shopmap-callback`, // 伺服器回調URL
             Device: isSmallScreen ? "1" : "0"                  // 0：PC（預設值） 1：Mobile
         };
 
@@ -424,9 +427,12 @@ const CheckOut = () => {
 
 
     const generateOrder = async (data: SubmitOrderReq, token: string) => {
+
+        const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+
         console.log("data:", data)
         console.log("token:", token)
-        const response = await fetch("http://localhost:5025/Order/SubmitOrder", {
+        const response = await fetch(`${apiUrl}/Order/SubmitOrder`, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -655,7 +661,11 @@ const recieveWayMap = new Map<string, string>([
 
 // 後端
 const getUserShippingAddress = async () => {
-    const response = await fetch("http://localhost:5025/User/GetUserShippingAddress", {
+
+
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+
+    const response = await fetch(`${apiUrl}/User/GetUserShippingAddress`, {
         method: 'GET',
         credentials: 'include',
 
