@@ -20,7 +20,7 @@ import { INPUT_FIELD } from '@/constant-value/constant';
 import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';
 import { UserInfo } from '@/interfaces/user';
-import { useCsrfTokenStore, userUserInfoStore } from '@/store/store';
+import { useAlertMsgStore, useCsrfTokenStore, userUserInfoStore } from '@/store/store';
 import { parseCookies } from 'nookies';
 
 
@@ -36,6 +36,8 @@ const MyAccountPage = () => {
   const csrfToken = useCsrfTokenStore((state) => state.csrfToken)
 
   const setCsrfToken = useCsrfTokenStore((state) => state.setCsrfToken)
+
+  const setAlertMsg = useAlertMsgStore(state => state.setAlertMsg)
 
   const initPersonInfo: PersonalInfomation = { name: "", email: "", phoneNumber: "", birthday: `${thisYear - 10}/1/1`, sex: "男", type: "web", picture: "" }
 
@@ -146,7 +148,21 @@ const MyAccountPage = () => {
       picture: personalInfo.picture
     }
 
-    await modifyUserInfo(data, csrfToken as string)
+    const result = await modifyUserInfo(data, csrfToken as string) as ApiResponse
+
+
+    if (result.code != RespCode.SUCCESS) {
+      setAlertMsg(result.message)
+      return
+    }
+
+
+    if (result.data == null) {
+      setAlertMsg(result.message)
+      return
+    }
+
+    setAlertMsg("修改成功")
 
     setisRenew(u => !u)
 
@@ -221,7 +237,7 @@ const MyAccountPage = () => {
   }, [])
 
   useEffect(() => {
-    
+
     const fetchData = async () => {
       try {
         const result = await getUserInfo() as ApiResponse;
