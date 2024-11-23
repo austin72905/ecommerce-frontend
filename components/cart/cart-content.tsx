@@ -15,10 +15,7 @@ interface TableViewCartContentProps {
 }
 
 const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductCount, removeFromCart }: TableViewCartContentProps) => {
-    //console.log(cartContent)
-    if (cartContent.length === 0) {
-        return <p style={{ textAlign: "center" }}>購物車內沒有商品</p>
-    }
+
 
     const router = useRouter()
 
@@ -28,22 +25,28 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
 
     //console.log("cartContent:",cartContent)
 
-    const showPrice = (item: ProductInfomationCount)=>{
-        if(item.selectedVariant){
-            if(item.selectedVariant.discountPrice)
+    const showPrice = (item: ProductInfomationCount) => {
+        if (item.selectedVariant) {
+            if (item.selectedVariant.discountPrice)
                 return item.selectedVariant.discountPrice
             else
                 return item.selectedVariant.price
-        }else{
-            if(item.product.discountPrice)
+        } else {
+            if (item.product.discountPrice)
                 return item.product.discountPrice
             else
                 return item.product.price
         }
     }
     //總計
-    const showItemTotalPrice = (item: ProductInfomationCount)=>{
-        return showPrice(item)*item.count
+    const showItemTotalPrice = (item: ProductInfomationCount) => {
+        return showPrice(item) * item.count
+    }
+
+
+    //console.log(cartContent)
+    if (cartContent.length === 0) {
+        return <p style={{ textAlign: "center" }}>購物車內沒有商品</p>
     }
 
 
@@ -191,7 +194,7 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
                                             顏色 : {item.selectedVariant ? item.selectedVariant.color : "標準"}
                                         </Typography>
                                         {/*價格 */}
-                                        <Typography variant='subtitle2' sx={{mt:1}}>
+                                        <Typography variant='subtitle2' sx={{ mt: 1 }}>
                                             {
                                                 item.selectedVariant ?
 

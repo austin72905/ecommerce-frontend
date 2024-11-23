@@ -30,17 +30,12 @@ import { RespCode } from "@/enums/resp-code";
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
-    if (!product) {
-        return <p>無商品資訊...</p>
-    }
-
-    
 
     const [recommendProducts, setrecommendProducts] = useState<ProductInfomationFavorite[] | null>(null);
+
+
     // 你可能感興趣
     useEffect(() => {
-
-
 
         const fetchData = async () => {
             try {
@@ -61,7 +56,10 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
             }
         };
 
-        fetchData();
+        if (product) {
+            fetchData();
+        }
+
     }, [])
 
 
@@ -103,6 +101,12 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     const handleView = (e: React.SyntheticEvent, newVal: string) => {
         setviewValue(newVal)
     }
+
+
+
+
+
+
 
 
     let sliderRef = useRef<Slider | null>(null)
@@ -225,6 +229,26 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
 
     }
+
+
+
+
+    /*
+       确保 Hooks 在组件顶层调用，不受条件控制。
+       这违反了 Hooks 的规则：每次组件渲染时，Hooks 的调用数量和顺序必须一致。
+       可以通过条件渲染返回的内容，而不是提前终止组件的执行。
+
+
+       所以不只是不能把hook放在 condition
+   
+   
+   */
+    if (!product) {
+        return <p>無商品資訊...</p>
+    }
+
+
+
 
     return (
         <Box sx={{ px: 0 }}>
@@ -405,7 +429,7 @@ const getRecommendationFromBackend = async (productId: string) => {
     }).toString()
 
     //console.log(query)
-    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
     const response = await fetch(`${apiUrl}/Product/GetRecommendationProduct?${query}`, {
         method: 'GET',
         credentials: 'include',
@@ -421,7 +445,7 @@ const getProductInfoFromBackend = async (productId: string) => {
 
     console.log(query)
 
-    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
 
     const response = await fetch(`${apiUrl}/Product/GetProductById?${query}`, {
         method: 'GET',
@@ -630,11 +654,7 @@ interface PurchaseDetailProps {
 const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavorite, itemCount, selectVariant, setselectVariant, setItemCount, addToCart, goToCheckoutDirectly }: PurchaseDetailProps) => {
 
 
-    if (!productFavorite) {
-        return <p>無商品資訊...</p>
-    }
-
-
+    
     const { product, isFavorite } = productFavorite
 
     const router = useRouter()
@@ -845,6 +865,14 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavorite, itemCount, s
         return priceList[0]
 
     }
+
+
+
+    if (!productFavorite) {
+        return <p>無商品資訊...</p>
+    }
+
+
 
 
 

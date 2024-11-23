@@ -75,7 +75,9 @@ const cargoInfomation: CargoInfomation[] = [
 const orderAddress: OrderAddress = {
     receiver: "王大明",
     phoneNumber: "(+886)964816276",
-    shippingAddress: "7-11 雅典門市 台中市南區三民西路377號西川一路1號 店號950963"
+    shippingAddress: "7-11 雅典門市 台中市南區三民西路377號西川一路1號 店號950963",
+    recieveWay:"7-11",
+    recieveStore:"雅典門市"
 }
 
 
@@ -341,7 +343,7 @@ const orderInfo: OrderInfomation = {
     orderStepInfomation: orderStepInfomation,
     status: 1,
     shippingPrice: 39,
-    payWay: "LinePay"
+    payWay: 1
 }
 
 
