@@ -4,30 +4,24 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
 
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import CloseIcon from '@mui/icons-material/Close';
+
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 
 
-import Link from 'next/link';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Avatar, Badge, Collapse, Menu, MenuItem } from '@mui/material';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { Avatar, Badge } from '@mui/material';
+
 import SideNavBar, { useOpenState } from './sidebar';
 import { useCartStore, userUserInfoStore } from '@/store/store';
 import UserMenu from './user-menu';
-import Image from 'next/image';
+
 
 
 

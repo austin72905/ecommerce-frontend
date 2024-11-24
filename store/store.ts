@@ -1,7 +1,5 @@
 import { ProductInfomation, ProductInfomationCount, ProductVariant } from '@/interfaces';
 import { PersonalInfomation } from '@/pages/user/account';
-import { userInfo } from 'os';
-import { useEffect } from 'react';
 import { create } from 'zustand'
 
 const useCartStore = create<CartState>((set, get) => ({

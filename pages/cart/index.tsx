@@ -1,36 +1,17 @@
-import React, { useState, useContext, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import styled from '@mui/system/styled';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import IconButton from '@mui/material/IconButton';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 
 
 
-import ProductImage1 from '/public/images/coat1.jpg'
 import { useRouter } from 'next/router';
 import { useAlertMsgStore, useCartStore, userUserInfoStore } from '@/store/store';
-import { it } from 'node:test';
 import { ProductInfomationCount } from '@/interfaces';
-import { Card, CardActions, CardContent, CardMedia, useMediaQuery, useTheme } from '@mui/material';
-import Image from 'next/image';
+import { useMediaQuery, useTheme } from '@mui/material';
 import { DefaultScreenCartContent, SmallScreenViewCartContent } from '@/components/cart/cart-content';
 import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';

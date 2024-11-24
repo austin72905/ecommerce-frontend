@@ -1,5 +1,5 @@
 import { useCartStore, useCsrfTokenStore, useSubscribeListStore } from "@/store/store"
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Checkbox, Grid, IconButton, Stack, Typography } from "@mui/material"
+import { Box, Button, Card, CardActions, CardContent, CardMedia, Grid, IconButton, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useRouter } from "next/router"
 

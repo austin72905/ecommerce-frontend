@@ -1,6 +1,6 @@
 import { useAlertMsgStore } from "@/store/store";
 import { Alert } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function AlertMsg(){
 

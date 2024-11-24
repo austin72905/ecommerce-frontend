@@ -4,7 +4,7 @@ import ProductImage2 from '/public/images/coat2.jpg'
 import ProductImage3 from '/public/images/coat3.jpg'
 import ProductImage4 from '/public/images/coat4.jpg'
 import ProductImage5 from '/public/images/coat5.jpg'
-import { ProductInfomation, ProductInfomationCount } from '@/interfaces'
+import { ProductInfomation } from '@/interfaces'
 
 
 const imgList = [ 

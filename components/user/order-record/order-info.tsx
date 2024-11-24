@@ -1,5 +1,4 @@
 import { OrderInfomation } from "@/interfaces";
-import { randomImg } from "@/pages/user/order-record";
 import { Box, Card, CardContent, CardMedia, Grid, Paper, Stack, Typography } from "@mui/material";
 import Image from "next/image";
 

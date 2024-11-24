@@ -1,7 +1,7 @@
-import { CargoInfomation, CargoStepInfomation } from "@/interfaces/cargo";
+import { CargoStepInfomation } from "@/interfaces/cargo";
 import { Box, Paper, Stack, Step, StepIconProps, StepLabel, Stepper, styled, Typography } from "@mui/material";
 
-export default function CargoInfo({ cargoInfomation, cargoStep }: CargoInfoProps) {
+export default function CargoInfo({ cargoInfomation }: CargoInfoProps) {
     return (
         <Paper sx={{ height: "250px", boxShadow: "none", border: "1px solid #d9d9d9"}}>
             <Stack spacing={4} sx={{ ml: 3, mt: 3, pb: 3 }}>

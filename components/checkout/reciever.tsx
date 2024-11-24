@@ -1,5 +1,5 @@
 import { RecieverInfo } from "@/interfaces";
-import { Checkbox, FormControlLabel, Paper, Stack, TextField, Typography } from "@mui/material";
+import { Paper, Stack, TextField, Typography } from "@mui/material";
 
 export default function RecieverInfomation({ recieverInfo, handleCheckRecieverInfo,handleRecieverInfo }: SubscriberInfoProps) {
     return (

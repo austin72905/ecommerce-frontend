@@ -5,10 +5,9 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
 
-import { Alert, Box, Button, Checkbox, Stack, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Stack, Typography } from "@mui/material";
 import { ChangeEvent, useEffect, useReducer, useState } from "react";
 import Image from "next/image";
-import { getProducts } from "@/dummy-data/dummy-data";
 import { GetServerSideProps } from "next";
 import { ProductInfomation, ProductInfomationFavorite } from "@/interfaces";
 import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";

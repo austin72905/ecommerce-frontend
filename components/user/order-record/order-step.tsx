@@ -1,7 +1,6 @@
 import { Box, Divider, Paper, Stack, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import { OrderInfomation, OrderStepInfomation } from "@/interfaces";
-import { orderStatus, orderStatusColor } from "@/dummy-data/order-dummy-data";
 import { orderStatusMap } from "@/enums/order-status";
 import { OrderStepStatus } from "@/enums/order-step";
 

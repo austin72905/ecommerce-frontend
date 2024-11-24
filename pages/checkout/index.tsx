@@ -17,7 +17,6 @@ import { LastConfirm } from '@/components/checkout/last-confirm';
 import PaymentAmount from '@/components/checkout/payment-amount';
 import CargoWay from '@/components/checkout/cargo-way';
 import PaymentWay from '@/components/checkout/payment-way';
-import SubscriberInfo from '@/components/checkout/subscriber';
 import RecieverInfomation from '@/components/checkout/reciever';
 import WithAuth from '@/components/auth/with-auth';
 import { useRouter } from 'next/router';

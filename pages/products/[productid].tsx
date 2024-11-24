@@ -7,22 +7,15 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import styled from '@mui/system/styled'
-import ProductImage4 from '/public/images/coat1.jpg'
-import ProductImage5 from '/public/images/coat2.jpg'
 import Image from "next/image";
-import { AppBar, Box, Button, Card, CardContent, CardHeader, CardMedia, Checkbox, Container, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, SpeedDial, SpeedDialIcon, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, ToggleButton, ToggleButtonGroup, Toolbar, Typography, TypographyOwnProps, useMediaQuery, useTheme } from "@mui/material";
+import { AppBar, Box, Button, Card, CardContent, CardMedia, Checkbox, Container, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, SpeedDial, SpeedDialIcon, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, ToggleButton, ToggleButtonGroup, Toolbar, Typography, TypographyOwnProps, useMediaQuery, useTheme } from "@mui/material";
 import Grid from '@mui/material/Grid';
 import { ChangeEvent, Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
-import { getProducts, getProdcctById } from "@/dummy-data/dummy-data";
 import { ProductInfomation, ProductInfomationCount, ProductInfomationFavorite, ProductVariant } from "@/interfaces";
 import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
-import GoToTopButton from "@/components/layout/speed-dial-group";
 import { GridContainer } from "@/components/ui/grid-container";
 import { ApiResponse } from "@/interfaces/api/response";
 import { RespCode } from "@/enums/resp-code";

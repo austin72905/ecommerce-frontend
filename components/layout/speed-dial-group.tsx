@@ -1,8 +1,6 @@
 import { SpeedDial, Stack } from "@mui/material"
 
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { useState } from "react";
 
 
 interface GoToTopButtonProps {
