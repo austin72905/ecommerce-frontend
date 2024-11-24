@@ -7,6 +7,9 @@ WORKDIR /usr/src/app
 # 複製依賴文件
 COPY package.json package-lock.json ./
 
+
+# 安裝依賴
+ENV NODE_ENV=production
 # 安裝生產和開發依賴
 RUN npm install
 
@@ -19,6 +22,9 @@ RUN npm run build
 # （可選）使用更小的映像檔來運行應用程式
 FROM node:18.17.0 AS runner
 
+
+
+
 # 設置環境變數（可選，視需求調整）
 ENV NODE_ENV=production
 
@@ -30,6 +36,7 @@ COPY --from=builder /usr/src/app/package.json .
 COPY --from=builder /usr/src/app/.next ./.next
 COPY --from=builder /usr/src/app/public ./public
 COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/next.config.mjs ./next.config.mjs
 
 # 暴露應用的默認端口
 EXPOSE 3000
