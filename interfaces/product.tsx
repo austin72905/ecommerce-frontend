@@ -3,9 +3,9 @@
 export interface ProductInfomation {
     productId: number;
     title: string;
-    price: number;
+    price?: number;
     discountPrice?: number;
-    stock: number;
+    stock?: number;
     howToWash?: string;
     features?: string;
     material?: string[];
@@ -14,6 +14,23 @@ export interface ProductInfomation {
     coverImg?: any;
     variants:ProductVariant[];
 
+}
+
+export interface ProductBasic {
+    productId: number;
+    title: string;
+    howToWash?: string;
+    features?: string;
+    material?: string[];
+    colorDescription?: string[];
+    coverImg?: any;
+
+}
+
+export interface ProductDynamic {
+   variants:ProductVariant[];
+   isFavorite?:boolean;
+   productId:number;
 }
 
 

@@ -21,7 +21,7 @@ import { useAlertMsgStore, useCsrfTokenStore } from '@/store/store';
 import WithAuth from '@/components/auth/with-auth';
 import { INPUT_FIELD } from '@/constant-value/constant';
 import { validateAddress, validateEmail, validateNickName, validatePhoneNumber, validateRecieveStore, ValidationErrors } from '@/utils/validation';
-import { OrderAddress, UserShipAddress } from '@/interfaces';
+import {  UserShipAddress } from '@/interfaces';
 import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';
 

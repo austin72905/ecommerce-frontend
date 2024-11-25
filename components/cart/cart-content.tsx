@@ -31,12 +31,9 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                 return item.selectedVariant.discountPrice
             else
                 return item.selectedVariant.price
-        } else {
-            if (item.product.discountPrice)
-                return item.product.discountPrice
-            else
-                return item.product.price
-        }
+        } 
+
+        return 0
     }
     //總計
     const showItemTotalPrice = (item: ProductInfomationCount) => {

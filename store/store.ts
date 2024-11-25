@@ -93,11 +93,7 @@ const useCartStore = create<CartState>((set, get) => ({
                     if (item.count < item.selectedVariant.stock) {
                         item.count += 1;
                     }
-                } else {
-                    if (item.count < item.product.stock) {
-                        item.count += 1;
-                    }
-                }
+                } 
 
             }
 
@@ -117,13 +113,7 @@ const useCartStore = create<CartState>((set, get) => ({
                 else
                     totalPrice += item.selectedVariant.price * item.count
 
-            } else {
-                if (item.product.discountPrice)
-                    totalPrice += item.product.discountPrice * item.count
-                else
-                    totalPrice += item.product.price * item.count
-
-            }
+            } 
 
         })
         return totalPrice

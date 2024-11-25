@@ -705,8 +705,8 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavorite, itemCount, s
 
     const handleCountMinus = () => {
         setItemCount(i => {
-            if (i - 1 < 0) {
-                return 0
+            if (i - 1 <= 0) {
+                return 1
             }
 
             return i - 1
@@ -822,11 +822,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavorite, itemCount, s
             if (itemCount > selectVariant.stock) {
                 setItemCount(1)
             }
-        } else {
-            if (itemCount > product.stock) {
-                setItemCount(1)
-            }
-        }
+        } 
 
 
     }, [selectVariant])

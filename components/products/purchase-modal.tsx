@@ -48,8 +48,8 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
 
     const handleCountMinus = () => {
         setItemCount(i => {
-            if (i - 1 < 0) {
-                return 0
+            if (i - 1 <= 0) {
+                return 1
             }
 
             
@@ -169,11 +169,7 @@ export default function PurchaseModal({ product, modalOpen, handleModalOpen, han
             if (itemCount > selectVariant.stock) {
                 setItemCount(1)
             }
-        } else {
-            if (itemCount > product.stock) {
-                setItemCount(1)
-            }
-        }
+        } 
 
 
     }, [selectVariant])

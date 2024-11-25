@@ -101,7 +101,7 @@ export default function AuthLogin() {
 
 
 
-    }, [router.isReady, router.query])
+    }, [router, setCsrfToken, setUserInfo])  // 只要 router 被添加為依賴，useEffect 會在 router.isReady 或 router.query 改變時自動重新運行
     // 必備參數 code
     // 跳轉 state
     // redirect_url (從state裡面取)
