@@ -10,11 +10,11 @@ import styled from '@mui/system/styled'
 import Image from "next/image";
 import { AppBar, Box, Button, Card, CardContent, CardMedia, Checkbox, Container, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, SpeedDial, SpeedDialIcon, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, ToggleButton, ToggleButtonGroup, Toolbar, Typography, TypographyOwnProps, useMediaQuery, useTheme } from "@mui/material";
 import Grid from '@mui/material/Grid';
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
-import { ProductInfomation, ProductInfomationCount, ProductInfomationFavorite, ProductVariant } from "@/interfaces";
+import { ProductBasic, ProductDynamic, ProductInfomation, ProductInfomationCount, ProductInfomationFavorite, ProductVariant } from "@/interfaces";
 import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 import { GridContainer } from "@/components/ui/grid-container";
 import { ApiResponse } from "@/interfaces/api/response";
@@ -23,16 +23,140 @@ import { RespCode } from "@/enums/resp-code";
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
+    const [count, setCount] = useState(0);
+    // const renderCount = useRef(0);
 
-    const [recommendProducts, setrecommendProducts] = useState<ProductInfomationFavorite[] | null>(null);
+    // useEffect(() => {
+    //     renderCount.current += 1; // 每次渲染後增加 1
+    //     console.log(`Component has rendered ${renderCount.current} times`);
+    // });
+    //const [recommendProducts, setrecommendProducts] = useState<ProductInfomationFavorite[] | null>(null);
+    const [recommendProducts, setrecommendProducts] = useState<ProductBasic[] | null>(null);
+
+    const [dynamicInfo, setdynamicInfo] = useState<ProductDynamic[]>()
+
+
+    // 請求商品動態數據、庫存、價格等
+    //請求後端獲取variant
+    useEffect(() => {
+        
+        const fetchData = async (productId: number) => {
+            try {
+                const result = await getProductDynamicInfoFromBackend(productId) as ApiResponse;
+                console.log("result=", result)
+
+
+                if (result.code != RespCode.SUCCESS) {
+
+                    console.log("獲取數據失敗")
+                    return;
+                }
+
+
+                if (result.data == null) {
+                    console.log("獲取數據失敗")
+                    return;
+                }
+
+
+                const data = result.data as ProductDynamic[]
+
+                setdynamicInfo(data);
+
+
+
+
+            } catch (error) {
+                console.error('Error fetching data:', error)
+            }
+        }
+
+
+        fetchData(product.productId)
+
+
+
+
+    }, [product])
+
+
+
+    const filterProductVariant = (productId: number) => {
+        console.log("productId=", productId)
+        console.log("dynamicInfo=", dynamicInfo)
+        var variants =dynamicInfo?.find(p => p.productId === productId)?.variants
+        return variants || []
+    }
+
+    const filterProductIsVariant = (productId: number) => {
+        return dynamicInfo?.find(p => p.productId === productId)?.isFavorite as boolean
+    }
+
+
+    const combineToProductInfo = (basic: ProductBasic) => {
+        //const variants =dynamicInfo?.find(p=>p.productId==basic.productId)?.variants   as ProductVariant[]
+
+        const productInfo: ProductInfomation = {
+            productId: basic.productId,
+            title: basic.title,
+            howToWash: basic.howToWash,
+            features: basic.features,
+            material: basic.material,
+            coverImg: basic.coverImg,
+            variants: filterProductVariant(basic.productId)
+        }
+
+        return productInfo
+    }
+
+    const comineToProductInfoFavroiate = (basic: ProductBasic) => {
+
+
+        const prodoctInfo: ProductInfomationFavorite = {
+            product: combineToProductInfo(basic),
+            isFavorite: filterProductIsVariant(basic.productId)
+        }
+
+        return prodoctInfo
+    }
+
+
+    //const memoizedProductFavoritate = useMemo(() => comineToProductInfoFavroiate(product), [product]);
 
 
     // 你可能感興趣
+    // useEffect(() => {
+
+    //     const fetchData = async () => {
+    //         try {
+    //             const response = await getRecommendationFromBackend(product.productId.toString()) as ApiResponse<ProductInfomationFavorite[]>;
+
+    //             if (response.code != RespCode.SUCCESS) {
+    //                 return
+    //             }
+
+    //             const products = response.data
+
+    //             console.log("fetch products", products)
+
+    //             setrecommendProducts(products)
+
+    //         } catch (error) {
+    //             console.error('Error fetching data:', error);
+    //         }
+    //     };
+
+    //     if (product) {
+    //         fetchData();
+    //     }
+
+    // }, [])
+
     useEffect(() => {
 
         const fetchData = async () => {
             try {
-                const response = await getRecommendationFromBackend(product.product.productId.toString()) as ApiResponse<ProductInfomationFavorite[]>;
+                const response = await getRecommendationBasicInfoFromBackend(product.productId.toString()) as ApiResponse<ProductBasic[]>;
 
                 if (response.code != RespCode.SUCCESS) {
                     return
@@ -201,11 +325,13 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
     const addProductToCart = () => {
         setAlertMsg("加入購物車成功")
-        addToCart({ ...product.product }, selectVariant, itemCount)
+        var productInfo = combineToProductInfo(product)
+        addToCart({ ...productInfo }, selectVariant, itemCount)
     }
     const userInfo = userUserInfoStore((state) => state.userInfo)
     const goToCheckoutDirectly = () => {
-        addToCart({ ...product.product }, selectVariant, itemCount)
+        var productInfo = combineToProductInfo(product)
+        addToCart({ ...productInfo }, selectVariant, itemCount)
 
         if (!userInfo) {
             setAlertMsg("請先登入")
@@ -251,7 +377,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
             <AnchorNavbar showNavBar={showNavBar} handleLinkClick={handleLinkClick} />
 
             <BottomBar
-                productFavoritate={product}
+                productFavoritate={comineToProductInfoFavroiate(product)}
                 addProductToCart={addProductToCart}
                 goToCheckoutDirectly={goToCheckoutDirectly}
 
@@ -264,7 +390,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         <Box sx={{ p: 0, m: 2, mb: 1, maxWidth: "400px", maxHeight: "400px", width: '100%', height: 'auto' }}>
 
                             <Slider {...settings} ref={sliderRef} >
-                                {product.product?.images && product.product?.images.map((img, index) => (
+                                {product?.images && product?.images.map((img, index) => (
                                     <Box key={index} sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
                                         <Image src={img} alt={`img${index}`} fill style={{ objectFit: "cover" }} />
                                     </Box>
@@ -278,13 +404,16 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
                 <Grid item lg={4} md={4} sm={4} xs={8}>
                     {/*購買資訊 */}
+                    {
+                    dynamicInfo &&
+                    
                     <PurchaseDetail
                         columns={8}
                         xs={2}
                         sm={2.5}
                         md={2}
                         lg={1.5}
-                        productFavorite={product}
+                        productFavorite={comineToProductInfoFavroiate(product)}
                         itemCount={itemCount}
                         selectVariant={selectVariant}
                         setselectVariant={setselectVariant}
@@ -293,6 +422,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         setItemCount={setItemCount}
 
                     />
+                    }
+                    
                 </Grid>
 
                 {/*大圖區 */}
@@ -308,7 +439,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                             <Divider />
                         </Grid>
                         <Grid item xs={8}>
-                            {product.product.images?.map((img, index) => (
+                            {product.images?.map((img, index) => (
                                 <Box
                                     key={index}
                                     sx={{
@@ -337,7 +468,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
                     {/*商品介紹*/}
                     <ProductIntroduce
-                        productFavoritate={product}
+                        productFavoritate={comineToProductInfoFavroiate(product)}
                         columns={8}
                         xs={2.5}
                         md={1}
@@ -398,7 +529,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                             <Box >
                                 <Slider {...settingsYouMayInterested} >
                                     {recommendProducts && recommendProducts.map((p) => (
-                                        <CustomSilde key={p.product.productId} productFavorite={p} goToProductDetail={goToProductDetail} />
+                                        <CustomSilde key={p.productId} productFavorite={comineToProductInfoFavroiate(p)} goToProductDetail={goToProductDetail} />
                                     ))}
                                 </Slider>
                             </Box>
@@ -415,6 +546,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     )
 }
 
+// 後端
 const getRecommendationFromBackend = async (productId: string) => {
 
     const query = new URLSearchParams({
@@ -424,6 +556,23 @@ const getRecommendationFromBackend = async (productId: string) => {
     //console.log(query)
     const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
     const response = await fetch(`${apiUrl}/Product/GetRecommendationProduct?${query}`, {
+        method: 'GET',
+        credentials: 'include',
+
+    })
+
+    return response.json();
+}
+
+const getRecommendationBasicInfoFromBackend = async (productId: string) => {
+
+    const query = new URLSearchParams({
+        productId: productId
+    }).toString()
+
+    //console.log(query)
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/Product/GetRecommendationProductBasicInfo?${query}`, {
         method: 'GET',
         credentials: 'include',
 
@@ -449,6 +598,43 @@ const getProductInfoFromBackend = async (productId: string) => {
     return response.json();
 }
 
+
+const getProductBasicInfoFromBackend = async (productId: number) => {
+
+    const query = new URLSearchParams({
+        productId: productId.toString()
+    }).toString()
+
+    console.log(query)
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/Product/GetProductBasicInfoById?${query}`, {
+        method: 'GET',
+
+    })
+
+    return response.json();
+}
+
+const getProductDynamicInfoFromBackend = async (productId: number) => {
+
+    const postBody = {
+        productId: productId,
+    }
+
+
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+    const response = await fetch(`${apiUrl}/Product/GetProductDynamicInfo`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',  // 設置 Content-Type 為 JSON
+        },
+        body: JSON.stringify(postBody)  // 將 postBody 轉換為 JSON 字串
+    })
+
+    return response.json();
+}
+
 interface RecommendationData {
     products: ProductInfomationFavorite[]
 }
@@ -458,7 +644,7 @@ interface ProductDetailData {
 }
 
 interface ProductDetailPageProps {
-    product: ProductInfomationFavorite
+    product: ProductBasic
 }
 
 export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = async (context) => {
@@ -479,7 +665,7 @@ export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = as
 
     //const product = getProdcctById(Number(productId))
 
-    const response = await getProductInfoFromBackend(productId) as ApiResponse<ProductInfomationFavorite>
+    const response = await getProductBasicInfoFromBackend(Number(productId)) as ApiResponse<ProductBasic>
 
     if (response.code != RespCode.SUCCESS) {
         return {
@@ -647,7 +833,7 @@ interface PurchaseDetailProps {
 const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavorite, itemCount, selectVariant, setselectVariant, setItemCount, addToCart, goToCheckoutDirectly }: PurchaseDetailProps) => {
 
 
-    
+
     const { product, isFavorite } = productFavorite
 
     const router = useRouter()
@@ -822,7 +1008,7 @@ const PurchaseDetail = ({ xs, sm, md, lg, columns, productFavorite, itemCount, s
             if (itemCount > selectVariant.stock) {
                 setItemCount(1)
             }
-        } 
+        }
 
 
     }, [selectVariant])

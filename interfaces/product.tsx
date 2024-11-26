@@ -22,7 +22,7 @@ export interface ProductBasic {
     howToWash?: string;
     features?: string;
     material?: string[];
-    colorDescription?: string[];
+    images?: string[];
     coverImg?: any;
 
 }

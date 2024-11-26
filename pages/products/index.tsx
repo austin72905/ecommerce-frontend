@@ -43,8 +43,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
     const [dynamicInfo, setdynamicInfo] = useState<ProductDynamic[]>()
 
-    const [variants,setvariants]=useState<ProductVariant[]>([])
-
+   
     const filterProductVariant = (productId: number) => {
         console.log("productId=", productId)
         console.log("dynamicInfo=", dynamicInfo)
