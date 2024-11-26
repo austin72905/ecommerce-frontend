@@ -17,6 +17,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import PurchaseModal from "@/components/products/purchase-modal";
 import { ApiResponse } from "@/interfaces/api/response";
 import { RespCode } from "@/enums/resp-code";
+import { pageTitleMap } from "@/constant-value/page-title-map";
 
 
 
@@ -265,10 +266,10 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
     return (
         <Box sx={{ p: 2 }}>
-            <h1>
-                {router.query.tag && router.query.tag}
-                {router.query.kind && router.query.kind}
-            </h1>
+            <h2>
+                {router.query.tag && pageTitleMap.get(router.query.tag as string)  }
+                {router.query.kind && pageTitleMap.get(router.query.kind as string)}
+            </h2>
             <Grid container columns={8} spacing={3}>
 
 

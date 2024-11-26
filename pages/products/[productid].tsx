@@ -30,8 +30,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     //     renderCount.current += 1; // 每次渲染後增加 1
     //     console.log(`Component has rendered ${renderCount.current} times`);
     // });
-    //const [recommendProducts, setrecommendProducts] = useState<ProductInfomationFavorite[] | null>(null);
-    const [recommendProducts, setrecommendProducts] = useState<ProductBasic[] | null>(null);
+    const [recommendProducts, setrecommendProducts] = useState<ProductInfomationFavorite[] | null>(null);
+    //const [recommendProducts, setrecommendProducts] = useState<ProductBasic[] | null>(null);
 
     const [dynamicInfo, setdynamicInfo] = useState<ProductDynamic[]>()
 
@@ -125,38 +125,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
 
     // 你可能感興趣
-    // useEffect(() => {
-
-    //     const fetchData = async () => {
-    //         try {
-    //             const response = await getRecommendationFromBackend(product.productId.toString()) as ApiResponse<ProductInfomationFavorite[]>;
-
-    //             if (response.code != RespCode.SUCCESS) {
-    //                 return
-    //             }
-
-    //             const products = response.data
-
-    //             console.log("fetch products", products)
-
-    //             setrecommendProducts(products)
-
-    //         } catch (error) {
-    //             console.error('Error fetching data:', error);
-    //         }
-    //     };
-
-    //     if (product) {
-    //         fetchData();
-    //     }
-
-    // }, [])
-
     useEffect(() => {
 
         const fetchData = async () => {
             try {
-                const response = await getRecommendationBasicInfoFromBackend(product.productId.toString()) as ApiResponse<ProductBasic[]>;
+                const response = await getRecommendationFromBackend(product.productId.toString()) as ApiResponse<ProductInfomationFavorite[]>;
 
                 if (response.code != RespCode.SUCCESS) {
                     return
@@ -178,6 +151,33 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
         }
 
     }, [])
+
+    // useEffect(() => {
+
+    //     const fetchData = async () => {
+    //         try {
+    //             const response = await getRecommendationBasicInfoFromBackend(product.productId.toString()) as ApiResponse<ProductBasic[]>;
+
+    //             if (response.code != RespCode.SUCCESS) {
+    //                 return
+    //             }
+
+    //             const products = response.data
+
+    //             console.log("fetch products", products)
+
+    //             setrecommendProducts(products)
+
+    //         } catch (error) {
+    //             console.error('Error fetching data:', error);
+    //         }
+    //     };
+
+    //     if (product) {
+    //         fetchData();
+    //     }
+
+    // }, [])
 
 
     //從store 取值
@@ -529,7 +529,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                             <Box >
                                 <Slider {...settingsYouMayInterested} >
                                     {recommendProducts && recommendProducts.map((p) => (
-                                        <CustomSilde key={p.productId} productFavorite={comineToProductInfoFavroiate(p)} goToProductDetail={goToProductDetail} />
+                                        <CustomSilde key={p.product.productId} productFavorite={p} goToProductDetail={goToProductDetail} />
                                     ))}
                                 </Slider>
                             </Box>
@@ -564,22 +564,22 @@ const getRecommendationFromBackend = async (productId: string) => {
     return response.json();
 }
 
-const getRecommendationBasicInfoFromBackend = async (productId: string) => {
+// const getRecommendationBasicInfoFromBackend = async (productId: string) => {
 
-    const query = new URLSearchParams({
-        productId: productId
-    }).toString()
+//     const query = new URLSearchParams({
+//         productId: productId
+//     }).toString()
 
-    //console.log(query)
-    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
-    const response = await fetch(`${apiUrl}/Product/GetRecommendationProductBasicInfo?${query}`, {
-        method: 'GET',
-        credentials: 'include',
+//     //console.log(query)
+//     const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+//     const response = await fetch(`${apiUrl}/Product/GetRecommendationProductBasicInfo?${query}`, {
+//         method: 'GET',
+//         credentials: 'include',
 
-    })
+//     })
 
-    return response.json();
-}
+//     return response.json();
+// }
 
 const getProductInfoFromBackend = async (productId: string) => {
 
