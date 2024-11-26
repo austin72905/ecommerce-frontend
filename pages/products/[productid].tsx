@@ -392,7 +392,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                             <Slider {...settings} ref={sliderRef} >
                                 {product?.images && product?.images.map((img, index) => (
                                     <Box key={index} sx={{ position: 'relative', width: '100%', paddingBottom: '120%' }}>
-                                        <Image src={img} alt={`img${index}`} fill style={{ objectFit: "cover" }} />
+                                        <Image src={img} alt={`img${index}`} fill priority style={{ objectFit: "cover" }} />
                                     </Box>
                                 ))}
                             </Slider>
@@ -1358,6 +1358,7 @@ const CustomSilde = ({ productFavorite, goToProductDetail }: CustomSildeProps) =
                             alt="product information"
                             fill
                             style={{ objectFit: "cover" }}
+                                                    
                         />
                     </Box>
 

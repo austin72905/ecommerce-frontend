@@ -235,7 +235,7 @@ const CheckOut = () => {
         let totalPrice = 0
         console.log("cartContent", cartContent)
         cartContent.forEach(cartItem => {
-            let price = cartItem.selectedVariant?.discountPrice ? cartItem.selectedVariant?.discountPrice:cartItem.selectedVariant?.price as number
+            let price = cartItem.selectedVariant?.discountPrice ? cartItem.selectedVariant?.discountPrice : cartItem.selectedVariant?.price as number
             totalPrice += price * cartItem.count
         })
 
@@ -260,6 +260,46 @@ const CheckOut = () => {
 
     useEffect(() => {
 
+        const mergeCartenthData = async (content: ProductInfomationCount[], isCover: boolean) => {
+            try {
+                //console.log("content:", content)
+                const cartItems = content.map(item => {
+                    const cartItem: CartItem = {
+                        productVariantId: item.selectedVariant?.variantID,
+                        quantity: item.count
+                    }
+
+                    return cartItem;
+                })
+                // 用前端覆蓋後端 的資料庫
+                const cart: Cart = {
+                    items: cartItems,
+                    isCover: true
+                }
+                const result = await mergeCartContent(cart) as ApiResponse;
+
+                //console.log("mergeCartContent result=", result)
+
+                if (result.code !== RespCode.SUCCESS) {
+                    return;
+                }
+
+                const data = result.data as ProductInfomationCount[]
+
+                initializeCart(data)
+
+
+            } catch (error) {
+                console.error('Error fetching data:', error)
+            }
+        }
+
+        // 如果本地沒有數據，去數據庫撈
+        if (cartContent.length == 0 && userInfo) {
+            mergeCartenthData(cartContent, false)
+
+        }
+
         return () => {
             // 如果是第一次渲染，跳過 fetchData 的執行
             if (isFirstRender.current && userInfo !== null) {
@@ -268,45 +308,7 @@ const CheckOut = () => {
             }
             //console.log("content:cartContent", cartContent) // 確實，會發現cartcontent 會保持初次掛載時拿到的值
             if (userInfo) {
-
-                const mergeCartenthData = async (content: ProductInfomationCount[]) => {
-                    try {
-                        //console.log("content:", content)
-                        const cartItems = content.map(item => {
-                            const cartItem: CartItem = {
-                                productVariantId: item.selectedVariant?.variantID,
-                                quantity: item.count
-                            }
-
-                            return cartItem;
-                        })
-                        // 用前端覆蓋後端 的資料庫
-                        const cart: Cart = {
-                            items: cartItems,
-                            isCover: true
-                        }
-                        const result = await mergeCartContent(cart) as ApiResponse;
-
-                        //console.log("mergeCartContent result=", result)
-
-                        if (result.code !== RespCode.SUCCESS) {
-                            return;
-                        }
-
-                        const data = result.data as ProductInfomationCount[]
-
-
-
-
-                    } catch (error) {
-                        console.error('Error fetching data:', error)
-                    }
-                }
-
-
-
-
-                mergeCartenthData(cartContentRef.current);
+                mergeCartenthData(cartContentRef.current, true);
 
             }
 
@@ -326,7 +328,7 @@ const CheckOut = () => {
         form.action = 'https://logistics-stage.ecpay.com.tw/Express/map'; // 提交的目標URL
 
 
-        const replyUrl= process.env.NEXT_PUBLIC_MAP_RETURN_URL
+        const replyUrl = process.env.NEXT_PUBLIC_MAP_RETURN_URL
 
         // 添加表單字段
         const data = {
@@ -403,7 +405,7 @@ const CheckOut = () => {
         // 清除購物車
         // 確保在提交訂單前，同步購物車內容
         try {
-            
+
             // 用前端覆蓋後端 的資料庫
             const cart: Cart = {
                 items: [],
@@ -427,7 +429,7 @@ const CheckOut = () => {
 
     const generateOrder = async (data: SubmitOrderReq, token: string) => {
 
-        const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
 
         console.log("data:", data)
         console.log("token:", token)
@@ -662,7 +664,7 @@ const recieveWayMap = new Map<string, string>([
 const getUserShippingAddress = async () => {
 
 
-    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
 
     const response = await fetch(`${apiUrl}/User/GetUserShippingAddress`, {
         method: 'GET',

@@ -292,6 +292,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                         alt="product information"
                                         fill
                                         style={{ objectFit: "cover" }}
+                                        priority                                       
                                     />
                                 </Box>
 

@@ -100,7 +100,7 @@ export default function Cart() {
 
                 const mergeCartenthData = async (content: ProductInfomationCount[]) => {
                     try {
-                        //console.log("content:", content)
+                        console.log("合併購物車")
                         const cartItems = content.map(item => {
                             const cartItem: CartItem = {
                                 productVariantId: item.selectedVariant?.variantID,
@@ -139,7 +139,7 @@ export default function Cart() {
             }
 
         }
-    }, [])
+    }, [cartContentRef.current])
 
 
 
