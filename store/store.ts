@@ -246,6 +246,23 @@ interface AlertMsgStoreState {
     setAlertMsg: (msg: string) => void
 }
 
+const useAlertErrorMsgStore = create<AlertErrorMsgStoreState>((set, get) => ({
+    alerErrortMsg: "",
+    setAlertErrorMsg: (msg) => set((state) => {
+
+        return {
+            alerErrortMsg: msg
+        }
+
+    })
+}))
+
+
+interface AlertErrorMsgStoreState {
+    alerErrortMsg: string;
+    setAlertErrorMsg: (msg: string) => void
+}
+
 
 const userUserInfoStore = create<UserInfoStore>((set, get) => ({
     userInfo: null,
@@ -281,4 +298,4 @@ interface CsrfTokenStore {
 
 
 
-export { useCartStore, useSubscribeListStore, useAlertMsgStore, userUserInfoStore, useCsrfTokenStore }
+export { useCartStore, useSubscribeListStore, useAlertMsgStore,useAlertErrorMsgStore ,userUserInfoStore, useCsrfTokenStore }

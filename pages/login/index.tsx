@@ -22,9 +22,12 @@ import { INPUT_FIELD } from '@/constant-value/constant';
 import { validatePassword, validateUserName, ValidationErrors } from '@/utils/validation';
 import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';
+import { useAlertErrorMsgStore, useAlertMsgStore } from '@/store/store';
 
 export default function Login() {
 
+    const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
+    const setAlertErrorMsg=useAlertErrorMsgStore((state)=>state.setAlertErrorMsg)
     const [isRenew, setisRenew] = useState<boolean>(false)
     const router = useRouter()
 
@@ -141,7 +144,8 @@ export default function Login() {
 
         if (result.code != RespCode.SUCCESS) {
 
-            console.log(result.message)
+            setAlertErrorMsg(result.message)
+            //console.log(result.message)
             return;
         }
 

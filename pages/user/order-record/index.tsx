@@ -35,13 +35,6 @@ import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';
 
 
-
-import ProductImage from '/public/images/朋朋衛生紙商品圖.jpg'
-import ProductImage1 from '/public/images/coat1.jpg'
-import ProductImage2 from '/public/images/coat2.jpg'
-import ProductImage3 from '/public/images/coat3.jpg'
-import ProductImage4 from '/public/images/coat4.jpg'
-import ProductImage5 from '/public/images/coat5.jpg'
 import { OrderStatus, orderStatusMap } from '@/enums/order-status';
 import { useCartStore } from '@/store/store';
 

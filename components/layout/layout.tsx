@@ -8,6 +8,7 @@ import Footer from "./footer";
 import { Box } from "@mui/material";
 import GoToTopButton from "./speed-dial-group";
 import AlertMsg from "../msg/alert-msg";
+import AlertErrorMsg from "../msg/alert-error-msg";
 
 interface LayoutProps {
     children: ReactNode
@@ -55,6 +56,7 @@ export default function Layout({ children }: LayoutProps) {
             <GoToTopButton handleScrollTop={handleScrollTop} />
 
             <AlertMsg/>
+            <AlertErrorMsg/>
 
             <Footer />
         </ThemeProvider>

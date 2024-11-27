@@ -17,7 +17,7 @@ import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import Backdrop from '@mui/material/Backdrop';
 import { FormControl, MenuItem, Select, SelectChangeEvent, useMediaQuery, useTheme } from '@mui/material';
 import { GridContainer } from '@/components/ui/grid-container';
-import { useAlertMsgStore, useCsrfTokenStore } from '@/store/store';
+import { useAlertErrorMsgStore, useAlertMsgStore, useCsrfTokenStore } from '@/store/store';
 import WithAuth from '@/components/auth/with-auth';
 import { INPUT_FIELD } from '@/constant-value/constant';
 import { validateAddress, validateEmail, validateNickName, validatePhoneNumber, validateRecieveStore, ValidationErrors } from '@/utils/validation';
@@ -198,6 +198,7 @@ const AddressPage = () => {
 
 
     const setAlertMsg = useAlertMsgStore(state => state.setAlertMsg)
+    const setAlertErrorMsg=useAlertErrorMsgStore(state=>state.setAlertErrorMsg)
 
     const changeDefaultAddress = (e: React.MouseEvent, i: number) => {
 
@@ -263,8 +264,7 @@ const AddressPage = () => {
                 console.log("addNewAddress result=", result)
 
                 if (result.code != RespCode.SUCCESS) {
-
-                    console.log("獲取數據失敗")
+                    setAlertErrorMsg(result.message)
                     return;
                 }
                 setAlertMsg("新增地址成功")
@@ -283,14 +283,14 @@ const AddressPage = () => {
                 console.log("addNewAddress result=", result)
 
                 if (result.code != RespCode.SUCCESS ) {
-
-                    console.log("獲取數據失敗")
+                    setAlertErrorMsg(result.message)
                     return;
                 }
 
 
                 setAlertMsg("修改地址成功")
             } catch (error) {
+
                 console.log("修改異常")
             }
 
@@ -305,7 +305,7 @@ const AddressPage = () => {
 
     const deleteAddress = async (address: AddressInfo) => {
 
-        console.log(address)
+        //console.log(address)
 
         const data: UserShipAddress = {
             addressId: address.id,
@@ -320,8 +320,7 @@ const AddressPage = () => {
         const result =await deleteShippingAddress(data, csrfToken as string)
         console.log("deleteAddress result:",result)
         if (result.code != RespCode.SUCCESS) {
-
-            console.log("獲取數據失敗")
+            setAlertErrorMsg(result.message)
             return;
         }
 
@@ -345,8 +344,12 @@ const AddressPage = () => {
             isDefault: address.isDefaultAddress
         }
 
-        await setDefaultShippingAddress(data, csrfToken as string)
-        setisRenew(u => !u)
+        const result =await setDefaultShippingAddress(data, csrfToken as string)
+        if (result.code != RespCode.SUCCESS) {
+            setAlertErrorMsg(result.message)
+            return;
+        }
+        setisRenew(u => !u) //重新去後端取值
         setAlertMsg("修改預設地址成功")
     }
 

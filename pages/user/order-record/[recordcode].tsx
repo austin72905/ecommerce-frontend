@@ -28,7 +28,7 @@ const OrderDetailPage = () => {
 
     //const orderInfo = orderInfoList.find(order => order.recordCode === recordcode)
 
-
+    const [isLoading,setisLoading]=useState<boolean>(true)
 
 
     const [achieveStep, setAchieveStep] = useState<number>(2)
@@ -84,7 +84,7 @@ const OrderDetailPage = () => {
 
                 const orderData = result.data as OrderInfomation
 
-
+                setisLoading(false)
                 setOrderInfo(orderData)
                 setAchieveStep(orderData.orderStepInfomation.length - 1)
 
@@ -98,6 +98,13 @@ const OrderDetailPage = () => {
         fetchData()
     }, [router.isReady])
 
+
+    
+
+
+    if(isLoading){
+        return <p>載入中...</p>
+    }
 
     if (!orderInfo) {
         return <p>訂單不存在</p>
