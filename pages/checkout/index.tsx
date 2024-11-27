@@ -260,46 +260,7 @@ const CheckOut = () => {
 
     useEffect(() => {
 
-        const mergeCartenthData = async (content: ProductInfomationCount[], isCover: boolean) => {
-            try {
-                //console.log("content:", content)
-                const cartItems = content.map(item => {
-                    const cartItem: CartItem = {
-                        productVariantId: item.selectedVariant?.variantID,
-                        quantity: item.count
-                    }
-
-                    return cartItem;
-                })
-                // 用前端覆蓋後端 的資料庫
-                const cart: Cart = {
-                    items: cartItems,
-                    isCover: true
-                }
-                const result = await mergeCartContent(cart) as ApiResponse;
-
-                //console.log("mergeCartContent result=", result)
-
-                if (result.code !== RespCode.SUCCESS) {
-                    return;
-                }
-
-                const data = result.data as ProductInfomationCount[]
-
-                initializeCart(data)
-
-
-            } catch (error) {
-                console.error('Error fetching data:', error)
-            }
-        }
-
-        // 如果本地沒有數據，去數據庫撈
-        if (cartContent.length == 0 && userInfo) {
-            mergeCartenthData(cartContent, false)
-
-        }
-
+       
         return () => {
             // 如果是第一次渲染，跳過 fetchData 的執行
             if (isFirstRender.current && userInfo !== null) {
@@ -308,6 +269,39 @@ const CheckOut = () => {
             }
             //console.log("content:cartContent", cartContent) // 確實，會發現cartcontent 會保持初次掛載時拿到的值
             if (userInfo) {
+                const mergeCartenthData = async (content: ProductInfomationCount[], isCover: boolean) => {
+                    try {
+                        //console.log("content:", content)
+                        const cartItems = content.map(item => {
+                            const cartItem: CartItem = {
+                                productVariantId: item.selectedVariant?.variantID,
+                                quantity: item.count
+                            }
+        
+                            return cartItem;
+                        })
+                        // 用前端覆蓋後端 的資料庫
+                        const cart: Cart = {
+                            items: cartItems,
+                            isCover: isCover
+                        }
+                        const result = await mergeCartContent(cart) as ApiResponse;
+        
+                        //console.log("mergeCartContent result=", result)
+        
+                        if (result.code !== RespCode.SUCCESS) {
+                            return;
+                        }
+        
+                        const data = result.data as ProductInfomationCount[]
+        
+                        initializeCart(data)
+        
+        
+                    } catch (error) {
+                        console.error('Error fetching data:', error)
+                    }
+                }
                 mergeCartenthData(cartContentRef.current, true);
 
             }

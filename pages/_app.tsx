@@ -3,7 +3,7 @@ import { useCartStore, useCsrfTokenStore, userUserInfoStore } from "@/store/stor
 
 import type { AppProps } from "next/app";
 import { parseCookies } from "nookies";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { PersonalInfomation } from "./user/account";
 import { ApiResponse } from "@/interfaces/api/response";
 import { RespCode } from "@/enums/resp-code";
@@ -38,21 +38,21 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [])
 
 
-  useEffect(() => {
-    // 定義清理函數
-    const handleBeforeUnload = () => {
-      localStorage.setItem('cart', JSON.stringify(cartContent));
-    };
+  // useEffect(() => {
+  //   // 定義清理函數
+  //   const handleBeforeUnload = () => {
+  //     localStorage.setItem('cart', JSON.stringify(cartContent));
+  //   };
 
-    // 監聽 "beforeunload" 事件
-    // 當用戶即將離開頁面時，可以將購物車數據或表單數據保存到 localStorage
-    window.addEventListener('beforeunload', handleBeforeUnload);
+  //   // 監聽 "beforeunload" 事件
+  //   // 當用戶即將離開頁面時，可以將購物車數據或表單數據保存到 localStorage
+  //   window.addEventListener('beforeunload', handleBeforeUnload);
 
-    // 在卸載或頁面變更時清除事件監聽器
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [cartContent]);
+  //   // 在卸載或頁面變更時清除事件監聽器
+  //   return () => {
+  //     window.removeEventListener('beforeunload', handleBeforeUnload);
+  //   };
+  // }, [cartContent]);
 
   //檢查是否登陸
   useEffect(() => {
@@ -110,6 +110,12 @@ export default function App({ Component, pageProps }: AppProps) {
 
   }, [])
 
+  const cartContentRef = useRef(cartContent);
+
+  useEffect(() => {
+    console.log("pp cartContent 更新")
+    cartContentRef.current = cartContent; // 更新最新的 cartContent
+  }, [cartContent]);
 
   useEffect(() => {
     // 登陸狀態
@@ -119,6 +125,7 @@ export default function App({ Component, pageProps }: AppProps) {
       const mergeCartenthData = async (content: ProductInfomationCount[]) => {
         try {
           //console.log("content:", content)
+
           const cartItems = content.map(item => {
             const cartItem: CartItem = {
               productVariantId: item.selectedVariant?.variantID,
@@ -152,12 +159,11 @@ export default function App({ Component, pageProps }: AppProps) {
       }
 
 
-      const savedCart = localStorage.getItem('cart');
+      //const savedCart = localStorage.getItem('cart');
 
-      if (savedCart) {
-
-        mergeCartenthData(JSON.parse(savedCart));
-      }
+     
+      mergeCartenthData(cartContentRef.current);
+      
 
     }
   }, [userInfo])

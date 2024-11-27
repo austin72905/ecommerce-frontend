@@ -10,7 +10,7 @@ import { ChangeEvent, useEffect, useReducer, useState } from "react";
 import Image from "next/image";
 import { GetServerSideProps, GetStaticPaths, GetStaticProps } from "next";
 import { ProductBasic, ProductDynamic, ProductInfomation, ProductInfomationFavorite, ProductVariant } from "@/interfaces";
-import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
+import { useAlertMsgStore, useCartStore, useCsrfTokenStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -40,6 +40,8 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
     const userInfo = userUserInfoStore((state) => state.userInfo)
     const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
+
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken)
 
 
     const [dynamicInfo, setdynamicInfo] = useState<ProductDynamic[]>()
@@ -191,7 +193,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
         try {
             // 發送請求更新後端數據
-            const response = await addToFavoriteListToBackend(product.productId)
+            const response = await addToFavoriteListToBackend(product.productId,csrfToken as string)
         } catch (error) {
             // 若請求失敗，回滾狀態
             removeFromList(product.productId)
@@ -203,7 +205,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
         console.log("removeFromFavoriteList")
         try {
             // 發送請求更新後端數據
-            const response = await removeFromFavoriteListToBackend(product.productId)
+            const response = await removeFromFavoriteListToBackend(product.productId,csrfToken as string)
         } catch (error) {
             // 若請求失敗，回滾狀態
             addToList(product)
@@ -366,7 +368,7 @@ interface ProductsPageProps {
 }
 
 
-const addToFavoriteListToBackend = async (productId: number) => {
+const addToFavoriteListToBackend = async (productId: number, token: string) => {
     console.log("productId:", productId)
     const postBody = {
         productId: productId,
@@ -377,6 +379,7 @@ const addToFavoriteListToBackend = async (productId: number) => {
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',  // 設置 Content-Type 為 JSON
+            'X-CSRF-Token': token
         },
         body: JSON.stringify(postBody)  // 將 postBody 轉換為 JSON 字串
     })
@@ -384,7 +387,7 @@ const addToFavoriteListToBackend = async (productId: number) => {
     return response.json();
 }
 
-const removeFromFavoriteListToBackend = async (productId: number) => {
+const removeFromFavoriteListToBackend = async (productId: number, token: string) => {
 
     const postBody = {
         productId: productId,
@@ -397,6 +400,7 @@ const removeFromFavoriteListToBackend = async (productId: number) => {
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',  // 設置 Content-Type 為 JSON
+            'X-CSRF-Token': token
         },
         body: JSON.stringify(postBody)  // 將 postBody 轉換為 JSON 字串
     })

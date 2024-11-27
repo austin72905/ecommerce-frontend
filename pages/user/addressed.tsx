@@ -21,7 +21,7 @@ import { useAlertMsgStore, useCsrfTokenStore } from '@/store/store';
 import WithAuth from '@/components/auth/with-auth';
 import { INPUT_FIELD } from '@/constant-value/constant';
 import { validateAddress, validateEmail, validateNickName, validatePhoneNumber, validateRecieveStore, ValidationErrors } from '@/utils/validation';
-import {  UserShipAddress } from '@/interfaces';
+import { UserShipAddress } from '@/interfaces';
 import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';
 
@@ -33,7 +33,7 @@ const AddressPage = () => {
 
     const [editedAddress, setEditedAddress] = useState<AddressInfo>(initAddress)
 
-    const csrfToken=useCsrfTokenStore((state)=>state.csrfToken)
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken)
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -256,13 +256,46 @@ const AddressPage = () => {
             isDefault: false
         }
 
-        if(editedAddress.id===0){
-            await addShippingAddress(data,csrfToken as string);
+        if (editedAddress.id === 0) {
+            try {
+                const result = await addShippingAddress(data, csrfToken as string) as ApiResponse;
 
-        }else{
-            await modifyShippingAddress(data,csrfToken as string);
+                console.log("addNewAddress result=", result)
+
+                if (result.code != RespCode.SUCCESS) {
+
+                    console.log("獲取數據失敗")
+                    return;
+                }
+                setAlertMsg("新增地址成功")
+
+
+            } catch (error) {
+                console.log("修改異常")
+            }
+
+
+        } else {
+
+            try {
+                const result = await modifyShippingAddress(data, csrfToken as string) as ApiResponse;
+
+                console.log("addNewAddress result=", result)
+
+                if (result.code != RespCode.SUCCESS ) {
+
+                    console.log("獲取數據失敗")
+                    return;
+                }
+
+
+                setAlertMsg("修改地址成功")
+            } catch (error) {
+                console.log("修改異常")
+            }
+
         }
-  
+
 
 
         handleClose()
@@ -270,7 +303,7 @@ const AddressPage = () => {
         setisRenew(u => !u)
     }
 
-    const deleteAddress = async (address:AddressInfo)=>{
+    const deleteAddress = async (address: AddressInfo) => {
 
         console.log(address)
 
@@ -284,11 +317,21 @@ const AddressPage = () => {
             isDefault: address.isDefaultAddress
         }
 
-        await deleteShippingAddress(data,csrfToken as string)
+        const result =await deleteShippingAddress(data, csrfToken as string)
+        console.log("deleteAddress result:",result)
+        if (result.code != RespCode.SUCCESS) {
+
+            console.log("獲取數據失敗")
+            return;
+        }
+
+        setAlertMsg("刪除地址成功")
+
+
         setisRenew(u => !u)
     }
 
-    const setDefaultAddress = async (address:AddressInfo)=>{
+    const setDefaultAddress = async (address: AddressInfo) => {
 
         console.log(address)
 
@@ -302,12 +345,12 @@ const AddressPage = () => {
             isDefault: address.isDefaultAddress
         }
 
-        await setDefaultShippingAddress(data,csrfToken as string)
+        await setDefaultShippingAddress(data, csrfToken as string)
         setisRenew(u => !u)
         setAlertMsg("修改預設地址成功")
     }
 
-    
+
 
     return (
         <Container sx={{ border: "0px solid" }} maxWidth='xl'>
@@ -497,8 +540,8 @@ const recieverInfoList: AddressInfo[] = [
 
 
 // 後端請求
-const addShippingAddress = async (data: UserShipAddress,token:string) => {
-    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+const addShippingAddress = async (data: UserShipAddress, token: string) => {
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
     const response = await fetch(`${apiUrl}/User/AddShippingAddress`, {
         method: 'POST',
         credentials: 'include',
@@ -512,8 +555,8 @@ const addShippingAddress = async (data: UserShipAddress,token:string) => {
     return response.json();
 }
 
-const modifyShippingAddress = async (data: UserShipAddress,token:string) => {
-    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+const modifyShippingAddress = async (data: UserShipAddress, token: string) => {
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
     const response = await fetch(`${apiUrl}/User/ModifyShippingAddress`, {
         method: 'POST',
         credentials: 'include',
@@ -527,8 +570,8 @@ const modifyShippingAddress = async (data: UserShipAddress,token:string) => {
     return response.json();
 }
 
-const deleteShippingAddress = async (data: UserShipAddress,token:string) => {
-    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+const deleteShippingAddress = async (data: UserShipAddress, token: string) => {
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
     const response = await fetch(`${apiUrl}/User/DeleteShippingAddress`, {
         method: 'DELETE',
         credentials: 'include',
@@ -543,8 +586,8 @@ const deleteShippingAddress = async (data: UserShipAddress,token:string) => {
 }
 
 
-const setDefaultShippingAddress = async (data: UserShipAddress,token:string) => {
-    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+const setDefaultShippingAddress = async (data: UserShipAddress, token: string) => {
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
     const response = await fetch(`${apiUrl}/User/SetDefaultShippingAddress`, {
         method: 'POST',
         credentials: 'include',
@@ -559,7 +602,7 @@ const setDefaultShippingAddress = async (data: UserShipAddress,token:string) => 
 }
 
 const getUserShippingAddress = async () => {
-    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
     const response = await fetch(`${apiUrl}/User/GetUserShippingAddress`, {
         method: 'GET',
         credentials: 'include',
@@ -569,7 +612,7 @@ const getUserShippingAddress = async () => {
     return response.json();
 }
 
-const RecieverInfo = ({ handleEditModal, changeDefaultAddress,deleteAddress,setDefaultAddress ,content, isSmallScreen, isXSScreen }: RecieverInfoProps) => {
+const RecieverInfo = ({ handleEditModal, changeDefaultAddress, deleteAddress, setDefaultAddress, content, isSmallScreen, isXSScreen }: RecieverInfoProps) => {
     return (
         <Paper sx={{ mt: 2, boxShadow: "none", border: `1px solid ${content.isDefaultAddress ? "#61D1BD" : "#d9d9d9"}` }}>
 
@@ -641,7 +684,7 @@ const RecieverInfo = ({ handleEditModal, changeDefaultAddress,deleteAddress,setD
                         <Stack spacing={0.5} alignItems={"end"} justifyContent={"space-between"} sx={{ border: "0px solid", height: "100%", width: "100%" }}>
                             <Stack spacing={0.5} sx={{ border: "0px solid" }} direction={"row"}>
                                 <Button onClick={(e) => { handleEditModal(e, content) }} variant='outlined' sx={{ border: "1px solid #d9d9d9", color: "#AFAFAF" }}>編輯地址</Button>
-                                <IconButton onClick={(e)=>{deleteAddress(content)}}>
+                                <IconButton onClick={(e) => { deleteAddress(content) }}>
                                     <DeleteIcon />
                                 </IconButton>
 
@@ -666,7 +709,7 @@ const RecieverInfo = ({ handleEditModal, changeDefaultAddress,deleteAddress,setD
                             <Stack direction={"row"} spacing={0.5} justifyContent={"space-between"} sx={{ border: "0px solid", }}>
 
                                 <Button onClick={(e) => { handleEditModal(e, content) }} variant='outlined' sx={{ border: "1px solid #d9d9d9", color: "#AFAFAF" }}>編輯地址</Button>
-                                <IconButton onClick={(e)=>{deleteAddress(content)}}>
+                                <IconButton onClick={(e) => { deleteAddress(content) }}>
                                     <DeleteIcon />
                                 </IconButton>
 
