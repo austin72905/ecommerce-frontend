@@ -424,7 +424,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
 
 
                                                     <CardActions sx={{ pr: 4, py: 3, display: "flex", flexDirection: "row", justifyContent: "end" }}>
-                                                        {info.status === 3 ? <Button variant="contained" sx={{ backgroundColor: "#EFB878", color: "black", "&:hover": { backgroundColor: "#EFB878" } }}>取消訂單</Button> : null}
+                                                        {info.status === OrderStatus.WaitingForPayment ? <Button variant="contained" sx={{ backgroundColor: "#EFB878", color: "black", "&:hover": { backgroundColor: "#EFB878" } }}>取消訂單</Button> : null}
                                                         <Button variant="outlined" onClick={() => { goOrderDetail(info) }}>訂單詳情</Button>
                                                         <Button variant="contained" onClick={()=>{buyAgain(info.productList)}}>重新購買</Button>
                                                     </CardActions>

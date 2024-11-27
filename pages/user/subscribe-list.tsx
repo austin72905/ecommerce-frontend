@@ -56,6 +56,43 @@ const SubscribeListPage = () => {
 
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken)
 
+    const filterProductVariant = (productId: number) => {
+
+        var variants =subscribeList.find(p => p.productId === productId)?.variants
+        return variants || []
+    }
+
+    const getLowestPrice = (productId: number) => {
+        //const variants =dynamicInfo?.find(p=>p.productId==product.productId)?.variants   as ProductVariant[]
+        const priceList = filterProductVariant(productId).map(v => v.price).sort((a, b) => a - b)
+        return priceList[0]
+
+
+    }
+
+    const getHighstPrice = (productId: number) => {
+        //const variants =dynamicInfo?.find(p=>p.productId==product.productId)?.variants   as ProductVariant[]
+        const priceList = filterProductVariant(productId).map(v => v.price).sort((a, b) => a - b)
+        return priceList[priceList.length - 1]
+
+
+    }
+
+
+    const getLowestDiscountPrice = (productId: number) => {
+        //product: ProductInfomation
+
+        //const variants =dynamicInfo?.find(p=>p.productId==product.productId)?.variants   as ProductVariant[]
+        const priceList = filterProductVariant(productId)
+            .filter(v => v.discountPrice !== null)
+            .map(v => v.discountPrice as number)
+            .sort((a, b) => a - b)
+
+        //console.log("priceList:", priceList)
+        return priceList[0]
+
+    }
+
 
 
     useEffect(() => {
@@ -148,9 +185,18 @@ const SubscribeListPage = () => {
                             }}>
                                 <Stack spacing={"15px"}>
                                     <Typography sx={{ minHeight: { xs: "48px", sm: "unset" }, fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.productId) }}>{product.title}</Typography>
-                                    <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${product.price}</Typography>
-                                    <Typography>NT${product.price}</Typography>
+                                    {
+                                        product.variants.filter(v => v.discountPrice) ?
+                                        <Stack direction={"row"} spacing={"15px"}>
+                                            <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${getHighstPrice(product.productId)}</Typography>
+                                            <Typography sx={{ color: "#ef6060" }}>${getLowestDiscountPrice(product.productId)}</Typography>
+                                        </Stack>
 
+                                        :
+                                        <Stack direction={"row"} spacing={"15px"}>
+                                            <Typography variant="subtitle2">定價NT${getLowestPrice(product.productId)}</Typography>
+                                        </Stack>
+                                    }
                                 </Stack>
                             </CardContent>
                             <CardActions >
