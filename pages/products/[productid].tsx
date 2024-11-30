@@ -324,6 +324,12 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     const [selectVariant, setselectVariant] = useState<undefined | ProductVariant>(undefined)
 
     const addProductToCart = () => {
+        // 還未選擇規格
+        if(!selectVariant){
+            setAlertMsg("尚未選擇顏色與尺寸")
+            return
+        }
+
         setAlertMsg("加入購物車成功")
         var productInfo = combineToProductInfo(product)
         addToCart({ ...productInfo }, selectVariant, itemCount)
@@ -353,9 +359,6 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
 
     }
-
-
-
 
     /*
        确保 Hooks 在组件顶层调用，不受条件控制。
