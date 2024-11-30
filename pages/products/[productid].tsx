@@ -330,6 +330,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     }
     const userInfo = userUserInfoStore((state) => state.userInfo)
     const goToCheckoutDirectly = () => {
+        // 還未選擇規格
+        if(!selectVariant){
+            setAlertMsg("尚未選擇顏色與尺寸")
+            return
+        }
         var productInfo = combineToProductInfo(product)
         addToCart({ ...productInfo }, selectVariant, itemCount)
 
