@@ -46,7 +46,7 @@ export default function Login() {
     }
 
     //預設Oauth 完之後跳轉的頁面
-    const [redirectAfterAuth, setredirectAfterAuth] = useState("/products")
+    const [redirectAfterAuth, setredirectAfterAuth] = useState("/products?tag=new-arrival")
 
     useEffect(() => {
         if (router.isReady) {
