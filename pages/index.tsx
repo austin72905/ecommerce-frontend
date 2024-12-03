@@ -1,17 +1,10 @@
-import Head from "next/head";
-import Image from "next/image";
+
 import { Inter } from "next/font/google";
 
-import Slider from "react-slick";
-import Banner1 from '/public/images/草寫3.jpg'
-import Banner2 from '/public/images/暖男專屬優惠1.jpg'
-import Banner3 from '/public/images/熱銷推薦2.jpg'
+
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Box, Typography } from "@mui/material";
-import Container from '@mui/material/Container';
-import { useEffect } from "react";
-import { useRouter } from "next/router";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -119,7 +112,7 @@ function SamplePrevArrow(props: any) {
 }
 
 // 首頁直接跳轉 新品上市
-export async function getStaticProps() {
+export async function getServerSideProps() {
   return {
     redirect: {
       destination: '/products?tag=new-arrival',

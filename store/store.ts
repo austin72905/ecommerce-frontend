@@ -10,14 +10,8 @@ import { PersistStorage } from 'zustand/middleware';
 // 實現 PersistStorage接口，getItem、setItem、removeItem 方法都要實現，實現細節看個人
 const cartStorage: PersistStorage<ProductInfomationCount[]> = {
     getItem: (name) => {
-        try {
-            const item = localStorage.getItem(name);
-            return item ? (JSON.parse(item) as StorageValue<ProductInfomationCount[]>) : null;
-        } catch (error) {
-            console.error(`Failed to parse storage item "${name}", clearing value.`, error);
-            localStorage.removeItem(name); // 清空該值
-            return null; // 返回 null
-        }
+        const item = localStorage.getItem(name);
+        return item ? (JSON.parse(item) as StorageValue<ProductInfomationCount[]>) : null;
     },
 
     setItem: (name, value) => {
@@ -30,7 +24,7 @@ const cartStorage: PersistStorage<ProductInfomationCount[]> = {
 }
 
 
-const useCartStore = create<CartState,[['zustand/persist', ProductInfomationCount[] ]]>(
+const useCartStore = create<CartState, [['zustand/persist', ProductInfomationCount[]]]>(
 
     persist(
         (set, get) => ({
@@ -38,23 +32,23 @@ const useCartStore = create<CartState,[['zustand/persist', ProductInfomationCoun
             addToCart: (product, selectedVariant, count) => set((state) => {
                 //console.log("selectedVariant in store:",selectedVariant)
                 let cartcontent = [...state.cartContent];
-    
+
                 if (cartcontent.length === 0) {
                     cartcontent.push({
                         product: product,
                         count: count,
                         selectedVariant: selectedVariant
                     })
-    
+
                     return {
                         cartContent: cartcontent
                     }
                 }
-    
+
                 // 加入購物車
                 // 比較carcontent 裡面是否已經有ProductId? 
                 const item = cartcontent.find(item => item.product.productId === product.productId && item.selectedVariant?.variantID === selectedVariant?.variantID);
-    
+
                 // 有就 count +1 , 沒有就push product count :1
                 if (item) {
                     cartcontent.forEach(item => {
@@ -69,37 +63,37 @@ const useCartStore = create<CartState,[['zustand/persist', ProductInfomationCoun
                         selectedVariant: selectedVariant
                     })
                 }
-    
+
                 return {
                     cartContent: cartcontent
                 }
             }),
             removeFromCart: (productId, variantID) => set((state) => {
                 let cartcontent = state.cartContent.filter(item => {
-    
+
                     //不是要被刪除的productId 就返回 true
                     if (item.product.productId !== productId) {
                         return true
                     }
-    
+
                     // 剩下要驗證被選重的id，以及選中的variantId
                     if (item.selectedVariant?.variantID === variantID) {
                         return false
                     }
-    
+
                     return true
                 });
-    
+
                 return {
                     cartContent: cartcontent
                 }
             }),
             minusProductCount: (productId) => set((state) => {
                 let cartcontent = [...state.cartContent];
-    
+
                 // count = 1 刪除  count > 1 減 1
                 const item = cartcontent.find(item => item.product.productId === productId);
-    
+
                 if (item?.count === 1) {
                     //cartcontent = cartcontent.filter(item => item.product.productId !== productId);
                     return {
@@ -111,14 +105,14 @@ const useCartStore = create<CartState,[['zustand/persist', ProductInfomationCoun
                             item.count -= 1;
                     })
                 }
-    
+
                 return {
                     cartContent: cartcontent
                 }
             }),
             plusProductCount: (productId) => set((state) => {
                 let cartcontent = [...state.cartContent];
-    
+
                 cartcontent.forEach(item => {
                     if (item.product.productId === productId && item.count < 10) {
                         if (item.selectedVariant) {
@@ -127,11 +121,11 @@ const useCartStore = create<CartState,[['zustand/persist', ProductInfomationCoun
                                 item.count += 1;
                             }
                         }
-    
+
                     }
-    
+
                 })
-    
+
                 return {
                     cartContent: cartcontent
                 }
@@ -145,24 +139,24 @@ const useCartStore = create<CartState,[['zustand/persist', ProductInfomationCoun
                             totalPrice += item.selectedVariant.discountPrice * item.count
                         else
                             totalPrice += item.selectedVariant.price * item.count
-    
+
                     }
-    
+
                 })
                 return totalPrice
             },
             // 新增初始化 cartContent 的函數
-            initializeCart: (initialCart: ProductInfomationCount[] ) => set(() => ({ cartContent: initialCart }))
-    
+            initializeCart: (initialCart: ProductInfomationCount[]) => set(() => ({ cartContent: initialCart }))
+
         })
         ,
         {
-            name:"cart-storage",
-            storage:cartStorage
+            name: "cart-storage",
+            storage: cartStorage
         }
     )
 
-    
+
 
 )
 
@@ -174,7 +168,7 @@ interface CartState {
     plusProductCount: (productId: number) => void;
     minusProductCount: (productId: number) => void;
     countTotalPrice: () => number;
-    initializeCart: (initialCart: ProductInfomationCount[] ) => void;
+    initializeCart: (initialCart: ProductInfomationCount[]) => void;
 }
 
 
@@ -304,4 +298,4 @@ interface CsrfTokenStore {
 
 
 
-export { useCartStore, useSubscribeListStore, useAlertMsgStore,useAlertErrorMsgStore ,userUserInfoStore, useCsrfTokenStore }
+export { useCartStore, useSubscribeListStore, useAlertMsgStore, useAlertErrorMsgStore, userUserInfoStore, useCsrfTokenStore }

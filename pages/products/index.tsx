@@ -8,7 +8,7 @@ import CardActions from '@mui/material/CardActions';
 import { Box, Button, Checkbox, Stack, Typography } from "@mui/material";
 import { ChangeEvent, useEffect, useReducer, useState } from "react";
 import Image from "next/image";
-import { GetServerSideProps, GetStaticPaths, GetStaticProps } from "next";
+import { GetServerSideProps } from "next";
 import { ProductBasic, ProductDynamic, ProductInfomation, ProductInfomationFavorite, ProductVariant } from "@/interfaces";
 import { useAlertMsgStore, useCartStore, useCsrfTokenStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 

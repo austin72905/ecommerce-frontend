@@ -10,7 +10,6 @@ import GoToTopButton from "./speed-dial-group";
 import AlertMsg from "../msg/alert-msg";
 import AlertErrorMsg from "../msg/alert-error-msg";
 import Banners from "./banners";
-import { GetServerSideProps, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 
 interface LayoutProps {
