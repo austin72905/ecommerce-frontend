@@ -46,11 +46,11 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
     const [dynamicInfo, setdynamicInfo] = useState<ProductDynamic[]>()
 
-   
+
     const filterProductVariant = (productId: number) => {
         console.log("productId=", productId)
         console.log("dynamicInfo=", dynamicInfo)
-        var variants =dynamicInfo?.find(p => p.productId === productId)?.variants
+        var variants = dynamicInfo?.find(p => p.productId === productId)?.variants
         return variants || []
     }
 
@@ -115,7 +115,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     //請求後端獲取variant
     useEffect(() => {
         let productIdList = products.map(p => p.productId)
-        console.log("productIdList=",productIdList)
+        console.log("productIdList=", productIdList)
 
         const fetchData = async (productIdList: number[]) => {
             try {
@@ -150,11 +150,11 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
 
         fetchData(productIdList)
-        
 
 
 
-    }, [products ])
+
+    }, [products])
 
 
     //清除計時器
@@ -193,7 +193,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
         try {
             // 發送請求更新後端數據
-            const response = await addToFavoriteListToBackend(product.productId,csrfToken as string)
+            const response = await addToFavoriteListToBackend(product.productId, csrfToken as string)
         } catch (error) {
             // 若請求失敗，回滾狀態
             removeFromList(product.productId)
@@ -205,7 +205,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
         console.log("removeFromFavoriteList")
         try {
             // 發送請求更新後端數據
-            const response = await removeFromFavoriteListToBackend(product.productId,csrfToken as string)
+            const response = await removeFromFavoriteListToBackend(product.productId, csrfToken as string)
         } catch (error) {
             // 若請求失敗，回滾狀態
             addToList(product)
@@ -269,9 +269,9 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     return (
         <Box sx={{ p: 2 }}>
             <h2>
-                { !router.query.query && router.query.tag && pageTitleMap.get(router.query.tag as string)  }
-                { !router.query.query &&router.query.kind && pageTitleMap.get(router.query.kind as string)}
-                {  
+                {!router.query.query && router.query.tag && pageTitleMap.get(router.query.tag as string)}
+                {!router.query.query && router.query.kind && pageTitleMap.get(router.query.kind as string)}
+                {
                     router.query.query && "搜尋結果"
                 }
             </h2>
@@ -297,7 +297,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                         alt="product information"
                                         fill
                                         style={{ objectFit: "cover" }}
-                                        priority                                       
+                                        priority
                                     />
                                 </Box>
 
@@ -449,13 +449,25 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
 
     // 當沒有tag 時，預設 返回新品
     if (!tag || typeof tag != "string") {
-        //tag = "new-arrival"
-        tag = ""
+
+        if (keyword) {
+            tag = ""
+        } else {
+            tag = "new-arrival"
+        }
+
+
     }
 
     if (!kind || typeof kind != "string") {
-        //kind = "clothes"
-        kind = ""
+
+
+        if (keyword) {
+            kind = ""
+
+        } else {
+            kind = "clothes"
+        }
     }
 
     if (typeof keyword != "string") {
@@ -467,7 +479,7 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
     // 將 cookies 從請求中提取並傳遞給後端請求
     //const cookieHeader = req.headers.cookie || '';
 
-    const response = await getProductsBasicInfoFromBackend(kind, tag,keyword) as ApiResponse<ProductBasic[]>
+    const response = await getProductsBasicInfoFromBackend(kind, tag, keyword) as ApiResponse<ProductBasic[]>
 
     console.log(response)
 
@@ -499,7 +511,7 @@ const getProductsBasicInfoFromBackend = async (kind: string, tag: string, keywor
     const query = new URLSearchParams({
         tag: tag,
         kind: kind,
-        query:keyword ==undefined?"":keyword
+        query: keyword == undefined ? "" : keyword
     }).toString()
 
     console.log(query)
