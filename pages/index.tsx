@@ -11,62 +11,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
 
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    pauseOnHover: true,
-    nextArrow: <SampleNextArrow />,
-    prevArrow: <SamplePrevArrow />,
-    appendDots: (dots: any) => (
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '15px',
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center'
-        }}
-      >
-        <ul style={{ margin: '0px' }}>{dots}</ul>
-      </div>
-    )
-
-
-
-  }
-
-
-  // const router = useRouter();
-
-  // useEffect(()=>{
-  //   router.replace("/products?tag=new-arrival")
-  // },[router])
-
   return (
     <>
-
-{/* 
-      <Box sx={{
-        mx: {
-          md: 5,
-          sm: 0,
-          xs: 0
-        }
-      }}>
-        <Slider {...settings}>
-          <Image src={Banner1} alt="banner" />
-          <Image src={Banner2} alt="banner" />
-          <Image src={Banner3} alt="banner" />
-
-        </Slider>
-      </Box> */}
-
-
       <Box sx={{ textAlign: "center" }}>
         <Box sx={{ my: 2 }}>
           <Typography variant="h4" >Demo商店</Typography>

@@ -92,19 +92,30 @@ export default function MainHeader() {
     const searchProducts = () => {
         const { kind, tag } = router.query
 
-        if(searchType=="currentPage"){
-            let quertString =""
-            if(tag){
-                quertString+=`tag=${tag}&`
+        if (searchType == "currentPage") {
+            let quertString = ""
+            if (tag) {
+                quertString += `tag=${tag}&`
             }
-            if(kind){
-                quertString+=`kind=${kind}`
+            if (kind) {
+                quertString += `kind=${kind}`
             }
             router.push(`/products?${quertString}&query=${keyword}`)
-        }else{
+        } else {
             router.push(`/products?query=${keyword}`)
         }
     }
+
+    // 變換畫面自動關起搜尋欄
+    useEffect(() => {
+        setsearchAreaShow(false)
+
+
+        // 修改不在產品頁面時，搜尋產品範圍為所有產品
+        if (router.pathname != "/products") {
+            setsearchType("allProducts")
+        }
+    }, [router])
 
     return (
         <header>
@@ -117,7 +128,12 @@ export default function MainHeader() {
                                 edge="start"
                                 color="inherit"
                                 aria-label="menu"
-                                sx={{ mr: 2 }}
+                                sx={{ mr: {
+                                    xs:0,
+                                    sm:0,
+                                    md:2,
+                                    lg:8
+                                } }}
                                 disableRipple
                                 onClick={() => setOpen(true)}
                             >
@@ -195,7 +211,7 @@ export default function MainHeader() {
                             <Toolbar>
 
 
-                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "100%", pr: 0 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "100%", boxShadow: "none", pr: 0 }}>
                                     <TextField
 
                                         onChange={handleKeyword}
@@ -206,7 +222,8 @@ export default function MainHeader() {
                                         placeholder="查詢商品"
                                         InputProps={{
                                             style: {
-                                                paddingRight: 0
+                                                paddingRight: 0,
+                                                borderRadius: 0
                                             },
 
                                             endAdornment: (
@@ -222,9 +239,13 @@ export default function MainHeader() {
                                                             borderRadius: 0
                                                         }}
                                                     >
-                                                        <MenuItem key="currentPage" value="currentPage">
-                                                            <Typography sx={{ fontSize: '15px' }}>當前頁面</Typography>
-                                                        </MenuItem>
+                                                        {
+
+                                                            router.pathname === "/products" &&
+                                                            <MenuItem key="currentPage" value="currentPage">
+                                                                <Typography sx={{ fontSize: '15px' }}>當前頁面</Typography>
+                                                            </MenuItem>
+                                                        }
                                                         <MenuItem key="allProducts" value="allProducts">
                                                             <Typography sx={{ fontSize: '15px' }}>所有產品</Typography>
                                                         </MenuItem>
