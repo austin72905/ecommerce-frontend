@@ -269,8 +269,11 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     return (
         <Box sx={{ p: 2 }}>
             <h2>
-                {router.query.tag && pageTitleMap.get(router.query.tag as string)  }
-                {router.query.kind && pageTitleMap.get(router.query.kind as string)}
+                { !router.query.query && router.query.tag && pageTitleMap.get(router.query.tag as string)  }
+                { !router.query.query &&router.query.kind && pageTitleMap.get(router.query.kind as string)}
+                {  
+                    router.query.query && "搜尋結果"
+                }
             </h2>
             <Grid container columns={8} spacing={3}>
 
@@ -438,24 +441,33 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
     const { query } = context
     let kind = query?.kind;
     let tag = query?.tag;
+    let keyword = query?.query;
 
     console.log("tag =", tag)
     console.log("kind =", kind)
+    console.log("keyword =", keyword)
 
     // 當沒有tag 時，預設 返回新品
     if (!tag || typeof tag != "string") {
-        tag = "new-arrival"
+        //tag = "new-arrival"
+        tag = ""
     }
 
     if (!kind || typeof kind != "string") {
-        kind = "clothes"
+        //kind = "clothes"
+        kind = ""
     }
+
+    if (typeof keyword != "string") {
+        keyword = ""
+    }
+
 
 
     // 將 cookies 從請求中提取並傳遞給後端請求
     //const cookieHeader = req.headers.cookie || '';
 
-    const response = await getProductsBasicInfoFromBackend(kind, tag) as ApiResponse<ProductBasic[]>
+    const response = await getProductsBasicInfoFromBackend(kind, tag,keyword) as ApiResponse<ProductBasic[]>
 
     console.log(response)
 
@@ -482,11 +494,12 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
 }
 
 
-const getProductsBasicInfoFromBackend = async (kind: string, tag: string) => {
+const getProductsBasicInfoFromBackend = async (kind: string, tag: string, keyword?: string) => {
 
     const query = new URLSearchParams({
         tag: tag,
-        kind: kind
+        kind: kind,
+        query:keyword ==undefined?"":keyword
     }).toString()
 
     console.log(query)

@@ -14,9 +14,9 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 
 
 
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Avatar, Badge } from '@mui/material';
+import { Avatar, Badge, Button, FormControl, InputAdornment, InputBase, MenuItem, Paper, Select, SelectChangeEvent, TextField } from '@mui/material';
 
 import SideNavBar, { useOpenState } from './sidebar';
 import { useCartStore, userUserInfoStore } from '@/store/store';
@@ -65,7 +65,7 @@ export default function MainHeader() {
     useEffect(() => {
 
         //console.log("main-header userInfo:",userInfo)
-        if (userInfo!==null) {
+        if (userInfo !== null) {
 
             setIsLogin(true)
 
@@ -73,6 +73,38 @@ export default function MainHeader() {
             setIsLogin(false)
         }
     }, [userInfo])
+
+
+    const [searchAreaShow, setsearchAreaShow] = useState(false)
+
+    const [searchType, setsearchType] = useState("currentPage")
+
+    const handleSearchType = (e: SelectChangeEvent<string>) => {
+        setsearchType(e.target.value)
+    }
+
+    const [keyword, setkeyword] = useState("")
+
+    const handleKeyword = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setkeyword(e.target.value)
+    }
+
+    const searchProducts = () => {
+        const { kind, tag } = router.query
+
+        if(searchType=="currentPage"){
+            let quertString =""
+            if(tag){
+                quertString+=`tag=${tag}&`
+            }
+            if(kind){
+                quertString+=`kind=${kind}`
+            }
+            router.push(`/products?${quertString}&query=${keyword}`)
+        }else{
+            router.push(`/products?query=${keyword}`)
+        }
+    }
 
     return (
         <header>
@@ -124,7 +156,7 @@ export default function MainHeader() {
 
 
                             <Box sx={{ display: 'flex', alignItems: "center" }}>
-                                <IconButton disableRipple>
+                                <IconButton disableRipple onClick={() => { setsearchAreaShow(u => !u) }}>
                                     <SearchIcon />
                                 </IconButton>
                                 <IconButton disableRipple onClick={goToCart}>
@@ -157,6 +189,79 @@ export default function MainHeader() {
 
                             </Box>
                         </Toolbar>
+                        {
+                            searchAreaShow &&
+
+                            <Toolbar>
+
+
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "100%", pr: 0 }}>
+                                    <TextField
+
+                                        onChange={handleKeyword}
+                                        value={keyword}
+                                        size='small'
+                                        fullWidth
+                                        variant="outlined"
+                                        placeholder="查詢商品"
+                                        InputProps={{
+                                            style: {
+                                                paddingRight: 0
+                                            },
+
+                                            endAdornment: (
+                                                <InputAdornment position="end" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <Select
+                                                        value={searchType}
+                                                        onChange={handleSearchType}
+                                                        size="small"
+                                                        sx={{
+                                                            backgroundColor: 'white',
+                                                            height: '2.5rem',
+                                                            border: 'none',
+                                                            borderRadius: 0
+                                                        }}
+                                                    >
+                                                        <MenuItem key="currentPage" value="currentPage">
+                                                            <Typography sx={{ fontSize: '15px' }}>當前頁面</Typography>
+                                                        </MenuItem>
+                                                        <MenuItem key="allProducts" value="allProducts">
+                                                            <Typography sx={{ fontSize: '15px' }}>所有產品</Typography>
+                                                        </MenuItem>
+                                                    </Select>
+                                                    <Button
+                                                        size="medium"
+                                                        variant="outlined"
+                                                        sx={{
+                                                            borderRadius: 0, // 確保外觀與輸入框一致
+                                                            margin: 0, // 移除外部 margin
+                                                            height: '2.5rem',
+                                                        }}
+                                                        onClick={searchProducts}
+                                                    >
+                                                        <Stack direction={"row"} >
+                                                            <SearchIcon />
+                                                            搜尋
+                                                        </Stack>
+
+                                                    </Button>
+                                                </InputAdornment>
+                                            ),
+
+                                        }}
+
+                                        sx={{ background: "white" }}
+
+
+
+
+                                    />
+                                </Box>
+
+
+                            </Toolbar>
+                        }
+
                     </Container>
 
                 </AppBar>
