@@ -104,7 +104,7 @@ export default function MainHeader() {
                                             sm: 10,
                                             xs: 2
                                         }, fontWeight: 900, color: "#755F4B"
-                                    }}>好男友</Typography>
+                                    }}>DEMO</Typography>
                                     <Typography sx={{
                                         fontSize: {
                                             sm: "18px",

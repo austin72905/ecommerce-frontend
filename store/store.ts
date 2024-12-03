@@ -10,8 +10,14 @@ import { PersistStorage } from 'zustand/middleware';
 // 實現 PersistStorage接口，getItem、setItem、removeItem 方法都要實現，實現細節看個人
 const cartStorage: PersistStorage<ProductInfomationCount[]> = {
     getItem: (name) => {
-        const item = localStorage.getItem(name);
-        return item ? (JSON.parse(item) as StorageValue< ProductInfomationCount[]>): null;
+        try {
+            const item = localStorage.getItem(name);
+            return item ? (JSON.parse(item) as StorageValue<ProductInfomationCount[]>) : null;
+        } catch (error) {
+            console.error(`Failed to parse storage item "${name}", clearing value.`, error);
+            localStorage.removeItem(name); // 清空該值
+            return null; // 返回 null
+        }
     },
 
     setItem: (name, value) => {
