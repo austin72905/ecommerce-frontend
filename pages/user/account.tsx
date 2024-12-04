@@ -54,9 +54,9 @@ const MyAccountPage = () => {
       case INPUT_FIELD.NAME:
         error = validateNickName(e.target.value)
         if (error) {
-          setErrors(oldError => ({ ...oldError, username: error as string }))
+          setErrors(oldError => ({ ...oldError, nickname: error as string }))
         } else {
-          setErrors(oldError => ({ ...oldError, username: undefined }))
+          setErrors(oldError => ({ ...oldError, nickname: undefined }))
         }
         break;
 

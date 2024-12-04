@@ -23,7 +23,7 @@ import { StepIconProps } from '@mui/material/StepIcon';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 
-import React, { useEffect, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 
 import { CardHeader, Divider, useMediaQuery } from '@mui/material';
 import { useRouter } from 'next/router';
@@ -211,6 +211,52 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
         setviewValue(newVal)
     }
 
+    const [keyword,setkeyword]=useState("");
+
+    const handleKeyword = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setkeyword(e.target.value)
+    }
+
+    const searchOrderRecords= async(e: React.KeyboardEvent<HTMLInputElement>)=>{
+
+        if (e.key !== "Enter") {
+            return
+        }
+
+        if(keyword.length===0){
+            return
+        }
+
+        try {
+            const result =await getOrders(keyword) as ApiResponse;
+            console.log("result=", result)
+            
+
+            if(result.code!=RespCode.SUCCESS){
+
+                console.log("獲取數據失敗")
+                return;
+            }
+
+
+            if(result.data==null){
+                console.log("獲取數據失敗")
+                return;
+            }
+
+            
+            const ordersData =result.data as OrderInfomation[]
+            
+           
+            
+            setorderList(ordersData)
+            
+    
+        } catch (error) {
+            console.error('Error fetching data:', error)
+        }
+    }
+
     const goOrderDetail = (orderInfo: OrderInfomation) => {
         //setOrderInfoDetail(orderInfo)
         //console.log(orderInfo.recordCode)
@@ -229,17 +275,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
         
     }
 
-    //請求後端
-    const getOrders = async () => {
-        const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
 
-        const response = await fetch(`${apiUrl}/Order/GetOrders`, {
-            method: 'GET',
-            credentials:'include',
-        })
-
-        return response.json();
-    }
 
     // 請求後端
     useEffect(()=>{
@@ -303,6 +339,9 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                         sx={{ ml: 1, flex: 1 }}
                                         placeholder="輸入訂單編號或是商品名稱查詢訂單"
                                         inputProps={{ 'aria-label': '輸入訂單編號或是商品名稱查詢訂單' }}
+                                        value={keyword}
+                                        onChange={handleKeyword}
+                                        onKeyDown={searchOrderRecords}
                                     />
                                 </Paper>
 
@@ -451,4 +490,21 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
 export const randomImg = ()=>{
     const randomIndex = Math.floor(Math.random() * imgList.length);
     return imgList[randomIndex];
+}
+
+
+//請求後端
+const getOrders = async (keyword?:string) => {
+    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+
+    const query = new URLSearchParams({
+        query: keyword == undefined ? "" : keyword
+    }).toString()
+
+    const response = await fetch(`${apiUrl}/Order/GetOrders?${query}`, {
+        method: 'GET',
+        credentials:'include',
+    })
+
+    return response.json();
 }
