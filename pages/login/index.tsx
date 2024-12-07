@@ -184,14 +184,14 @@ export default function Login() {
                 <InputSet label='密碼' placeholder='請輸入密碼' name={INPUT_FIELD.PASSWORD} value={input.password} errorMsg={errors.password} func={handleLoginInput} />
 
                 <Stack spacing={1} sx={{ pt: 1 }}>
-                    <Stack sx={{ mt: 1 }} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+                    {/* <Stack sx={{ mt: 1 }} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                         <FormControlLabel
                             sx={{ ml: "1px" }}
                             control={<Checkbox sx={{ width: "25px", height: "25px" }} />}
                             label={<Typography sx={{ px: 1 }} variant='subtitle2'>記住我</Typography>} />
 
                         <Typography variant='body2' sx={{ color: "#3E8FB2" }}>忘記密碼?</Typography>
-                    </Stack>
+                    </Stack> */}
                 </Stack>
 
                 <Stack spacing={1} sx={{ pt: 1 }}>

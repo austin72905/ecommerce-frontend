@@ -92,6 +92,10 @@ export default function MainHeader() {
     const searchProducts = () => {
         const { kind, tag } = router.query
 
+        if(keyword.length===0){
+            return
+        }
+
         if (searchType == "currentPage") {
             let quertString = ""
             if (tag) {
