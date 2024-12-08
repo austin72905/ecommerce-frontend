@@ -118,6 +118,15 @@ const routes: NestedRoutes[] = [
             }
         }
     },
+    {
+
+        singleRoute: {
+            title: "關於",
+            href: {
+                pathname: "/about"
+            }
+        }
+    },
 
 
 ]

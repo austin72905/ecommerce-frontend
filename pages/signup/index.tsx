@@ -14,6 +14,7 @@ import { INPUT_FIELD } from '@/constant-value/constant';
 import { validateEmail, validateNickName, validatePassword, validatePasswordConfirm, validateUserName, ValidationErrors } from '@/utils/validation';
 import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';
+import { useAlertErrorMsgStore } from '@/store/store';
 
 export default function SignUp() {
     const router = useRouter()
@@ -31,6 +32,8 @@ export default function SignUp() {
     const [errors, setErrors] = useState<ValidationErrors>({});
     const initSignUp: SignUp = { nickname: "", email: "", username: "", password: "", passwordConfirm: "" }
     const [signUp, setsignUp] = useState<SignUp>(initSignUp);
+
+    const setAlertErrorMsg = useAlertErrorMsgStore(state => state.setAlertErrorMsg)
 
     const handleSignUpInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 
@@ -117,7 +120,7 @@ export default function SignUp() {
 
 
         if (result.code != RespCode.SUCCESS) {
-
+            setAlertErrorMsg(result.message)
             console.log("註冊失敗")
             return;
         }

@@ -38,7 +38,7 @@ import { RespCode } from '@/enums/resp-code';
 import { OrderStatus, orderStatusMap } from '@/enums/order-status';
 import { useCartStore } from '@/store/store';
 
-const OrderRecordPage=()=> {
+const OrderRecordPage = () => {
 
     const { pathname } = useRouter();
     //console.log("pathname",pathname)
@@ -58,32 +58,32 @@ const OrderRecordPage=()=> {
     )
 }
 
-export default WithAuth(OrderRecordPage) ;
+export default WithAuth(OrderRecordPage);
 
 
 
 interface OrderState {
     status: OrderStatus;
     description: string;
-  }
+}
 
-const orderStateList = ()=>{
-    let stateList:OrderState[]=[]
-    orderStatusMap.forEach((value,status)=>{
+const orderStateList = () => {
+    let stateList: OrderState[] = []
+    orderStatusMap.forEach((value, status) => {
 
-        if(status===OrderStatus.Created){
+        if (status === OrderStatus.Created) {
             stateList.push({
-                status:status,
-                description:"所有訂單"
+                status: status,
+                description: "所有訂單"
             })
-        }else{
+        } else {
             stateList.push({
-                status:status,
-                description:value.description
+                status: status,
+                description: value.description
             })
         }
 
-        
+
     })
     return stateList;
 }
@@ -205,53 +205,53 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
     const router = useRouter();
     const [viewValue, setviewValue] = useState<string>(OrderStatus.Created.toString())
 
-    const [orderList,setorderList]=useState<OrderInfomation[]>([]);
+    const [orderList, setorderList] = useState<OrderInfomation[]>([]);
 
     const handleView = (e: React.SyntheticEvent, newVal: string) => {
         setviewValue(newVal)
     }
 
-    const [keyword,setkeyword]=useState("");
+    const [keyword, setkeyword] = useState("");
 
     const handleKeyword = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setkeyword(e.target.value)
     }
 
-    const searchOrderRecords= async(e: React.KeyboardEvent<HTMLInputElement>)=>{
+    const searchOrderRecords = async (e: React.KeyboardEvent<HTMLInputElement>) => {
 
         if (e.key !== "Enter") {
             return
         }
 
-        if(keyword.length===0){
+        if (keyword.length === 0) {
             return
         }
 
         try {
-            const result =await getOrders(keyword) as ApiResponse;
+            const result = await getOrders(keyword) as ApiResponse;
             console.log("result=", result)
-            
 
-            if(result.code!=RespCode.SUCCESS){
+
+            if (result.code != RespCode.SUCCESS) {
 
                 console.log("獲取數據失敗")
                 return;
             }
 
 
-            if(result.data==null){
+            if (result.data == null) {
                 console.log("獲取數據失敗")
                 return;
             }
 
-            
-            const ordersData =result.data as OrderInfomation[]
-            
-           
-            
+
+            const ordersData = result.data as OrderInfomation[]
+
+
+
             setorderList(ordersData)
-            
-    
+
+
         } catch (error) {
             console.error('Error fetching data:', error)
         }
@@ -267,45 +267,45 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
 
     // 把訂單內的商品再放入購物車
     // router.push 到購物車
-    const buyAgain = (productList: ProductInfomationCount[])=>{
-        productList.forEach(productCount=>{
-            addToCart(productCount.product,productCount.selectedVariant,productCount.count)
+    const buyAgain = (productList: ProductInfomationCount[]) => {
+        productList.forEach(productCount => {
+            addToCart(productCount.product, productCount.selectedVariant, productCount.count)
         })
         router.push("/cart")
-        
+
     }
 
 
 
     // 請求後端
-    useEffect(()=>{
+    useEffect(() => {
 
         const fetchData = async () => {
             try {
-                const result =await getOrders() as ApiResponse;
+                const result = await getOrders() as ApiResponse;
                 console.log("result=", result)
-                
 
-                if(result.code!=RespCode.SUCCESS){
+
+                if (result.code != RespCode.SUCCESS) {
 
                     console.log("獲取數據失敗")
                     return;
                 }
 
 
-                if(result.data==null){
+                if (result.data == null) {
                     console.log("獲取數據失敗")
                     return;
                 }
 
-                
-                const ordersData =result.data as OrderInfomation[]
-                
-               
-                
+
+                const ordersData = result.data as OrderInfomation[]
+
+
+
                 setorderList(ordersData)
-                
-        
+
+
             } catch (error) {
                 console.error('Error fetching data:', error)
             }
@@ -313,7 +313,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
 
 
         fetchData()
-    },[])
+    }, [])
 
     const isSmallScreen = useMediaQuery('(max-width:700px)');
     return (
@@ -379,7 +379,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                             info.productList.map((item, indexItem) => (
                                                                 <Card key={indexItem} sx={{ width: "100%", boxShadow: "none", border: "solid 1px #D9D9D9" }}>
                                                                     <Grid container columns={12} sx={{ border: "0px solid purple" }}>
-                                                                        
+
                                                                         {/*圖片 */}
                                                                         <Grid item xs={4} sm={2}>
                                                                             <CardMedia
@@ -390,7 +390,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                                                     maxWidth: '130px',
                                                                                     border: '0px solid black',
                                                                                     overflow: 'hidden',
-                                                                                    p:1
+                                                                                    p: 1
                                                                                 }}
                                                                             >
                                                                                 <Box
@@ -404,7 +404,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                                                     <Image
                                                                                         src={item.product.coverImg}
                                                                                         //src={randomImg()}
-                                                                                        
+
                                                                                         alt="product information5"
                                                                                         layout="fill"
                                                                                         style={{ objectFit: 'cover' }}
@@ -413,8 +413,8 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                                             </CardMedia>
                                                                         </Grid>
                                                                         <Grid item xs={8} sm={10} sx={{ border: "0px solid orange" }}>
-                                                                            <CardContent sx={{ border: "0px solid red", px: 4}}>
-                                                                                <Grid container columns={8} sx={{ border: "0px solid green"}}>
+                                                                            <CardContent sx={{ border: "0px solid red", px: 4 }}>
+                                                                                <Grid container columns={8} sx={{ border: "0px solid green" }}>
                                                                                     <Grid item xs={8} sm={6} sx={{ border: "0px solid" }}>
                                                                                         <Box sx={{ border: "0px solid", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                                                                                             <Typography sx={{ fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goOrderDetail(info) }}>{item.product.title}</Typography>
@@ -423,10 +423,17 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                                                         </Box>
                                                                                     </Grid>
                                                                                     <Grid item xs={8} sm={2}>
-                                                                                        <Box sx={{ display: "flex", flexDirection: "row"}}>
+                                                                                        <Box sx={{ display: "flex", flexDirection: "row" }}>
                                                                                             <Stack sx={{ alignItems: "end" }} spacing={3}>
 
-                                                                                                <Typography>NT${item.selectedVariant?.price}</Typography>
+                                                                                                <Typography>
+                                                                                                    NT$
+                                                                                                    {
+                                                                                                        item.selectedVariant?.discountPrice ?
+                                                                                                            item.selectedVariant?.discountPrice :
+                                                                                                            item.selectedVariant?.price
+                                                                                                    }
+                                                                                                </Typography>
                                                                                             </Stack>
                                                                                         </Box>
 
@@ -446,7 +453,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                         }
 
                                                         {/*訂單金額 */}
-                                                        <Stack sx={{ alignItems: "end", pr: 4,mt:2 }} spacing={4}>
+                                                        <Stack sx={{ alignItems: "end", pr: 4, mt: 2 }} spacing={4}>
                                                             <Stack direction={"row"} sx={{ mt: 3 }} spacing={0.5}>
                                                                 <Typography >
                                                                     訂單金額 :
@@ -465,7 +472,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                                                     <CardActions sx={{ pr: 4, py: 3, display: "flex", flexDirection: "row", justifyContent: "end" }}>
                                                         {info.status === OrderStatus.WaitingForPayment ? <Button variant="contained" sx={{ backgroundColor: "#EFB878", color: "black", "&:hover": { backgroundColor: "#EFB878" } }}>取消訂單</Button> : null}
                                                         <Button variant="outlined" onClick={() => { goOrderDetail(info) }}>訂單詳情</Button>
-                                                        <Button variant="contained" onClick={()=>{buyAgain(info.productList)}}>重新購買</Button>
+                                                        <Button variant="contained" onClick={() => { buyAgain(info.productList) }}>重新購買</Button>
                                                     </CardActions>
                                                 </Card>
 
@@ -487,15 +494,15 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
     )
 }
 
-export const randomImg = ()=>{
+export const randomImg = () => {
     const randomIndex = Math.floor(Math.random() * imgList.length);
     return imgList[randomIndex];
 }
 
 
 //請求後端
-const getOrders = async (keyword?:string) => {
-    const apiUrl= process.env.NEXT_PUBLIC_BACKEND_URL
+const getOrders = async (keyword?: string) => {
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
 
     const query = new URLSearchParams({
         query: keyword == undefined ? "" : keyword
@@ -503,7 +510,7 @@ const getOrders = async (keyword?:string) => {
 
     const response = await fetch(`${apiUrl}/Order/GetOrders?${query}`, {
         method: 'GET',
-        credentials:'include',
+        credentials: 'include',
     })
 
     return response.json();
