@@ -13,6 +13,12 @@ import { ProductInfomationCount } from "@/interfaces";
 
 export default function App({ Component, pageProps }: AppProps) {
 
+  // 生產環境不打印 || process.env.NODE_ENV ==="development"
+  if(process.env.NODE_ENV ==="production" ){
+    console.log = () => {};
+    console.warn = () => {};
+    console.error = () => {};
+  }
 
   const userInfo = userUserInfoStore((state) => state.userInfo)
   const setUserInfo = userUserInfoStore((state) => state.setUserInfo)
