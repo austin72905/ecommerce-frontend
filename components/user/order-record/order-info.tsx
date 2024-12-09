@@ -106,13 +106,13 @@ export default function OrderInfo({ orderInfo,goToProductDetail }: OrderInfoProp
                             <Grid item xs={2}>
                                 <Stack spacing={3} sx={{ border: "0px solid", alignItems: "end" }}>
                                     <Typography >
-                                        NT${orderInfo.orderPrice}
+                                        NT${orderInfo.orderPrice-orderInfo.shippingPrice}
                                     </Typography>
                                     <Typography >
                                         NT${orderInfo.shippingPrice}
                                     </Typography>
                                     <Typography sx={{ color: "#ef6060", fontWeight: "bold" }}>
-                                        NT${orderInfo.orderPrice + orderInfo.shippingPrice}
+                                        NT${orderInfo.orderPrice}
                                     </Typography>
                                     <Typography >
                                         {payWayMap.get(orderInfo.payWay)?payWayMap.get(orderInfo.payWay):"銀行轉帳"}
