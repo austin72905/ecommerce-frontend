@@ -1,4 +1,4 @@
-import { ReactNode } from "react"
+import { ReactNode, useEffect } from "react"
 import MainHeader from "./main-header";
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
@@ -11,6 +11,8 @@ import AlertMsg from "../msg/alert-msg";
 import AlertErrorMsg from "../msg/alert-error-msg";
 import Banners from "./banners";
 import { useRouter } from "next/router";
+import NotifyModal from "../notify/notify-modal";
+import { useFirstVisitProductPageStore } from "@/store/store";
 
 interface LayoutProps {
     children: ReactNode
@@ -32,6 +34,8 @@ const customTheme = createTheme({
 export default function Layout({ children }: LayoutProps) {
 
 
+    const hasVisited=useFirstVisitProductPageStore((state) => state.hasVisited);
+    const sethasVisited=useFirstVisitProductPageStore((state) => state.sethasVisited);
 
     const handleScrollTop = () => {
         window.scrollTo({
@@ -41,6 +45,8 @@ export default function Layout({ children }: LayoutProps) {
     }
 
     const router=useRouter()
+
+
 
     return (
         <ThemeProvider theme={customTheme}>
@@ -54,14 +60,15 @@ export default function Layout({ children }: LayoutProps) {
                         xs: 0
                     }
                 }}>
-                    {router.pathname==="/products" && <Banners />}
+                    {router.pathname==="/products" && <Banners />  }
                     
                     {children}
                 </Container>
             </Box>
-
+            { !hasVisited  && <NotifyModal/>}
+            
             <GoToTopButton handleScrollTop={handleScrollTop} />
-
+            
             <AlertMsg />
             <AlertErrorMsg />
 

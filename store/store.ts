@@ -296,6 +296,20 @@ interface CsrfTokenStore {
     setCsrfToken: (token: string | null) => void
 }
 
+const useFirstVisitProductPageStore = create<FirstVisitProductPageStore>((set, get) => ({
+    hasVisited: false,
+    sethasVisited: () => set((state) => {
+        return {
+            hasVisited: true
+        }
+    })
+}))
+
+interface FirstVisitProductPageStore {
+    hasVisited: boolean;
+    sethasVisited: () => void
+}
 
 
-export { useCartStore, useSubscribeListStore, useAlertMsgStore, useAlertErrorMsgStore, userUserInfoStore, useCsrfTokenStore }
+
+export { useCartStore, useSubscribeListStore, useAlertMsgStore, useAlertErrorMsgStore, userUserInfoStore, useCsrfTokenStore,useFirstVisitProductPageStore }
