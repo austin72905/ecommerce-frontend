@@ -1,0 +1,41 @@
+name: CI/CD for Next.js Project
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: 檢出程式碼
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # Step 2: 安裝 Node.js 環境
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # 根據您的專案需求設置 Node.js 版本
+
+      # Step 3: 安裝依賴
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: 構建 Next.js 應用
+      - name: Build Next.js app
+        run: npm run build
+
+      # Step 5: 部署到 GCP VM
+      - name: Deploy to GCP VM
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "~/deploy-scripts/deploy-compose.sh ecommerce-frontend"
