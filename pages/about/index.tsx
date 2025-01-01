@@ -58,7 +58,8 @@ export default function AboutPage() {
                         <Typography component={"p"} sx={{ lineHeight: "40px" }}>
                             1. GCP : 使用GCP上面的VM，作業環境使用Ubuntu，能夠使用基本的Linux指令，加上成本關係..<br />
                             2. nginx : 當網站入口、簡易圖片服務器<br />
-                            3. Docker : 所有服務都是run 在docker 容器內，能夠快速部屬
+                            3. Docker : 所有服務都是run 在docker 容器內，並使用docker-compose管理，能夠快速部屬
+                            4. CI/CD  : 使用Github Action 實現CI/CD，後端通過單元測試後，才會部屬到遠端VM上
                         </Typography>
                     </Stack>
 
@@ -97,9 +98,7 @@ export default function AboutPage() {
                                 </Stack>
 
                             </ListItem>
-                            <ListItem sx={{ px: 0 }}>
-                                2. 使用gitHub action 的CI/CD，配合docker-compose 達到自動測試、自動部屬功能
-                            </ListItem>
+                            
                             <ListItem sx={{ px: 0 }}>
                                 3. 目前缺乏即時通知功能，可以通過websocket、SignalR 實現
                             </ListItem>
