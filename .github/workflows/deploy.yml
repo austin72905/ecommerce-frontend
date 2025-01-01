@@ -3,7 +3,7 @@ name: CI/CD for Next.js Project
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build-and-deploy:
