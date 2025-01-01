@@ -58,7 +58,7 @@ export default function AboutPage() {
                         <Typography component={"p"} sx={{ lineHeight: "40px" }}>
                             1. GCP : 使用GCP上面的VM，作業環境使用Ubuntu，能夠使用基本的Linux指令，加上成本關係..<br />
                             2. nginx : 當網站入口、簡易圖片服務器<br />
-                            3. Docker : 所有服務都是run 在docker 容器內，並使用docker-compose管理，能夠快速部屬
+                            3. Docker : 所有服務都是run 在docker 容器內，並使用docker-compose管理，能夠快速部屬<br />
                             4. CI/CD  : 使用Github Action 實現CI/CD，後端通過單元測試後，才會部屬到遠端VM上
                         </Typography>
                     </Stack>
@@ -100,10 +100,10 @@ export default function AboutPage() {
                             </ListItem>
                             
                             <ListItem sx={{ px: 0 }}>
-                                3. 目前缺乏即時通知功能，可以通過websocket、SignalR 實現
+                                2. 目前缺乏即時通知功能，可以通過websocket、SignalR 實現
                             </ListItem>
                             <ListItem sx={{ px: 0 }}>
-                                4. 使用Stored Procedure 寫一個腳本，處理每日未支付訂單的訂單狀態
+                                3. 使用Stored Procedure 寫一個腳本，處理每日未支付訂單的訂單狀態
                             </ListItem>
 
 
