@@ -14,8 +14,14 @@ import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import PersonIcon from '@mui/icons-material/Person';
+import PhoneIcon from '@mui/icons-material/Phone';
+import StoreIcon from '@mui/icons-material/Store';
 import Backdrop from '@mui/material/Backdrop';
-import { FormControl, MenuItem, Select, SelectChangeEvent, useMediaQuery, useTheme } from '@mui/material';
+import { FormControl, MenuItem, Select, SelectChangeEvent, useMediaQuery, useTheme, Card, Chip, alpha } from '@mui/material';
 import { GridContainer } from '@/components/ui/grid-container';
 import { useAlertErrorMsgStore, useAlertMsgStore, useCsrfTokenStore } from '@/store/store';
 import WithAuth from '@/components/auth/with-auth';
@@ -24,8 +30,6 @@ import { validateAddress, validateEmail, validateNickName, validatePhoneNumber, 
 import { UserShipAddress } from '@/interfaces';
 import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';
-
-
 
 const AddressPage = () => {
 
@@ -61,13 +65,13 @@ const AddressPage = () => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: isXSScreen ? 340 : isSmallScreen ? 400 : 500,
+        width: isXSScreen ? 360 : isSmallScreen ? 420 : 520,
         bgcolor: 'background.paper',
-        border: '1px solid #d9d9d9',
-        borderRadius: "4px",
-        boxShadow: "none",
-        px: isSmallScreen ? "15px" : "30px",
-        py: "20px"
+        borderRadius: 3,
+        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+        backdropFilter: 'blur(10px)',
+        px: isSmallScreen ? 3 : 4,
+        py: 3
     };
 
     const [isRenew, setisRenew] = useState<boolean>(false)
@@ -81,19 +85,15 @@ const AddressPage = () => {
                 const result = await getUserShippingAddress() as ApiResponse;
                 console.log("result=", result)
 
-
                 if (result.code != RespCode.SUCCESS) {
-
                     console.log("獲取數據失敗")
                     return;
                 }
-
 
                 if (result.data == null) {
                     console.log("獲取數據失敗")
                     return;
                 }
-
 
                 const data = result.data as UserShipAddress[]
 
@@ -112,7 +112,6 @@ const AddressPage = () => {
 
                 setDefaultAddressList(addressListData)
 
-
             } catch (error) {
                 console.error('Error fetching data:', error)
             }
@@ -120,8 +119,6 @@ const AddressPage = () => {
 
         fetchData()
     }, [isRenew])
-
-
 
     // onChange
     const handleEditedAddress = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -158,7 +155,6 @@ const AddressPage = () => {
                 }
                 break;
 
-
             case INPUT_FIELD.RECIEVE_STORE:
                 error = validateRecieveStore(e.target.value)
                 if (error) {
@@ -178,7 +174,6 @@ const AddressPage = () => {
                 break;
         }
 
-
         setEditedAddress(o => {
 
             let newO: any = { ...o }
@@ -193,9 +188,6 @@ const AddressPage = () => {
             return newO
         })
     }
-
-
-
 
     const setAlertMsg = useAlertMsgStore(state => state.setAlertMsg)
     const setAlertErrorMsg=useAlertErrorMsgStore(state=>state.setAlertErrorMsg)
@@ -240,7 +232,6 @@ const AddressPage = () => {
     const addNewAddress = async () => {
         console.log(editedAddress)
 
-
         // 判斷是否都有輸入
         if (!Object.values(errors).every(value => value === undefined)) {
             console.log("errors:", errors)
@@ -269,11 +260,9 @@ const AddressPage = () => {
                 }
                 setAlertMsg("新增地址成功")
 
-
             } catch (error) {
                 console.log("修改異常")
             }
-
 
         } else {
 
@@ -287,7 +276,6 @@ const AddressPage = () => {
                     return;
                 }
 
-
                 setAlertMsg("修改地址成功")
             } catch (error) {
 
@@ -295,8 +283,6 @@ const AddressPage = () => {
             }
 
         }
-
-
 
         handleClose()
 
@@ -326,7 +312,6 @@ const AddressPage = () => {
 
         setAlertMsg("刪除地址成功")
 
-
         setisRenew(u => !u)
     }
 
@@ -353,119 +338,267 @@ const AddressPage = () => {
         setAlertMsg("修改預設地址成功")
     }
 
-
-
     return (
-        <Container sx={{ border: "0px solid" }} maxWidth='xl'>
+        <Box sx={{ 
+            backgroundColor: 'background.default',
+            minHeight: '100vh',
+            py: 4
+        }}>
+            <Container maxWidth='xl'>
+                {/* 現代化標題區域 */}
+                <Box sx={{ mb: 4 }}>
+                    <Typography 
+                        variant="h4" 
+                        sx={{ 
+                            fontWeight: 700,
+                            mb: 1,
+                            background: 'linear-gradient(45deg, #2C3E50, #34495E)',
+                            backgroundClip: 'text',
+                            WebkitBackgroundClip: 'text',
+                            color: 'transparent'
+                        }}
+                    >
+                        常用地址管理
+                    </Typography>
+                    <Box sx={{
+                        height: '3px',
+                        width: '80px',
+                        background: 'linear-gradient(90deg, #E67E22, #F39C12)',
+                        borderRadius: 2,
+                        mb: 2
+                    }} />
+                    <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+                        管理您的收件地址，讓購物更便利
+                    </Typography>
+                </Box>
 
-            <Paper sx={{ border: "1px solid #d9d9d9", boxShadow: "none", mx: 1, mt: 2.5, minHeight: "500px" }}>
-                <Stack spacing={3} sx={{ mt: 1 }}>
-                    <Stack sx={{ mt: 4, px: "30px" }}>
-                        <Typography variant='h6' sx={{ fontWeight: "bold" }}>常用地址</Typography>
-                    </Stack>
-                    <Stack sx={{ mt: 4, px: 4 }} direction="row" justifyContent="end">
-                        <Button variant='outlined' onClick={handleOpen}>新增常用地址</Button>
-                    </Stack>
-
-                    {
-                        defaultAddressList.map((c, index) =>
-                        (
-                            <RecieverInfo
-                                key={index}
-                                handleEditModal={handleEditModal}
-                                content={c}
-                                changeDefaultAddress={changeDefaultAddress}
-                                deleteAddress={deleteAddress}
-                                setDefaultAddress={setDefaultAddress}
-                                isSmallScreen={isSmallScreen}
-                                isXSScreen={isXSScreen}
-                            />
-                        ))
-                    }
-
-
-
-                </Stack>
-
-
-
-            </Paper>
-
-            <Modal open={open} onClose={handleClose} disableScrollLock closeAfterTransition BackdropComponent={Backdrop} BackdropProps={{ timeout: 500 }}>
-                <Fade in={open} >
-                    <Box sx={style}>
-
-
-                        <Stack direction={"row"} justifyContent={"space-between"}>
-
-                            <ItemWrapper sx={{ pl: "10px", pt: "0px" }}>
-                                <Typography variant='h6' >新增常用地址</Typography>
-
-                            </ItemWrapper>
-
-                            <IconButton onClick={handleClose} sx={{ "&:hover": { backgroundColor: "#d9d9d9" }, border: "0px solid #d9d9d9", backgroundColor: "white", boxShadow: "none", width: "30px", height: "30px" }}>
-                                <ClearOutlinedIcon />
-                            </IconButton>
-
-                        </Stack>
-
-
-
-                        <Stack spacing={"10px"} sx={{ minHeight: "450px", marginLeft: "2px", marginRight: "2px", my: "10px", border: "1px solid #D9D9D9", borderRadius: "4px", backgroundColor: "white" }}>
-
-
-                            <ItemWrapper sx={{ pt: "20px" }}>
-                                <Typography variant='subtitle2' >收件人</Typography>
-                                <TextField value={editedAddress.name} onChange={handleEditedAddress} name={INPUT_FIELD.NAME} placeholder='不得包含特殊符號 / $ . @ & # @...' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
-                                <Typography variant='caption' sx={{ color: "red" }}>{errors.username}</Typography>
-                            </ItemWrapper>
-                            <ItemWrapper >
-                                <Typography variant='subtitle2' >聯絡電話</Typography>
-                                <TextField value={editedAddress.phoneNumber} onChange={handleEditedAddress} name={INPUT_FIELD.PHONE_NUMBER} placeholder='ex: 09xxxxxxxx' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
-                                <Typography variant='caption' sx={{ color: "red" }}>{errors.phoneNumber}</Typography>
-                            </ItemWrapper>
-
-                            <ItemWrapper >
-                                <Typography variant='subtitle2' >取件方式</Typography>
-
-                                <FormControl fullWidth sx={{ marginTop: "10px" }} >
-                                    <Select
-                                        value={editedAddress.recieveWay}
-                                        onChange={handleRecieveWay}
-                                        size='small'
-                                        name={INPUT_FIELD.RECIEVE_WAY}
-                                        sx={{ height: "35px" }}
-                                    >
-                                        <MenuItem value="UNIMARTC2C">7-11</MenuItem>
-                                        <MenuItem value="FAMIC2C">全家</MenuItem>
-                                    </Select>
-                                </FormControl>
-
-                            </ItemWrapper>
-                            <ItemWrapper >
-                                <Typography variant='subtitle2' >取件門市</Typography>
-                                <TextField value={editedAddress.recieveStore} onChange={handleEditedAddress} name={INPUT_FIELD.RECIEVE_STORE} placeholder='ex: 台中門市' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
-                                <Typography variant='caption' sx={{ color: "red" }}>{errors.recieveStore}</Typography>
-                            </ItemWrapper>
-                            <ItemWrapper >
-                                <Typography variant='subtitle2' >收件地址</Typography>
-                                <TextField value={editedAddress.recieverAddress} onChange={handleEditedAddress} name={INPUT_FIELD.RECIEVER_ADDRESS} placeholder='收件地址' inputProps={{ sx: { height: "15px" } }} sx={{ marginTop: "10px" }} size='small' fullWidth />
-                                <Typography variant='caption' sx={{ color: "red" }}>{errors.shippingAddress}</Typography>
-                            </ItemWrapper>
-
-                            <ItemWrapper sx={{ pt: "40px", pb: "20px" }}>
-                                <Stack direction={"row"} justifyContent={"space-around"}>
-                                    <Button onClick={handleClose} variant='outlined'>取消</Button>
-                                    <Button variant='contained' onClick={addNewAddress}>確定</Button>
-                                </Stack>
-                            </ItemWrapper>
-
+                {/* 現代化主要內容卡片 */}
+                <Card sx={{ 
+                    borderRadius: 3,
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                    overflow: 'hidden'
+                }}>
+                    <Box sx={{ 
+                        background: 'linear-gradient(135deg, #2C3E50 0%, #34495E 100%)',
+                        p: 3
+                    }}>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                            <Typography 
+                                variant="h6" 
+                                sx={{ 
+                                    color: 'white',
+                                    fontWeight: 600
+                                }}
+                            >
+                                收件地址列表
+                            </Typography>
+                            <Button 
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={handleOpen}
+                                sx={{
+                                    backgroundColor: '#E67E22',
+                                    '&:hover': {
+                                        backgroundColor: '#D35400'
+                                    }
+                                }}
+                            >
+                                新增地址
+                            </Button>
                         </Stack>
                     </Box>
-                </Fade>
 
-            </Modal>
-        </Container>
+                    <Box sx={{ p: 3 }}>
+                        {defaultAddressList.length === 0 ? (
+                            <Box sx={{
+                                textAlign: 'center',
+                                py: 8,
+                                color: 'text.secondary'
+                            }}>
+                                <LocationOnIcon sx={{ fontSize: 64, mb: 2, opacity: 0.3 }} />
+                                <Typography variant="h6" sx={{ mb: 1 }}>
+                                    尚未添加任何地址
+                                </Typography>
+                                <Typography variant="body2">
+                                    點擊「新增地址」按鈕來添加您的第一個收件地址
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <Grid container spacing={3}>
+                                {defaultAddressList.map((address, index) => (
+                                    <Grid item xs={12} md={6} lg={4} key={index}>
+                                        <ModernAddressCard
+                                            address={address}
+                                            handleEditModal={handleEditModal}
+                                            deleteAddress={deleteAddress}
+                                            setDefaultAddress={setDefaultAddress}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        )}
+                    </Box>
+                </Card>
+
+                {/* 現代化新增/編輯地址對話框 */}
+                <Modal 
+                    open={open} 
+                    onClose={handleClose} 
+                    disableScrollLock 
+                    closeAfterTransition 
+                    BackdropComponent={Backdrop} 
+                    BackdropProps={{ 
+                        timeout: 500,
+                        sx: { 
+                            backgroundColor: 'rgba(44, 62, 80, 0.8)',
+                            backdropFilter: 'blur(8px)'
+                        }
+                    }}
+                >
+                    <Fade in={open}>
+                        <Box sx={style}>
+                            {/* 對話框標題 */}
+                            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                                <Typography 
+                                    variant="h5" 
+                                    sx={{ 
+                                        fontWeight: 700,
+                                        color: '#2C3E50'
+                                    }}
+                                >
+                                    {editedAddress.id === 0 ? '新增常用地址' : '編輯地址'}
+                                </Typography>
+                                <IconButton 
+                                    onClick={handleClose}
+                                    sx={{
+                                        backgroundColor: alpha('#E67E22', 0.1),
+                                        '&:hover': {
+                                            backgroundColor: alpha('#E67E22', 0.2),
+                                            transform: 'scale(1.1)'
+                                        }
+                                    }}
+                                >
+                                    <ClearOutlinedIcon />
+                                </IconButton>
+                            </Stack>
+
+                            {/* 表單內容 */}
+                            <Box sx={{
+                                backgroundColor: '#FAFAFA',
+                                borderRadius: 2,
+                                p: 3
+                            }}>
+                                <Grid container spacing={3}>
+                                    <Grid item xs={12} sm={6}>
+                                        <ModernFormField
+                                            label="收件人"
+                                            icon={<PersonIcon />}
+                                            placeholder="請輸入收件人姓名"
+                                            name={INPUT_FIELD.NAME}
+                                            value={editedAddress.name}
+                                            error={errors.username}
+                                            onChange={handleEditedAddress}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <ModernFormField
+                                            label="聯絡電話"
+                                            icon={<PhoneIcon />}
+                                            placeholder="ex: 09xxxxxxxx"
+                                            name={INPUT_FIELD.PHONE_NUMBER}
+                                            value={editedAddress.phoneNumber}
+                                            error={errors.phoneNumber}
+                                            onChange={handleEditedAddress}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: '#2C3E50' }}>
+                                            取件方式
+                                        </Typography>
+                                        <FormControl fullWidth>
+                                            <Select
+                                                value={editedAddress.recieveWay}
+                                                onChange={handleRecieveWay}
+                                                name={INPUT_FIELD.RECIEVE_WAY}
+                                                sx={{
+                                                    borderRadius: 2,
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: 'rgba(0,0,0,0.1)'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#E67E22'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#E67E22'
+                                                        }
+                                                    }
+                                                }}
+                                            >
+                                                <MenuItem value="UNIMARTC2C">7-11</MenuItem>
+                                                <MenuItem value="FAMIC2C">全家</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <ModernFormField
+                                            label="取件門市"
+                                            icon={<StoreIcon />}
+                                            placeholder="ex: 台中門市"
+                                            name={INPUT_FIELD.RECIEVE_STORE}
+                                            value={editedAddress.recieveStore}
+                                            error={errors.recieveStore}
+                                            onChange={handleEditedAddress}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <ModernFormField
+                                            label="收件地址"
+                                            icon={<LocationOnIcon />}
+                                            placeholder="請輸入完整收件地址"
+                                            name={INPUT_FIELD.RECIEVER_ADDRESS}
+                                            value={editedAddress.recieverAddress}
+                                            error={errors.shippingAddress}
+                                            onChange={handleEditedAddress}
+                                        />
+                                    </Grid>
+                                </Grid>
+
+                                {/* 按鈕區域 */}
+                                <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 4 }}>
+                                    <Button 
+                                        onClick={handleClose} 
+                                        variant="outlined"
+                                        sx={{
+                                            borderColor: '#2C3E50',
+                                            color: '#2C3E50',
+                                            '&:hover': {
+                                                borderColor: '#34495E',
+                                                backgroundColor: alpha('#2C3E50', 0.05)
+                                            }
+                                        }}
+                                    >
+                                        取消
+                                    </Button>
+                                    <Button 
+                                        variant="contained" 
+                                        onClick={addNewAddress}
+                                        sx={{
+                                            backgroundColor: '#E67E22',
+                                            '&:hover': {
+                                                backgroundColor: '#D35400'
+                                            }
+                                        }}
+                                    >
+                                        {editedAddress.id === 0 ? '新增地址' : '儲存變更'}
+                                    </Button>
+                                </Stack>
+                            </Box>
+                        </Box>
+                    </Fade>
+                </Modal>
+            </Container>
+        </Box>
     )
 }
 
@@ -488,12 +621,9 @@ const ItemWrapper = styled(Box)({
 
 interface RecieverInfoProps {
     handleEditModal: (e: React.MouseEvent, content: AddressInfo) => void;
-    changeDefaultAddress: (e: React.MouseEvent, i: number) => void;
     deleteAddress: (address: AddressInfo) => Promise<void>;
-    setDefaultAddress: (address: AddressInfo) => Promise<void>
-    content: AddressInfo;
-    isSmallScreen: boolean;
-    isXSScreen: boolean;
+    setDefaultAddress: (address: AddressInfo) => Promise<void>;
+    address: AddressInfo;
 }
 
 const addressContent = new Map([
@@ -615,140 +745,109 @@ const getUserShippingAddress = async () => {
     return response.json();
 }
 
-const RecieverInfo = ({ handleEditModal, changeDefaultAddress, deleteAddress, setDefaultAddress, content, isSmallScreen, isXSScreen }: RecieverInfoProps) => {
+const ModernAddressCard = ({ address, handleEditModal, deleteAddress, setDefaultAddress }: RecieverInfoProps) => {
     return (
-        <Paper sx={{ mt: 2, boxShadow: "none", border: `1px solid ${content.isDefaultAddress ? "#61D1BD" : "#d9d9d9"}` }}>
-
-            <Grid container columns={12} sx={{ p: 4 }} >
-                <Grid item xs={12} sm={9} md={9} >
-                    <Grid container columns={12} spacing={1}>
-
-                        <Grid item xs={12}>
-                            <GridContainer
-                                xs={5} sm={2}
-                                columns={12}
-                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >收件人</Typography>}
-                                content={
-                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.name}</Typography>
-                                }
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <GridContainer
-                                xs={5} sm={2}
-                                columns={12}
-                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >連絡電話</Typography>}
-                                content={
-                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.phoneNumber}</Typography>
-                                }
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <GridContainer
-                                xs={5} sm={2}
-                                columns={12}
-                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >取件地址</Typography>}
-                                content={
-                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.recieverAddress}</Typography>
-                                }
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <GridContainer
-                                xs={5} sm={2}
-                                columns={12}
-                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >取件門市</Typography>}
-                                content={
-                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{content.recieveStore}</Typography>
-                                }
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <GridContainer
-                                xs={5} sm={2}
-                                columns={12}
-                                title={<Typography sx={{ minWidth: "30px" }} variant='subtitle2' >取件方式</Typography>}
-                                content={
-                                    <Typography sx={{ minWidth: "30px" }} variant='subtitle2'  >{recieveWayMap.get(content.recieveWay as string)}</Typography>
-                                }
-                            />
-                        </Grid>
-
-                    </Grid>
-                </Grid>
-
-                <Grid item xs={12} sm={3} md={3} sx={{ border: "0px solid #d9d9d9" }}>
-
-                    {!isSmallScreen &&
-                        <Stack spacing={0.5} alignItems={"end"} justifyContent={"space-between"} sx={{ border: "0px solid", height: "100%", width: "100%" }}>
-                            <Stack spacing={0.5} sx={{ border: "0px solid" }} direction={"row"}>
-                                <Button onClick={(e) => { handleEditModal(e, content) }} variant='outlined' sx={{ border: "1px solid #d9d9d9", color: "#AFAFAF" }}>編輯地址</Button>
-                                <IconButton onClick={(e) => { deleteAddress(content) }}>
-                                    <DeleteIcon />
-                                </IconButton>
-
-                            </Stack>
-                            {
-                                content.isDefaultAddress
-                                    ?
-                                    <Stack justifyContent={"center"} alignItems={"center"} sx={{ height: "40px", width: "135px", backgroundColor: "#61D1BD", borderRadius: "4px" }}>
-                                        <Typography variant='button' sx={{ color: "white" }}>預設地址</Typography>
-                                    </Stack>
-                                    :
-                                    <Button variant='outlined' onClick={(e) => { setDefaultAddress(content) }} sx={{ width: "135px" }}>設為預設地址</Button>
+        <Card sx={{ 
+            borderRadius: 2,
+            boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+            '&:hover': {
+                boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
+            }
+        }}>
+            <Box sx={{ p: 3, pb: 2 }}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>{address.name}</Typography>
+                    <Chip
+                        label={address.isDefaultAddress ? '預設地址' : ''}
+                        size="small"
+                        sx={{
+                            backgroundColor: address.isDefaultAddress ? '#61D1BD' : '#E0E0E0',
+                            color: address.isDefaultAddress ? 'white' : 'text.primary',
+                            fontWeight: 600,
+                            borderRadius: 1,
+                            '& .MuiChip-label': {
+                                px: 1.5
                             }
+                        }}
+                    />
+                </Stack>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{address.phoneNumber}</Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{address.recieverAddress}</Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>{address.recieveStore}</Typography>
+            </Box>
+            <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                p: 2, 
+                borderTop: '1px solid #eee'
+            }}>
+                <Stack direction="row" spacing={1}>
+                    <IconButton onClick={(e) => handleEditModal(e, address)}>
+                        <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={(e) => deleteAddress(address)}>
+                        <DeleteIcon />
+                    </IconButton>
+                </Stack>
+                <Button 
+                    variant="outlined" 
+                    onClick={(e) => setDefaultAddress(address)}
+                    sx={{ 
+                        borderColor: '#E67E22', 
+                        color: '#E67E22', 
+                        '&:hover': {
+                            borderColor: '#D35400',
+                            backgroundColor: alpha('#E67E22', 0.05)
+                        }
+                    }}
+                >
+                    設為預設
+                </Button>
+            </Box>
+        </Card>
+    )
+}
 
-
-
-                        </Stack>
+const ModernFormField = ({ label, icon, placeholder, name, value, error, onChange }: {
+    label: string;
+    icon: React.ReactNode;
+    placeholder: string;
+    name: string;
+    value: string;
+    error: string | undefined;
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+}) => {
+    return (
+        <Box sx={{ mb: 2 }}>
+            <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
+                <Box component="span" sx={{ color: '#2C3E50', mr: 1, display: 'flex', alignItems: 'center' }}>
+                    {icon}
+                </Box>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#2C3E50' }}>{label}</Typography>
+            </Stack>
+            <TextField
+                fullWidth
+                placeholder={placeholder}
+                name={name}
+                value={value}
+                onChange={onChange}
+                error={!!error}
+                helperText={error}
+                sx={{
+                    '& .MuiOutlinedInput-root': {
+                        '& fieldset': {
+                            borderColor: 'rgba(0,0,0,0.1)'
+                        },
+                        '&:hover fieldset': {
+                            borderColor: '#E67E22'
+                        },
+                        '&.Mui-focused fieldset': {
+                            borderColor: '#E67E22'
+                        }
                     }
-
-                    {isSmallScreen &&
-                        <Stack spacing={"20px"} sx={{ mt: "10px" }}>
-                            <Stack direction={"row"} spacing={0.5} justifyContent={"space-between"} sx={{ border: "0px solid", }}>
-
-                                <Button onClick={(e) => { handleEditModal(e, content) }} variant='outlined' sx={{ border: "1px solid #d9d9d9", color: "#AFAFAF" }}>編輯地址</Button>
-                                <IconButton onClick={(e) => { deleteAddress(content) }}>
-                                    <DeleteIcon />
-                                </IconButton>
-
-
-
-
-
-
-                            </Stack>
-
-                            {
-                                content.isDefaultAddress
-                                    ?
-                                    <Stack justifyContent={"center"} alignItems={"center"} sx={{ height: "40px", width: "135px", backgroundColor: "#61D1BD", borderRadius: "4px" }}>
-                                        <Typography variant='button' sx={{ color: "white" }}>預設地址</Typography>
-                                    </Stack>
-                                    :
-                                    <Button variant='outlined' onClick={(e) => { setDefaultAddress(content) }} sx={{ width: "135px" }}>設為預設地址</Button>
-                            }
-                        </Stack>
-
-
-
-                    }
-
-
-
-
-                </Grid>
-
-
-
-            </Grid>
-
-
-
-        </Paper>
+                }}
+            />
+        </Box>
     )
 }

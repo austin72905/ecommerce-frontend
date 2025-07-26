@@ -12,18 +12,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 
-
-
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Avatar, Badge, Button, FormControl, InputAdornment, InputBase, MenuItem, Paper, Select, SelectChangeEvent, TextField } from '@mui/material';
+import { Avatar, Badge, Button, FormControl, InputAdornment, InputBase, MenuItem, Paper, Select, SelectChangeEvent, TextField, alpha } from '@mui/material';
 
 import SideNavBar, { useOpenState } from './sidebar';
 import { useCartStore, userUserInfoStore } from '@/store/store';
 import UserMenu from './user-menu';
-
-
-
 
 export default function MainHeader() {
 
@@ -57,7 +52,6 @@ export default function MainHeader() {
 
     const cartContent = useCartStore(state => state.cartContent)
 
-
     const setUserInfo = userUserInfoStore((state) => state.setUserInfo)
 
     const userInfo = userUserInfoStore((state) => state.userInfo)
@@ -73,7 +67,6 @@ export default function MainHeader() {
             setIsLogin(false)
         }
     }, [userInfo])
-
 
     const [searchAreaShow, setsearchAreaShow] = useState(false)
 
@@ -114,7 +107,6 @@ export default function MainHeader() {
     useEffect(() => {
         setsearchAreaShow(false)
 
-
         // 修改不在產品頁面時，搜尋產品範圍為所有產品
         if (router.pathname != "/products") {
             setsearchType("allProducts")
@@ -124,112 +116,229 @@ export default function MainHeader() {
     return (
         <header>
             <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="fixed" >
+                <AppBar 
+                    position="fixed" 
+                    sx={{
+                        // 毛玻璃效果
+                        backgroundColor: alpha('#2C3E50', 0.95),
+                        backdropFilter: 'blur(20px)',
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+                    }}
+                >
                     <Container sx={{ px: 0 }}>
-                        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+                        <Toolbar sx={{ 
+                            display: "flex", 
+                            justifyContent: "space-between",
+                            minHeight: '70px !important'
+                        }}>
                             <IconButton
                                 size="large"
                                 edge="start"
                                 color="inherit"
                                 aria-label="menu"
-                                sx={{ mr: {
-                                    xs:0,
-                                    sm:0,
-                                    md:2,
-                                    lg:8
-                                } }}
+                                sx={{ 
+                                    mr: {
+                                        xs: 0,
+                                        sm: 0,
+                                        md: 2,
+                                        lg: 8
+                                    },
+                                    borderRadius: 2,
+                                    transition: 'all 0.3s ease',
+                                    '&:hover': {
+                                        backgroundColor: alpha('#E67E22', 0.1),
+                                        transform: 'scale(1.05)'
+                                    }
+                                }}
                                 disableRipple
                                 onClick={() => setOpen(true)}
                             >
                                 <MenuIcon />
                             </IconButton>
 
-
                             <Stack direction={"row"}>
-                                <Box sx={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={backToHomePage}>
-                                    <Typography variant="h5" sx={{
-                                        fontSize: {
-                                            sm: "25px",
-                                            xs: "15px"
-                                        },
-                                        letterSpacing: {
-                                            sm: 10,
-                                            xs: 2
-                                        }, fontWeight: 900, color: "#755F4B"
-                                    }}>DEMO</Typography>
+                                <Box sx={{ 
+                                    display: "flex", 
+                                    alignItems: "center", 
+                                    cursor: "pointer",
+                                    padding: '8px 16px',
+                                    borderRadius: 3,
+                                    transition: 'all 0.3s ease',
+                                    '&:hover': {
+                                        backgroundColor: alpha('#E67E22', 0.1),
+                                        transform: 'translateY(-1px)'
+                                    }
+                                }} onClick={backToHomePage}>
+                                    {/* 漸變色品牌標題 */}
+                                    <Typography 
+                                        variant="h5" 
+                                        sx={{
+                                            fontSize: {
+                                                sm: "28px",
+                                                xs: "18px"
+                                            },
+                                            letterSpacing: {
+                                                sm: 10,
+                                                xs: 3
+                                            }, 
+                                            fontWeight: 900,
+                                            background: 'linear-gradient(45deg, #E67E22, #F39C12)',
+                                            backgroundClip: 'text',
+                                            WebkitBackgroundClip: 'text',
+                                            color: 'transparent',
+                                            textShadow: 'none'
+                                        }}
+                                    >
+                                        DEMO
+                                    </Typography>
                                     <Typography sx={{
                                         fontSize: {
-                                            sm: "18px",
-                                            xs: "12px"
+                                            sm: "20px",
+                                            xs: "14px"
                                         },
                                         letterSpacing: {
-                                            sm: 10,
+                                            sm: 8,
                                             xs: 2
-                                        }, fontWeight: 900, color: "#355C5A"
-                                    }}>線上商店</Typography>
-
+                                        }, 
+                                        fontWeight: 700, 
+                                        color: "#FFFFFF",
+                                        ml: 1
+                                    }}>
+                                        線上商店
+                                    </Typography>
                                 </Box>
-
-
-
                             </Stack>
 
-
-                            <Box sx={{ display: 'flex', alignItems: "center" }}>
-                                <IconButton disableRipple onClick={() => { setsearchAreaShow(u => !u) }}>
+                            <Box sx={{ display: 'flex', alignItems: "center", gap: 1 }}>
+                                <IconButton 
+                                    disableRipple 
+                                    onClick={() => { setsearchAreaShow(u => !u) }}
+                                    sx={{
+                                        borderRadius: 2,
+                                        transition: 'all 0.3s ease',
+                                        '&:hover': {
+                                            backgroundColor: alpha('#E67E22', 0.1),
+                                            transform: 'scale(1.1)'
+                                        }
+                                    }}
+                                >
                                     <SearchIcon />
                                 </IconButton>
-                                <IconButton disableRipple onClick={goToCart}>
-                                    <Badge badgeContent={cartContent.length} max={99} color='error'>
+                                <IconButton 
+                                    disableRipple 
+                                    onClick={goToCart}
+                                    sx={{
+                                        borderRadius: 2,
+                                        transition: 'all 0.3s ease',
+                                        '&:hover': {
+                                            backgroundColor: alpha('#E67E22', 0.1),
+                                            transform: 'scale(1.1)'
+                                        }
+                                    }}
+                                >
+                                    <Badge 
+                                        badgeContent={cartContent.length} 
+                                        max={99} 
+                                        color='secondary'
+                                        sx={{
+                                            '& .MuiBadge-badge': {
+                                                backgroundColor: '#E67E22',
+                                                color: 'white',
+                                                fontWeight: 'bold'
+                                            }
+                                        }}
+                                        suppressHydrationWarning
+                                    >
                                         <ShoppingCartOutlinedIcon />
                                     </Badge>
-
                                 </IconButton>
                                 {
                                     isLogin ?
-                                        <IconButton disableRipple onClick={isLogin ? handleSetAnchor : goToLogin}>
+                                        <IconButton 
+                                            disableRipple 
+                                            onClick={isLogin ? handleSetAnchor : goToLogin}
+                                            sx={{
+                                                borderRadius: 2,
+                                                transition: 'all 0.3s ease',
+                                                '&:hover': {
+                                                    backgroundColor: alpha('#E67E22', 0.1),
+                                                    transform: 'scale(1.1)'
+                                                }
+                                            }}
+                                        >
                                             {
                                                 userInfo && userInfo.picture ?
-                                                    <Avatar src={userInfo?.picture} alt='user picture' sx={{ width: "30px", height: "30px" }} />
+                                                    <Avatar 
+                                                        src={userInfo?.picture} 
+                                                        alt='user picture' 
+                                                        sx={{ 
+                                                            width: "32px", 
+                                                            height: "32px",
+                                                            border: '2px solid #E67E22'
+                                                        }} 
+                                                    />
                                                     :
                                                     <AccountCircleOutlinedIcon />
                                             }
-
                                         </IconButton>
                                         :
-                                        <IconButton disableRipple onClick={isLogin ? handleSetAnchor : goToLogin}>
+                                        <IconButton 
+                                            disableRipple 
+                                            onClick={isLogin ? handleSetAnchor : goToLogin}
+                                            sx={{
+                                                borderRadius: 2,
+                                                transition: 'all 0.3s ease',
+                                                '&:hover': {
+                                                    backgroundColor: alpha('#E67E22', 0.1),
+                                                    transform: 'scale(1.1)'
+                                                }
+                                            }}
+                                        >
                                             <AccountCircleOutlinedIcon />
                                         </IconButton>
                                 }
                                 {
-                                    isLogin && <Typography variant="caption">{userInfo?.name}，Hello</Typography>
+                                    isLogin && 
+                                    <Typography 
+                                        variant="caption"
+                                        sx={{
+                                            ml: 1,
+                                            fontWeight: 500,
+                                            color: '#FFFFFF'
+                                        }}
+                                    >
+                                        {userInfo?.name}，您好
+                                    </Typography>
                                 }
-
-
-
                             </Box>
                         </Toolbar>
                         {
                             searchAreaShow &&
-
-                            <Toolbar>
-
-
-                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "100%", boxShadow: "none", pr: 0 }}>
+                            <Toolbar sx={{ pb: 2 }}>
+                                <Box sx={{ 
+                                    display: 'flex', 
+                                    justifyContent: 'center', 
+                                    alignItems: 'center', 
+                                    width: "100%", 
+                                    boxShadow: "none", 
+                                    pr: 0 
+                                }}>
+                                    {/* 圓角搜索框 */}
                                     <TextField
-
                                         onChange={handleKeyword}
                                         value={keyword}
                                         size='small'
                                         fullWidth
                                         variant="outlined"
-                                        placeholder="查詢商品"
+                                        placeholder="搜尋您想要的商品..."
                                         InputProps={{
                                             style: {
                                                 paddingRight: 0,
-                                                borderRadius: 0
+                                                borderRadius: 16,
+                                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                                backdropFilter: 'blur(10px)'
                                             },
-
                                             endAdornment: (
                                                 <InputAdornment position="end" sx={{ display: 'flex', alignItems: 'center' }}>
                                                     <Select
@@ -237,68 +346,78 @@ export default function MainHeader() {
                                                         onChange={handleSearchType}
                                                         size="small"
                                                         sx={{
-                                                            backgroundColor: 'white',
+                                                            backgroundColor: 'transparent',
                                                             height: '2.5rem',
                                                             border: 'none',
-                                                            borderRadius: 0
+                                                            borderRadius: 2,
+                                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                                border: 'none'
+                                                            }
                                                         }}
                                                     >
                                                         {
-
                                                             router.pathname === "/products" &&
                                                             <MenuItem key="currentPage" value="currentPage">
-                                                                <Typography sx={{ fontSize: '15px' }}>當前頁面</Typography>
+                                                                <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>當前頁面</Typography>
                                                             </MenuItem>
                                                         }
                                                         <MenuItem key="allProducts" value="allProducts">
-                                                            <Typography sx={{ fontSize: '15px' }}>所有產品</Typography>
+                                                            <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>所有產品</Typography>
                                                         </MenuItem>
                                                     </Select>
                                                     <Button
                                                         size="medium"
-                                                        variant="outlined"
+                                                        variant="contained"
+                                                        color="secondary"
                                                         sx={{
-                                                            borderRadius: 0, // 確保外觀與輸入框一致
-                                                            margin: 0, // 移除外部 margin
+                                                            borderRadius: 2,
+                                                            margin: 0,
                                                             height: '2.5rem',
+                                                            minWidth: '100px',
+                                                            fontWeight: 600,
+                                                            boxShadow: '0 4px 12px rgba(230, 126, 34, 0.3)',
+                                                            '&:hover': {
+                                                                boxShadow: '0 6px 20px rgba(230, 126, 34, 0.4)',
+                                                                transform: 'translateY(-1px)'
+                                                            }
                                                         }}
                                                         onClick={searchProducts}
                                                     >
-                                                        <Stack direction={"row"} >
+                                                        <Stack direction={"row"} spacing={1}>
                                                             <SearchIcon />
-                                                            搜尋
+                                                            <span>搜尋</span>
                                                         </Stack>
-
                                                     </Button>
                                                 </InputAdornment>
                                             ),
-
                                         }}
-
-                                        sx={{ background: "white" }}
-
-
-
-
+                                        sx={{ 
+                                            '& .MuiOutlinedInput-root': {
+                                                '& fieldset': {
+                                                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                                                    borderWidth: 2
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: '#E67E22'
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: '#E67E22'
+                                                }
+                                            }
+                                        }}
                                     />
                                 </Box>
-
-
                             </Toolbar>
                         }
-
                     </Container>
-
                 </AppBar>
                 <SideNavBar open={open} setOpen={setOpen} />
-
 
                 {/*他是黏著 帳戶icon 鈕的 */}
                 <UserMenu
                     anchorElement={anchorElement}
                     handleCancelAnchor={handleCancelAnchor}
                 />
-
             </Box>
         </header>
     )

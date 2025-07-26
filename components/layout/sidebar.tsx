@@ -1,5 +1,5 @@
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { Collapse, Drawer, IconButton, List, ListItemButton, ListItemText, Stack, SxProps, Theme } from "@mui/material";
+import { Collapse, Drawer, IconButton, List, ListItemButton, ListItemText, Stack, SxProps, Theme, Box, Typography, Divider, alpha } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import Link from "next/link";
 import { Fragment, useState } from "react";
@@ -9,22 +9,89 @@ import { UrlObject } from "url";
 
 function SideNavBar({ open, setOpen }: SideNavBarProps) {
 
-
     return (
         <Drawer
             PaperProps={{
-                sx: { backgroundColor: "#61D1BD" }
+                sx: { 
+                    backgroundColor: "linear-gradient(180deg, #2C3E50 0%, #34495E 100%)",
+                    background: "linear-gradient(180deg, #2C3E50 0%, #34495E 100%)",
+                    width: 280,
+                    borderTopRightRadius: 16,
+                    borderBottomRightRadius: 16,
+                    boxShadow: '0 8px 40px rgba(0,0,0,0.2)'
+                }
             }}
-            open={open} onClose={() => setOpen(false)}>
-            <Stack direction="row-reverse">
-                <IconButton disableRipple onClick={() => setOpen(false)}>
-                    <CloseIcon sx={{ color: "white" }} />
-                </IconButton>
-            </Stack>
-            <nav>
-                <List sx={{ width: "200px" }}>
+            open={open} 
+            onClose={() => setOpen(false)}
+        >
+            {/* 標頭區域 */}
+            <Box sx={{
+                p: 2,
+                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                position: 'relative'
+            }}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography 
+                        variant="h6" 
+                        sx={{ 
+                            fontWeight: 700,
+                            background: 'linear-gradient(45deg, #E67E22, #F39C12)',
+                            backgroundClip: 'text',
+                            WebkitBackgroundClip: 'text',
+                            color: 'transparent'
+                        }}
+                    >
+                        商品分類
+                    </Typography>
+                    <IconButton 
+                        disableRipple 
+                        onClick={() => setOpen(false)}
+                        sx={{
+                            backgroundColor: alpha('#FFFFFF', 0.1),
+                            color: 'white',
+                            '&:hover': {
+                                backgroundColor: alpha('#E67E22', 0.2),
+                                transform: 'scale(1.1)'
+                            },
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </Stack>
+            </Box>
 
-                    {routes.map((route,index) => (
+            <nav>
+                <List sx={{ 
+                    width: "100%", 
+                    p: 1,
+                    '& .MuiListItemButton-root': {
+                        borderRadius: 2,
+                        mx: 1,
+                        mb: 0.5,
+                        transition: 'all 0.3s ease',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        '&:hover': {
+                            backgroundColor: alpha('#E67E22', 0.15),
+                            transform: 'translateX(8px)',
+                            '&::before': {
+                                width: '4px'
+                            }
+                        },
+                        '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: 0,
+                            backgroundColor: '#E67E22',
+                            transition: 'width 0.3s ease'
+                        }
+                    }
+                }}>
+                    {routes.map((route, index) => (
                         <Fragment key={index}>
                             {route.nestedRoute && (
                                 <NestedLink
@@ -36,15 +103,20 @@ function SideNavBar({ open, setOpen }: SideNavBarProps) {
                                         <NavLink
                                             href={innerRoute.href}
                                             setOpen={setOpen}
-                                            sx={{ pl: 4 }}
+                                            sx={{ 
+                                                pl: 4,
+                                                ml: 2,
+                                                borderLeft: '2px solid rgba(230, 126, 34, 0.3)',
+                                                '&:hover': {
+                                                    borderLeft: '2px solid #E67E22'
+                                                }
+                                            }}
                                             key={innerRoute.title}
                                         >
                                             {innerRoute.title}
                                         </NavLink>
                                     ))}
-
                                 </NestedLink>
-
                             )}
 
                             {route.singleRoute && (
@@ -57,12 +129,20 @@ function SideNavBar({ open, setOpen }: SideNavBarProps) {
                                 </NavLink>
                             )}
                         </Fragment>
-
                     ))}
-
                 </List>
             </nav>
 
+            {/* 底部裝飾 */}
+            <Box sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 60,
+                background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%)',
+                borderBottomRightRadius: 16
+            }} />
         </Drawer>
     )
 }
@@ -79,7 +159,6 @@ interface SideNavBarProps {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-
 interface NestedLinkProps {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
     title: string;
@@ -89,7 +168,6 @@ interface NestedLinkProps {
 }
 
 const NestedLink = ({ setOpen, children, title, href, sx }: NestedLinkProps) => {
-
 
     const [expandOpen, setExpandOpen] = useState<boolean>(false)
 
@@ -101,24 +179,64 @@ const NestedLink = ({ setOpen, children, title, href, sx }: NestedLinkProps) => 
 
     return (
         <>
-            <ListItemButton sx={{ ...sx }} disableRipple onClick={handleExpandClick}>
+            <ListItemButton 
+                sx={{ 
+                    ...sx,
+                    '&:hover .expand-icon': {
+                        transform: 'scale(1.2)',
+                        color: '#E67E22'
+                    }
+                }} 
+                disableRipple 
+                onClick={handleExpandClick}
+            >
                 <ListItemText
-                    sx={{ color: "white" }}
+                    sx={{ 
+                        color: "white",
+                        '& .MuiListItemText-primary': {
+                            fontWeight: 600,
+                            fontSize: '1rem'
+                        }
+                    }}
                     primary={
                         <Link
                             passHref
                             href={href}
                             style={{ color: 'inherit', textDecoration: "none" }}
-                            onClick={() => setOpen(false)}>
+                            onClick={() => setOpen(false)}
+                        >
                             {title}
                         </Link>
-                    } />
+                    } 
+                />
 
-                {expandOpen ? <ExpandLess sx={{ color: "white" }} /> : <ExpandMore sx={{ color: "white" }} />}
+                {expandOpen ? 
+                    <ExpandLess 
+                        className="expand-icon"
+                        sx={{ 
+                            color: "#E67E22", 
+                            transition: 'all 0.3s ease' 
+                        }} 
+                    /> : 
+                    <ExpandMore 
+                        className="expand-icon"
+                        sx={{ 
+                            color: "rgba(255,255,255,0.7)", 
+                            transition: 'all 0.3s ease' 
+                        }} 
+                    />
+                }
             </ListItemButton >
+            
             {/*內層 nav */}
             <Collapse in={expandOpen} timeout="auto" unmountOnExit>
-                <List >
+                <List sx={{
+                    backgroundColor: alpha('#000000', 0.1),
+                    borderRadius: 1,
+                    mx: 1,
+                    mb: 1,
+                    border: '1px solid rgba(230, 126, 34, 0.1)'
+                }}>
                     {children}
                 </List>
             </Collapse>
@@ -126,202 +244,6 @@ const NestedLink = ({ setOpen, children, title, href, sx }: NestedLinkProps) => 
     )
 }
 
-/*
-    <NestedLink href>  -- NavLink + 可以展開 + 本身就有功能
-        <Collapse>
-            <NavLink href/>
-        <Collapse>
-    </NestedLink>
-    
-
-    [
-        {nestedHref:"",hrefs:[ href href]}
-        
-    ]
-  
- */
-
-
-
-
-
 export default SideNavBar;
 
 export { useOpenState }
-
-
-
-
-
-// #region 備用代碼
-
-// <NestedLink
-//     href={{
-//         pathname: "/products",
-//         query: { kind: "pants" }
-//     }}
-//     title="褲子"
-//     setOpen={setOpen}
-// >
-//     <NavLink
-//         href={{
-//             pathname: "/products",
-//             query: { tag: "jeans" }
-//         }}
-//         setOpen={setOpen}
-//         sx={{ pl: 4 }}
-//     >
-//         牛仔褲
-//     </NavLink>
-//     <NavLink
-//         href={{
-//             pathname: "/products",
-//             query: { tag: "shorts" }
-//         }}
-//         setOpen={setOpen}
-//         sx={{ pl: 4 }}
-//     >
-//         短褲
-//     </NavLink>
-// </NestedLink>
-
-
-// <NestedLink
-//     href={{
-//         pathname: "/products",
-//         query: { kind: "coats" }
-//     }}
-//     title="外套"
-//     setOpen={setOpen}
-// >
-//     <NavLink
-//         href={{
-//             pathname: "/products",
-//             query: { tag: "windcoat" }
-//         }}
-//         setOpen={setOpen}
-//         sx={{ pl: 4 }}
-//     >
-//         風衣
-//     </NavLink>
-//     <NavLink
-//         href={{
-//             pathname: "/products",
-//             query: { tag: "knitting" }
-//         }}
-//         setOpen={setOpen}
-//         sx={{ pl: 4 }}
-//     >
-//         針織
-//     </NavLink>
-
-// </NestedLink>
-
-
-
-// {/*單一層 */}
-// <Link passHref href={{
-//     pathname: "/products",
-//     query: { tag: "accessories" }
-// }}
-//     style={{ color: 'inherit', textDecoration: "none" }}>
-//     <ListItemButton disableRipple onClick={() => setOpen(false)}>
-//         <ListItemText sx={{ color: "white" }} primary={
-//             "配件"
-//         } />
-
-
-//     </ListItemButton >
-// </Link>
-
-// <Link passHref href={{
-//     pathname: "/products",
-//     query: { tag: "new-arrival" }
-// }}
-//     style={{ color: 'inherit', textDecoration: "none" }}>
-//     <ListItemButton disableRipple onClick={() => setOpen(false)}>
-//         <ListItemText sx={{ color: "white" }} primary={
-//             "新品上市"
-//         } />
-
-
-//     </ListItemButton >
-// </Link>
-
-// <Link passHref href={{
-//     pathname: "/products",
-//     query: { tag: "limit-time-offer" }
-// }}
-//     style={{ color: 'inherit', textDecoration: "none" }}>
-//     <ListItemButton disableRipple onClick={() => setOpen(false)}>
-//         <ListItemText sx={{ color: "white" }} primary={
-//             "本月優惠"
-//         } />
-
-
-//     </ListItemButton >
-// </Link>
-
-
-// #endregion
-
-
-
-//#region
-// {/*有分類的， btn 包 text 包lnk */}
-// <ListItemButton disableRipple onClick={handleTopClick}>
-
-// <ListItemText
-//     sx={{ color: "white" }}
-//     primary={
-//         <Link
-//             passHref
-//             href={{
-//                 pathname: "/products",
-//                 query: { kind: "clothes" }
-
-//             }}
-//             style={{ color: 'inherit', textDecoration: "none" }}
-//             onClick={() => setOpen(false)}>
-//             上衣
-//         </Link>
-//     } />
-
-// {topOpen ? <ExpandLess sx={{ color: "white" }} /> : <ExpandMore sx={{ color: "white" }} />}
-
-
-
-// </ListItemButton >
-
-
-// <Collapse in={topOpen} timeout="auto" unmountOnExit>
-// <List>
-
-//     <Link passHref href={{
-//         pathname: "/products",
-//         query: { tag: "shirt" }
-//     }}
-//         style={{ color: 'inherit', textDecoration: "none" }}>
-//         <ListItemButton sx={{ pl: 4 }} disableRipple onClick={() => setOpen(false)}>
-//             <ListItemText sx={{ color: "white" }} primary={
-//                 "襯衫"
-//             } />
-
-//         </ListItemButton >
-//     </Link>
-
-//     <Link passHref href={{
-//         pathname: "/products",
-//         query: { tag: "t-shirt" }
-//     }}
-//         style={{ color: 'inherit', textDecoration: "none" }}>
-//         <ListItemButton sx={{ pl: 4 }} disableRipple onClick={() => setOpen(false)}>
-//             <ListItemText sx={{ color: "white" }} primary={
-//                 "T恤"
-//             } />
-
-//         </ListItemButton >
-//     </Link>
-// </List>
-// </Collapse>
-//#endregion

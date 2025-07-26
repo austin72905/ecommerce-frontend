@@ -22,10 +22,14 @@ import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector
 import { StepIconProps } from '@mui/material/StepIcon';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import React, { ChangeEvent, useEffect, useState } from 'react'
 
-import { CardHeader, Divider, useMediaQuery } from '@mui/material';
+import { CardHeader, Divider, useMediaQuery, Chip, alpha, Badge } from '@mui/material';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { OrderInfomation, ProductInfomationCount } from '@/interfaces';
@@ -33,7 +37,6 @@ import { imgList, orderInfoList } from '@/dummy-data/order-dummy-data';
 import WithAuth from '@/components/auth/with-auth';
 import { ApiResponse } from '@/interfaces/api/response';
 import { RespCode } from '@/enums/resp-code';
-
 
 import { OrderStatus, orderStatusMap } from '@/enums/order-status';
 import { useCartStore } from '@/store/store';
@@ -47,24 +50,27 @@ const OrderRecordPage = () => {
 
     //const [orderInfoDetail, setOrderInfoDetail] = useState<OrderInfomation>(null)
 
-
     //{lastPath.includes("TX")?}
     return (
-        <Box sx={{ px: 2 }}>
-            <PurchaseRecord />
+        <Box sx={{ 
+            backgroundColor: 'background.default',
+            minHeight: '100vh',
+            py: 4
+        }}>
+            <Container maxWidth="xl">
+                <PurchaseRecord />
+            </Container>
         </Box>
-
-
     )
 }
 
 export default WithAuth(OrderRecordPage);
 
-
-
 interface OrderState {
     status: OrderStatus;
     description: string;
+    icon: React.ReactNode;
+    color: string;
 }
 
 const orderStateList = () => {
@@ -74,20 +80,42 @@ const orderStateList = () => {
         if (status === OrderStatus.Created) {
             stateList.push({
                 status: status,
-                description: "所有訂單"
+                description: "所有訂單",
+                icon: <ReceiptIcon />,
+                color: '#2C3E50'
+            })
+        } else if (status === OrderStatus.WaitingForPayment) {
+            stateList.push({
+                status: status,
+                description: value.description,
+                icon: <ShoppingBagIcon />,
+                color: '#F39C12'
+            })
+        } else if (status === OrderStatus.WaitingForShipment || status === OrderStatus.InTransit || status === OrderStatus.WaitPickup) {
+            stateList.push({
+                status: status,
+                description: value.description,
+                icon: <LocalShippingIcon />,
+                color: '#3498DB'
+            })
+        } else if (status === OrderStatus.Completed) {
+            stateList.push({
+                status: status,
+                description: value.description,
+                icon: <CheckCircleIcon />,
+                color: '#27AE60'
             })
         } else {
             stateList.push({
                 status: status,
-                description: value.description
+                description: value.description,
+                icon: <ReceiptIcon />,
+                color: '#E74C3C'
             })
         }
-
-
     })
     return stateList;
 }
-
 
 const StepIcon = (props: StepIconProps) => {
 
@@ -120,9 +148,6 @@ const StepIconRoot = styled('div')(({ theme }) => ({
     },
 
 }))
-
-
-
 
 const StepDetailConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.active}`]: {
@@ -164,7 +189,6 @@ const orderStepInfomationList: OrderStepInfomation[] = [
     },
 ]
 
-
 interface CargoInfomation {
     description: string;
     date: string;
@@ -189,15 +213,9 @@ const cargoInfomation: CargoInfomation[] = [
     },
 ]
 
-
-
-
 interface PurchaseRecordProps {
     //setOrderInfoDetail: React.Dispatch<React.SetStateAction<OrderInfomation>>;
 }
-
-
-
 
 //訂單頁面
 const PurchaseRecord = ({ }: PurchaseRecordProps) => {
@@ -206,6 +224,7 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
     const [viewValue, setviewValue] = useState<string>(OrderStatus.Created.toString())
 
     const [orderList, setorderList] = useState<OrderInfomation[]>([]);
+    const [orderCounts, setOrderCounts] = useState<Map<OrderStatus, number>>(new Map());
 
     const handleView = (e: React.SyntheticEvent, newVal: string) => {
         setviewValue(newVal)
@@ -231,26 +250,20 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
             const result = await getOrders(keyword) as ApiResponse;
             console.log("result=", result)
 
-
             if (result.code != RespCode.SUCCESS) {
 
                 console.log("獲取數據失敗")
                 return;
             }
 
-
             if (result.data == null) {
                 console.log("獲取數據失敗")
                 return;
             }
 
-
             const ordersData = result.data as OrderInfomation[]
 
-
-
             setorderList(ordersData)
-
 
         } catch (error) {
             console.error('Error fetching data:', error)
@@ -275,8 +288,6 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
 
     }
 
-
-
     // 請求後端
     useEffect(() => {
 
@@ -285,212 +296,481 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                 const result = await getOrders() as ApiResponse;
                 console.log("result=", result)
 
-
                 if (result.code != RespCode.SUCCESS) {
 
                     console.log("獲取數據失敗")
                     return;
                 }
 
-
                 if (result.data == null) {
                     console.log("獲取數據失敗")
                     return;
                 }
 
-
                 const ordersData = result.data as OrderInfomation[]
 
-
-
                 setorderList(ordersData)
-
 
             } catch (error) {
                 console.error('Error fetching data:', error)
             }
         }
 
-
         fetchData()
     }, [])
 
+    // 客戶端計算訂單數量，避免 SSR 不匹配
+    useEffect(() => {
+        const counts = new Map<OrderStatus, number>();
+        
+        // 計算所有訂單數量
+        counts.set(OrderStatus.Created, orderList.length);
+        
+        // 計算各狀態的訂單數量
+        orderStateList().forEach(orderState => {
+            if (orderState.status !== OrderStatus.Created) {
+                const count = orderList.filter(order => order.status === orderState.status).length;
+                counts.set(orderState.status, count);
+            }
+        });
+        
+        setOrderCounts(counts);
+    }, [orderList]);
+
     const isSmallScreen = useMediaQuery('(max-width:700px)');
+    
+    // 獲取訂單數量的安全方法
+    const getOrderCountByStatus = (status: OrderStatus): number => {
+        return orderCounts.get(status) || 0;
+    }
+
     return (
-        <Grid container columns={8} sx={{ border: "0px solid", mr: 1 }}>
-            <Grid item xs={8}>
+        <Box>
+            {/* 現代化標題區域 */}
+            <Box sx={{ mb: 4 }}>
+                <Typography 
+                    variant="h4" 
+                    sx={{ 
+                        fontWeight: 700,
+                        mb: 1,
+                        background: 'linear-gradient(45deg, #2C3E50, #34495E)',
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        color: 'transparent'
+                    }}
+                >
+                    我的訂單
+                </Typography>
+                <Box sx={{
+                    height: '3px',
+                    width: '60px',
+                    background: 'linear-gradient(90deg, #E67E22, #F39C12)',
+                    borderRadius: 2,
+                    mb: 2
+                }} />
+                <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+                    查看您的所有訂單狀態與詳細資訊
+                </Typography>
+            </Box>
+
+            {/* 現代化Tab區域 */}
+            <Card sx={{ 
+                borderRadius: 3,
+                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                overflow: 'hidden',
+                mb: 3
+            }}>
                 <TabContext value={viewValue}>
-                    <TabList variant={isSmallScreen ? 'scrollable' : 'fullWidth'} onChange={handleView} allowScrollButtonsMobile scrollButtons="auto" sx={{ border: "1px solid #D9D9D9", borderRadius: "4px", mr: 1, backgroundColor: "white" }}>
-                        {orderStateList().map(orderState => (
-                            <Tab key={orderState.status} value={orderState.status.toString()} label={orderState.description} sx={{ border: "0px solid #AFAFAF", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }}></Tab>
-                        ))}
-                    </TabList>
-                    {orderStateList().map(orderState => (
-                        <TabPanel key={orderState.status} value={orderState.status.toString()} sx={{ px: 0, mr: 1 }}>
-
-
-                            <Stack direction={"row"} sx={{ justifyContent: "end", my: 3 }}>
-                                {/*搜尋欄 */}
-                                <Paper sx={{ border: "1px solid #d9d9d9", boxShadow: "none", display: 'flex', alignItems: 'center', width: 350, height: 35 }}>
-                                    <IconButton type="button" sx={{ p: 1, width: 35, height: 35, borderRadius: "0px", '&:hover': { background: "white" } }} aria-label="search">
-                                        <SearchIcon />
-                                    </IconButton>
-                                    <InputBase
-                                        sx={{ ml: 1, flex: 1 }}
-                                        placeholder="輸入訂單編號或是商品名稱查詢訂單"
-                                        inputProps={{ 'aria-label': '輸入訂單編號或是商品名稱查詢訂單' }}
-                                        value={keyword}
-                                        onChange={handleKeyword}
-                                        onKeyDown={searchOrderRecords}
-                                    />
-                                </Paper>
-
-                            </Stack>
-
-                            {/*訂單們 */}
-                            <List>
-                                {
-                                    orderList.map((info, index) => {
-                                        // 不是當前狀態的訂單就不顯示
-                                        if (info.status.toString() != viewValue && viewValue != OrderStatus.Created.toString()) {
-                                            return null
-                                        }
-
-                                        return (
-                                            <ListItem key={index} sx={{ px: 0 }}>
-
-                                                <Card sx={{ width: "100%", boxShadow: "none", border: "solid 1px #D9D9D9" }}>
-                                                    <CardHeader sx={{ py: 1, pr: 4 }} title={
-                                                        <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-                                                            <Stack spacing={1} direction={"row"} justifyContent={"flex-end"}>
-                                                                <Typography>訂單號:</Typography>
-                                                                <Typography sx={{ border: "0px solid black", color: "red" }}>{info.recordCode}</Typography>
-                                                            </Stack>
-                                                            <Typography variant='caption' sx={{ color: orderStatusMap.get(info.status)?.color }}>{orderStatusMap.get(info.status)?.description}</Typography>
-
-                                                        </Stack>
-
-
-                                                    } />
-
-
-                                                    <CardContent sx={{ p: 0 }}>
-                                                        {
-                                                            info.productList.map((item, indexItem) => (
-                                                                <Card key={indexItem} sx={{ width: "100%", boxShadow: "none", border: "solid 1px #D9D9D9" }}>
-                                                                    <Grid container columns={12} sx={{ border: "0px solid purple" }}>
-
-                                                                        {/*圖片 */}
-                                                                        <Grid item xs={4} sm={2}>
-                                                                            <CardMedia
-                                                                                sx={{
-                                                                                    position: 'relative',
-                                                                                    width: '100%',
-                                                                                    height: '100%',
-                                                                                    maxWidth: '130px',
-                                                                                    border: '0px solid black',
-                                                                                    overflow: 'hidden',
-                                                                                    p: 1
-                                                                                }}
-                                                                            >
-                                                                                <Box
-                                                                                    sx={{
-                                                                                        width: '100%',
-                                                                                        height: 0,
-                                                                                        paddingBottom: '100%',
-                                                                                        position: 'relative',
-                                                                                    }}
-                                                                                >
-                                                                                    <Image
-                                                                                        src={item.product.coverImg}
-                                                                                        //src={randomImg()}
-
-                                                                                        alt="product information5"
-                                                                                        layout="fill"
-                                                                                        style={{ objectFit: 'cover' }}
-                                                                                    />
-                                                                                </Box>
-                                                                            </CardMedia>
-                                                                        </Grid>
-                                                                        <Grid item xs={8} sm={10} sx={{ border: "0px solid orange" }}>
-                                                                            <CardContent sx={{ border: "0px solid red", px: 4 }}>
-                                                                                <Grid container columns={8} sx={{ border: "0px solid green" }}>
-                                                                                    <Grid item xs={8} sm={6} sx={{ border: "0px solid" }}>
-                                                                                        <Box sx={{ border: "0px solid", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                                                                                            <Typography sx={{ fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goOrderDetail(info) }}>{item.product.title}</Typography>
-                                                                                            <Typography variant='caption'>規格 : {item.selectedVariant?.size} - {item.selectedVariant?.color}</Typography>
-                                                                                            <Typography >x {item.count}</Typography>
-                                                                                        </Box>
-                                                                                    </Grid>
-                                                                                    <Grid item xs={8} sm={2}>
-                                                                                        <Box sx={{ display: "flex", flexDirection: "row" }}>
-                                                                                            <Stack sx={{ alignItems: "end" }} spacing={3}>
-
-                                                                                                <Typography>
-                                                                                                    NT$
-                                                                                                    {
-                                                                                                        item.selectedVariant?.discountPrice ?
-                                                                                                            item.selectedVariant?.discountPrice :
-                                                                                                            item.selectedVariant?.price
-                                                                                                    }
-                                                                                                </Typography>
-                                                                                            </Stack>
-                                                                                        </Box>
-
-                                                                                    </Grid>
-                                                                                </Grid>
-                                                                            </CardContent>
-                                                                        </Grid>
-                                                                    </Grid>
-
-                                                                    <Divider />
-
-
-
-
-                                                                </Card>
-                                                            ))
-                                                        }
-
-                                                        {/*訂單金額 */}
-                                                        <Stack sx={{ alignItems: "end", pr: 4, mt: 2 }} spacing={4}>
-                                                            <Stack direction={"row"} sx={{ mt: 3 }} spacing={0.5}>
-                                                                <Typography >
-                                                                    訂單金額 :
-                                                                </Typography>
-                                                                <Typography sx={{ color: "#ef6060", fontWeight: "bold" }}>
-                                                                    NT${info.orderPrice}
-                                                                </Typography>
-                                                            </Stack>
-
-
-                                                        </Stack>
-                                                    </CardContent>
-
-
-
-                                                    <CardActions sx={{ pr: 4, py: 3, display: "flex", flexDirection: "row", justifyContent: "end" }}>
-                                                        {info.status === OrderStatus.WaitingForPayment ? <Button variant="contained" sx={{ backgroundColor: "#EFB878", color: "black", "&:hover": { backgroundColor: "#EFB878" } }}>取消訂單</Button> : null}
-                                                        <Button variant="outlined" onClick={() => { goOrderDetail(info) }}>訂單詳情</Button>
-                                                        <Button variant="contained" onClick={() => { buyAgain(info.productList) }}>重新購買</Button>
-                                                    </CardActions>
-                                                </Card>
-
-                                            </ListItem>
-                                        )
-
-
-                                    })
+                    <Box sx={{ 
+                        background: 'linear-gradient(135deg, #2C3E50 0%, #34495E 100%)',
+                        px: 3,
+                        pt: 2
+                    }}>
+                        <TabList 
+                            variant={isSmallScreen ? 'scrollable' : 'fullWidth'} 
+                            onChange={handleView} 
+                            allowScrollButtonsMobile 
+                            scrollButtons="auto"
+                            sx={{
+                                '& .MuiTab-root': {
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    fontWeight: 600,
+                                    minHeight: '64px',
+                                    transition: 'all 0.3s ease',
+                                    '&.Mui-selected': {
+                                        color: '#E67E22',
+                                    },
+                                    '&:hover': {
+                                        color: '#F39C12',
+                                        backgroundColor: alpha('#E67E22', 0.1)
+                                    }
+                                },
+                                '& .MuiTabs-indicator': {
+                                    backgroundColor: '#E67E22',
+                                    height: '3px',
+                                    borderRadius: '2px'
                                 }
+                            }}
+                        >
+                            {orderStateList().map(orderState => (
+                                <Tab 
+                                    key={orderState.status} 
+                                    value={orderState.status.toString()} 
+                                    label={
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            gap: 1,
+                                            flexDirection: isSmallScreen ? 'column' : 'row'
+                                        }}>
+                                            <Box sx={{ color: orderState.color }}>
+                                                {orderState.icon}
+                                            </Box>
+                                            <Box sx={{ textAlign: isSmallScreen ? 'center' : 'left' }}>
+                                                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                                    {orderState.description}
+                                                </Typography>
+                                                <Badge 
+                                                    badgeContent={getOrderCountByStatus(orderState.status)} 
+                                                    color="secondary"
+                                                    sx={{
+                                                        '& .MuiBadge-badge': {
+                                                            backgroundColor: '#E67E22',
+                                                            color: 'white',
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: 600
+                                                        }
+                                                    }}
+                                                    suppressHydrationWarning
+                                                />
+                                            </Box>
+                                        </Box>
+                                    }
+                                />
+                            ))}
+                        </TabList>
+                    </Box>
 
-                            </List>
+                    {orderStateList().map(orderState => (
+                        <TabPanel key={orderState.status} value={orderState.status.toString()} sx={{ p: 0 }}>
+                            <Box sx={{ p: 3 }}>
+                                {/* 現代化搜尋區域 */}
+                                <Stack direction="row" justifyContent="flex-end" sx={{ mb: 3 }}>
+                                    <Paper sx={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        width: { xs: '100%', sm: 400 },
+                                        borderRadius: 3,
+                                        border: '1px solid rgba(0,0,0,0.08)',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                                        '&:hover': {
+                                            borderColor: '#E67E22',
+                                            boxShadow: '0 4px 16px rgba(230, 126, 34, 0.2)'
+                                        }
+                                    }}>
+                                        <IconButton 
+                                            sx={{ 
+                                                p: 2,
+                                                color: '#E67E22',
+                                                '&:hover': {
+                                                    backgroundColor: alpha('#E67E22', 0.1)
+                                                }
+                                            }}
+                                        >
+                                            <SearchIcon />
+                                        </IconButton>
+                                        <InputBase
+                                            sx={{ 
+                                                ml: 1, 
+                                                flex: 1,
+                                                pr: 2,
+                                                fontSize: '0.95rem'
+                                            }}
+                                            placeholder="輸入訂單編號或商品名稱搜尋..."
+                                            value={keyword}
+                                            onChange={handleKeyword}
+                                            onKeyDown={searchOrderRecords}
+                                        />
+                                    </Paper>
+                                </Stack>
+
+                                {/* 現代化訂單列表 */}
+                                {orderList.length === 0 ? (
+                                    <Box sx={{
+                                        textAlign: 'center',
+                                        py: 8,
+                                        color: 'text.secondary'
+                                    }}>
+                                        <ReceiptIcon sx={{ fontSize: 64, mb: 2, opacity: 0.3 }} />
+                                        <Typography variant="h6" sx={{ mb: 1 }}>
+                                            尚無訂單記錄
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            開始購物來建立您的第一筆訂單
+                                        </Typography>
+                                    </Box>
+                                ) : (
+                                    <Stack spacing={3}>
+                                        {orderList.map((info, index) => {
+                                            // 不是當前狀態的訂單就不顯示
+                                            if (info.status.toString() != viewValue && viewValue != OrderStatus.Created.toString()) {
+                                                return null
+                                            }
+
+                                            return (
+                                                <ModernOrderCard
+                                                    key={index}
+                                                    orderInfo={info}
+                                                    onViewDetail={() => goOrderDetail(info)}
+                                                    onBuyAgain={() => buyAgain(info.productList)}
+                                                />
+                                            )
+                                        })}
+                                    </Stack>
+                                )}
+                            </Box>
                         </TabPanel>
                     ))}
-
-
                 </TabContext>
-            </Grid>
-        </Grid>
+            </Card>
+        </Box>
+    )
+}
+
+// 現代化訂單卡片組件
+const ModernOrderCard = ({ 
+    orderInfo, 
+    onViewDetail, 
+    onBuyAgain 
+}: {
+    orderInfo: OrderInfomation;
+    onViewDetail: () => void;
+    onBuyAgain: () => void;
+}) => {
+    const statusInfo = orderStatusMap.get(orderInfo.status);
+
+    return (
+        <Card sx={{ 
+            borderRadius: 3,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+            border: '1px solid rgba(0,0,0,0.05)',
+            overflow: 'hidden',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+                boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                transform: 'translateY(-2px)'
+            }
+        }}>
+            {/* 訂單標題區域 */}
+            <Box sx={{ 
+                background: 'linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%)',
+                p: 3,
+                borderBottom: '1px solid rgba(0,0,0,0.05)'
+            }}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                            訂單號:
+                        </Typography>
+                        <Typography 
+                            variant="body1" 
+                            sx={{ 
+                                fontWeight: 700,
+                                color: '#E67E22',
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    textDecoration: 'underline'
+                                }
+                            }}
+                            onClick={onViewDetail}
+                        >
+                            {orderInfo.recordCode}
+                        </Typography>
+                    </Stack>
+                    <Chip
+                        label={statusInfo?.description}
+                        sx={{
+                            backgroundColor: statusInfo?.color,
+                            color: 'white',
+                            fontWeight: 600,
+                            borderRadius: 2,
+                            '& .MuiChip-label': {
+                                px: 2
+                            }
+                        }}
+                    />
+                </Stack>
+            </Box>
+
+            {/* 商品列表區域 */}
+            <Box sx={{ p: 3 }}>
+                <Stack spacing={2}>
+                    {orderInfo.productList.map((item, index) => (
+                        <ModernProductItem 
+                            key={index} 
+                            productInfo={item}
+                            onViewDetail={onViewDetail}
+                        />
+                    ))}
+                </Stack>
+
+                {/* 訂單金額 */}
+                <Box sx={{ 
+                    mt: 3, 
+                    pt: 2, 
+                    borderTop: '1px solid rgba(0,0,0,0.08)',
+                    textAlign: 'right'
+                }}>
+                    <Stack direction="row" justifyContent="flex-end" spacing={1} alignItems="center">
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                            訂單總額:
+                        </Typography>
+                        <Typography 
+                            variant="h6" 
+                            sx={{ 
+                                fontWeight: 700,
+                                color: '#E67E22'
+                            }}
+                        >
+                            NT${orderInfo.orderPrice}
+                        </Typography>
+                    </Stack>
+                </Box>
+            </Box>
+
+            {/* 操作按鈕區域 */}
+            <Box sx={{ 
+                px: 3, 
+                pb: 3,
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: 2
+            }}>
+                {orderInfo.status === OrderStatus.WaitingForPayment && (
+                    <Button 
+                        variant="outlined"
+                        color="error"
+                        sx={{
+                            borderColor: '#E74C3C',
+                            color: '#E74C3C',
+                            '&:hover': {
+                                borderColor: '#C0392B',
+                                backgroundColor: alpha('#E74C3C', 0.05)
+                            }
+                        }}
+                    >
+                        取消訂單
+                    </Button>
+                )}
+                <Button 
+                    variant="outlined"
+                    onClick={onViewDetail}
+                    sx={{
+                        borderColor: '#2C3E50',
+                        color: '#2C3E50',
+                        '&:hover': {
+                            borderColor: '#34495E',
+                            backgroundColor: alpha('#2C3E50', 0.05)
+                        }
+                    }}
+                >
+                    查看詳情
+                </Button>
+                <Button 
+                    variant="contained"
+                    onClick={onBuyAgain}
+                    sx={{
+                        backgroundColor: '#E67E22',
+                        '&:hover': {
+                            backgroundColor: '#D35400'
+                        }
+                    }}
+                >
+                    重新購買
+                </Button>
+            </Box>
+        </Card>
+    )
+}
+
+// 現代化商品項目組件
+const ModernProductItem = ({ 
+    productInfo, 
+    onViewDetail 
+}: {
+    productInfo: ProductInfomationCount;
+    onViewDetail: () => void;
+}) => {
+    return (
+        <Box sx={{ 
+            display: 'flex',
+            gap: 2,
+            p: 2,
+            borderRadius: 2,
+            backgroundColor: '#FAFAFA',
+            border: '1px solid rgba(0,0,0,0.05)',
+            transition: 'all 0.2s ease',
+            '&:hover': {
+                backgroundColor: '#F5F5F5',
+                borderColor: 'rgba(230, 126, 34, 0.2)'
+            }
+        }}>
+            {/* 商品圖片 */}
+            <Box sx={{ 
+                width: 80, 
+                height: 80, 
+                borderRadius: 2,
+                overflow: 'hidden',
+                flexShrink: 0,
+                position: 'relative'
+            }}>
+                <Image
+                    src={productInfo.product.coverImg}
+                    alt={productInfo.product.title}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                />
+            </Box>
+
+            {/* 商品資訊 */}
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Box>
+                    <Typography 
+                        variant="body1" 
+                        sx={{ 
+                            fontWeight: 600,
+                            mb: 0.5,
+                            cursor: 'pointer',
+                            '&:hover': {
+                                color: '#E67E22'
+                            }
+                        }}
+                        onClick={onViewDetail}
+                    >
+                        {productInfo.product.title}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                        規格: {productInfo.selectedVariant?.size} - {productInfo.selectedVariant?.color}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        數量: {productInfo.count}
+                    </Typography>
+                </Box>
+            </Box>
+
+            {/* 價格 */}
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography 
+                    variant="h6" 
+                    sx={{ 
+                        fontWeight: 700,
+                        color: '#E67E22'
+                    }}
+                >
+                    NT${productInfo.selectedVariant?.discountPrice || productInfo.selectedVariant?.price}
+                </Typography>
+            </Box>
+        </Box>
     )
 }
 
@@ -498,7 +778,6 @@ export const randomImg = () => {
     const randomIndex = Math.floor(Math.random() * imgList.length);
     return imgList[randomIndex];
 }
-
 
 //請求後端
 const getOrders = async (keyword?: string) => {

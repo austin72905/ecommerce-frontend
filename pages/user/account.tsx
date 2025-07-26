@@ -13,6 +13,12 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
+import { Card, Grid, alpha, Avatar } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
+import CakeIcon from '@mui/icons-material/Cake';
+import WcIcon from '@mui/icons-material/Wc';
 
 import WithAuth from '@/components/auth/with-auth';
 import { validateEmail, validateNickName, validatePhoneNumber, ValidationErrors } from '@/utils/validation';
@@ -22,9 +28,6 @@ import { RespCode } from '@/enums/resp-code';
 import { UserInfo } from '@/interfaces/user';
 import { useAlertMsgStore, useCsrfTokenStore, userUserInfoStore } from '@/store/store';
 import { parseCookies } from 'nookies';
-
-
-
 
 const MyAccountPage = () => {
 
@@ -81,8 +84,6 @@ const MyAccountPage = () => {
         break;
     }
 
-
-
     setPersonalInfo(o => {
 
       let newO: PersonalInfomation = { ...o }
@@ -127,7 +128,6 @@ const MyAccountPage = () => {
   //儲存變更
   const saveChange = async () => {
 
-
     // 判斷是否都有輸入
     if (!Object.values(errors).every(value => value === undefined)) {
       console.log("errors:", errors)
@@ -150,12 +150,10 @@ const MyAccountPage = () => {
 
     const result = await modifyUserInfo(data, csrfToken as string) as ApiResponse
 
-
     if (result.code != RespCode.SUCCESS) {
       setAlertMsg(result.message)
       return
     }
-
 
     if (result.data == null) {
       setAlertMsg(result.message)
@@ -193,19 +191,16 @@ const MyAccountPage = () => {
         const result = await getUserInfo() as ApiResponse;
         console.log("result=", result)
 
-
         if (result.code != RespCode.SUCCESS) {
 
           console.log("獲取數據失敗")
           return;
         }
 
-
         if (result.data == null) {
           console.log("獲取數據失敗")
           return;
         }
-
 
         const data = result.data as UserInfo
 
@@ -226,7 +221,6 @@ const MyAccountPage = () => {
         //setPersonalInfo(personInfo)
 
         setUserInfo(personInfo)
-
 
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -243,19 +237,16 @@ const MyAccountPage = () => {
         const result = await getUserInfo() as ApiResponse;
         console.log("result=", result)
 
-
         if (result.code != RespCode.SUCCESS) {
 
           console.log("獲取數據失敗")
           return;
         }
 
-
         if (result.data == null) {
           console.log("獲取數據失敗")
           return;
         }
-
 
         const data = result.data as UserInfo
 
@@ -277,7 +268,6 @@ const MyAccountPage = () => {
 
         setUserInfo(personInfo)
 
-
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -287,80 +277,320 @@ const MyAccountPage = () => {
   }, [isRenew])
 
   return (
-    <Container sx={{ border: "0px solid" }} maxWidth='xl'>
-      <Stack spacing={1} sx={{ minHeight: "700px", mx: 1, mt: 2.5, border: "1px solid #D9D9D9", borderRadius: "4px", backgroundColor: "white" }}>
+    <Box sx={{ 
+      backgroundColor: 'background.default',
+      minHeight: '100vh',
+      py: 4
+    }}>
+      <Container maxWidth='xl'>
+        {/* 現代化標題區域 */}
+        <Box sx={{ mb: 4 }}>
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              fontWeight: 700,
+              mb: 1,
+              background: 'linear-gradient(45deg, #2C3E50, #34495E)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              color: 'transparent'
+            }}
+          >
+            我的帳戶
+          </Typography>
+          <Box sx={{
+            height: '3px',
+            width: '60px',
+            background: 'linear-gradient(90deg, #E67E22, #F39C12)',
+            borderRadius: 2,
+            mb: 2
+          }} />
+          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+            管理您的個人資料與帳戶設定
+          </Typography>
+        </Box>
 
-        <ItemWrapper sx={{ mt: 4 }}>
-          <Typography variant='h6' sx={{ fontWeight: "bold" }}>我的帳戶</Typography>
-        </ItemWrapper>
+        {/* 現代化主要內容卡片 */}
+        <Grid container spacing={4}>
+          {/* 個人頭像卡片 */}
+          <Grid item xs={12} md={4}>
+            <Card sx={{ 
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+              p: 4,
+              textAlign: 'center',
+              background: 'linear-gradient(135deg, #2C3E50 0%, #34495E 100%)',
+              color: 'white'
+            }}>
+              <Avatar
+                src={personalInfo.picture}
+                sx={{ 
+                  width: 120, 
+                  height: 120, 
+                  mx: 'auto', 
+                  mb: 2,
+                  border: '4px solid rgba(230, 126, 34, 0.3)'
+                }}
+              >
+                <PersonIcon sx={{ fontSize: 60 }} />
+              </Avatar>
+              <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+                {personalInfo.name || '未設定姓名'}
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                {personalInfo.email}
+              </Typography>
+            </Card>
+          </Grid>
 
-        <InputSet label='姓名' placeholder='不得包含特殊符號 / $ . @ & # @...' name={INPUT_FIELD.NAME} value={personalInfo.name} errorMsg={errors.nickname} func={handlePersonalInfo} />
-        <InputSet label='電話' placeholder='ex: 09xxxxxxxx' name={INPUT_FIELD.PHONE_NUMBER} value={personalInfo.phoneNumber} errorMsg={errors.phoneNumber} func={handlePersonalInfo} />
-        <InputSet label='信箱' name={INPUT_FIELD.EMAIL} value={personalInfo.email} errorMsg={errors.email} func={handlePersonalInfo} disabled />
+          {/* 個人資料表單卡片 */}
+          <Grid item xs={12} md={8}>
+            <Card sx={{ 
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+              overflow: 'hidden'
+            }}>
+              <Box sx={{ 
+                background: 'linear-gradient(135deg, #2C3E50 0%, #34495E 100%)',
+                p: 3
+              }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    color: 'white',
+                    fontWeight: 600
+                  }}
+                >
+                  個人資料
+                </Typography>
+              </Box>
 
+              <Box sx={{ p: 4 }}>
+                <Grid container spacing={3}>
+                  {/* 姓名 */}
+                  <Grid item xs={12} sm={6}>
+                    <ModernInputField
+                      label="姓名"
+                      icon={<PersonIcon />}
+                      placeholder="請輸入您的姓名"
+                      name={INPUT_FIELD.NAME}
+                      value={personalInfo.name}
+                      error={errors.nickname}
+                      onChange={handlePersonalInfo}
+                    />
+                  </Grid>
 
-        <ItemWrapper>
-          <Typography variant='caption' >生日</Typography>
-          <Stack direction={"row"} spacing={3} sx={{ mt: 2 }}>
-            <FormControl sx={{ width: "33%" }}>
-              <InputLabel id="select-day" >日</InputLabel>
-              <Select labelId="select-day" defaultValue={1} onChange={handleBirthday} name="day" value={Number(personalInfo.birthday?.split("/")[2])} label="日" inputProps={{ sx: { height: "15px" } }} MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }} size='small'>
-                {
-                  dateList(31).map(item => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))
-                }
-              </Select>
-            </FormControl>
-            <FormControl sx={{ width: "33%" }}>
-              <InputLabel id="select-month" >月</InputLabel>
-              <Select labelId="select-month" defaultValue={1} onChange={handleBirthday} name="month" value={Number(personalInfo.birthday.split("/")[1])} label="月" inputProps={{ sx: { height: "15px" } }} MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }} size='small'>
-                {
-                  dateList(12).map(item => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))
-                }
-              </Select>
-            </FormControl>
+                  {/* 電話 */}
+                  <Grid item xs={12} sm={6}>
+                    <ModernInputField
+                      label="電話"
+                      icon={<PhoneIcon />}
+                      placeholder="ex: 09xxxxxxxx"
+                      name={INPUT_FIELD.PHONE_NUMBER}
+                      value={personalInfo.phoneNumber}
+                      error={errors.phoneNumber}
+                      onChange={handlePersonalInfo}
+                    />
+                  </Grid>
 
-            <FormControl sx={{ width: "33%" }}>
-              <InputLabel id="select-year" >年</InputLabel>
-              <Select labelId="select-year" defaultValue={thisYear - 10} onChange={handleBirthday} name="year" value={Number(personalInfo.birthday.split("/")[0])} label="年" inputProps={{ sx: { height: "15px" } }} MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }} size='small'>
-                {
-                  yearList(2023).map(item => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))
-                }
-              </Select>
-            </FormControl>
+                  {/* 信箱 */}
+                  <Grid item xs={12}>
+                    <ModernInputField
+                      label="信箱"
+                      icon={<EmailIcon />}
+                      placeholder="您的電子郵件地址"
+                      name={INPUT_FIELD.EMAIL}
+                      value={personalInfo.email}
+                      error={errors.email}
+                      onChange={handlePersonalInfo}
+                      disabled
+                    />
+                  </Grid>
 
+                  {/* 生日 */}
+                  <Grid item xs={12}>
+                    <Box sx={{ mb: 2 }}>
+                      <Stack direction="row" alignItems="center" sx={{ mb: 2 }}>
+                        <CakeIcon sx={{ color: '#2C3E50', mr: 1 }} />
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#2C3E50' }}>
+                          生日
+                        </Typography>
+                      </Stack>
+                      <Grid container spacing={2}>
+                        <Grid item xs={4}>
+                          <FormControl fullWidth>
+                            <InputLabel>年</InputLabel>
+                            <Select
+                              value={Number(personalInfo.birthday?.split("/")[0])}
+                              onChange={handleBirthday}
+                              name="year"
+                              label="年"
+                              sx={{
+                                borderRadius: 2,
+                                '& .MuiOutlinedInput-root': {
+                                  '& fieldset': {
+                                    borderColor: 'rgba(0,0,0,0.1)'
+                                  },
+                                  '&:hover fieldset': {
+                                    borderColor: '#E67E22'
+                                  },
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#E67E22'
+                                  }
+                                }
+                              }}
+                            >
+                              {yearList(2023).map(item => (
+                                <MenuItem key={item} value={item}>
+                                  {item}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <FormControl fullWidth>
+                            <InputLabel>月</InputLabel>
+                            <Select
+                              value={Number(personalInfo.birthday.split("/")[1])}
+                              onChange={handleBirthday}
+                              name="month"
+                              label="月"
+                              sx={{
+                                borderRadius: 2,
+                                '& .MuiOutlinedInput-root': {
+                                  '& fieldset': {
+                                    borderColor: 'rgba(0,0,0,0.1)'
+                                  },
+                                  '&:hover fieldset': {
+                                    borderColor: '#E67E22'
+                                  },
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#E67E22'
+                                  }
+                                }
+                              }}
+                            >
+                              {dateList(12).map(item => (
+                                <MenuItem key={item} value={item}>
+                                  {item}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <FormControl fullWidth>
+                            <InputLabel>日</InputLabel>
+                            <Select
+                              value={Number(personalInfo.birthday?.split("/")[2])}
+                              onChange={handleBirthday}
+                              name="day"
+                              label="日"
+                              sx={{
+                                borderRadius: 2,
+                                '& .MuiOutlinedInput-root': {
+                                  '& fieldset': {
+                                    borderColor: 'rgba(0,0,0,0.1)'
+                                  },
+                                  '&:hover fieldset': {
+                                    borderColor: '#E67E22'
+                                  },
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#E67E22'
+                                  }
+                                }
+                              }}
+                            >
+                              {dateList(31).map(item => (
+                                <MenuItem key={item} value={item}>
+                                  {item}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  </Grid>
 
-          </Stack>
+                  {/* 性別 */}
+                  <Grid item xs={12}>
+                    <Box sx={{ mb: 2 }}>
+                      <Stack direction="row" alignItems="center" sx={{ mb: 2 }}>
+                        <WcIcon sx={{ color: '#2C3E50', mr: 1 }} />
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#2C3E50' }}>
+                          性別
+                        </Typography>
+                      </Stack>
+                      <FormControl>
+                        <RadioGroup 
+                          row 
+                          value={personalInfo.sex} 
+                          name="sex" 
+                          onChange={handlePersonalInfo}
+                        >
+                          {[
+                            { value: '男', label: '男性' },
+                            { value: '女', label: '女性' },
+                            { value: '其他', label: '其他' }
+                          ].map((option) => (
+                            <FormControlLabel 
+                              key={option.value}
+                              value={option.value} 
+                              control={
+                                <Radio 
+                                  sx={{ 
+                                    color: '#E67E22',
+                                    '&.Mui-checked': {
+                                      color: '#E67E22'
+                                    }
+                                  }} 
+                                />
+                              } 
+                              label={option.label}
+                              sx={{
+                                mr: 4,
+                                '& .MuiFormControlLabel-label': {
+                                  fontWeight: 500
+                                }
+                              }}
+                            />
+                          ))}
+                        </RadioGroup>
+                      </FormControl>
+                    </Box>
+                  </Grid>
 
-        </ItemWrapper>
-
-        <ItemWrapper>
-          <FormControl>
-            <Typography variant='caption' >性別</Typography>
-            <RadioGroup row defaultValue={"男"} name="sex" value={personalInfo.sex} onChange={handlePersonalInfo}>
-              <FormControlLabel value={"男"} control={<Radio sx={{ color: "#D9D9D9" }} />} label="男" />
-              <FormControlLabel value={"女"} control={<Radio sx={{ color: "#D9D9D9" }} />} label="女" />
-              <FormControlLabel value={"其他"} control={<Radio sx={{ color: "#D9D9D9" }} />} label="其他" />
-            </RadioGroup>
-          </FormControl>
-        </ItemWrapper>
-
-        <ItemWrapper sx={{ pt: 3 }}>
-          <Button variant="contained" sx={{ "& .MuiButton-text": { color: "white" } }} onClick={saveChange}>儲存變更</Button>
-        </ItemWrapper>
-      </Stack>
-    </Container>
+                  {/* 儲存按鈕 */}
+                  <Grid item xs={12}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                      <Button 
+                        variant="contained" 
+                        size="large"
+                        onClick={saveChange}
+                        sx={{
+                          backgroundColor: '#E67E22',
+                          px: 4,
+                          py: 1.5,
+                          borderRadius: 2,
+                          fontWeight: 600,
+                          '&:hover': {
+                            backgroundColor: '#D35400'
+                          }
+                        }}
+                      >
+                        儲存變更
+                      </Button>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   )
 }
 
@@ -377,26 +607,65 @@ export interface PersonalInfomation {
   type: string;
 }
 
-interface InputSetProps {
+// 現代化輸入欄位組件
+const ModernInputField = ({ 
+  label, 
+  icon, 
+  placeholder, 
+  name, 
+  disabled = false, 
+  value, 
+  error, 
+  onChange 
+}: {
   label: string;
-  disabled?: boolean;
+  icon: React.ReactNode;
   placeholder?: string;
   name?: string;
+  disabled?: boolean;
   value?: string;
-  errorMsg?: string;
-  func: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-
-}
-
-const InputSet = ({ label, placeholder, name, disabled, value, errorMsg, func }: InputSetProps) => {
-
+  error?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+}) => {
 
   return (
-    <Stack spacing={1} sx={{ pt: 1, px: 4 }}>
-      <Typography variant='caption' >{label}</Typography>
-      <TextField value={value} placeholder={placeholder} disabled={disabled} inputProps={{ sx: { height: "15px" } }} name={name} onChange={func} size='small' />
-      <Typography variant='caption' sx={{ color: "red" }}>{errorMsg}</Typography>
-    </Stack>
+    <Box sx={{ mb: 2 }}>
+      <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
+        <Box component="span" sx={{ color: '#2C3E50', mr: 1, display: 'flex', alignItems: 'center' }}>
+          {icon}
+        </Box>
+        <Typography variant="body2" sx={{ fontWeight: 600, color: '#2C3E50' }}>
+          {label}
+        </Typography>
+      </Stack>
+      <TextField
+        fullWidth
+        placeholder={placeholder}
+        disabled={disabled}
+        name={name}
+        value={value}
+        onChange={onChange}
+        error={!!error}
+        helperText={error}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2,
+            '& fieldset': {
+              borderColor: 'rgba(0,0,0,0.1)'
+            },
+            '&:hover fieldset': {
+              borderColor: disabled ? 'rgba(0,0,0,0.1)' : '#E67E22'
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#E67E22'
+            },
+            '&.Mui-disabled': {
+              backgroundColor: '#F5F5F5'
+            }
+          }
+        }}
+      />
+    </Box>
   )
 
 }

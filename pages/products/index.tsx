@@ -5,7 +5,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
 
-import { Box, Button, Checkbox, Stack, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Stack, Typography, Chip, alpha, IconButton } from "@mui/material";
 import { ChangeEvent, useEffect, useReducer, useState } from "react";
 import Image from "next/image";
 import { GetServerSideProps } from "next";
@@ -14,12 +14,13 @@ import { useAlertMsgStore, useCartStore, useCsrfTokenStore, userUserInfoStore, u
 
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import StarIcon from '@mui/icons-material/Star';
 import PurchaseModal from "@/components/products/purchase-modal";
 import { ApiResponse } from "@/interfaces/api/response";
 import { RespCode } from "@/enums/resp-code";
 import { pageTitleMap } from "@/constant-value/page-title-map";
-
-
 
 export default function ProductsPage({ products }: ProductsPageProps) {
     //console.log("products=",products)
@@ -43,9 +44,8 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken)
 
-
     const [dynamicInfo, setdynamicInfo] = useState<ProductDynamic[]>()
-
+    const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
     const filterProductVariant = (productId: number) => {
         console.log("productId=", productId)
@@ -57,7 +57,6 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     const filterProductIsVariant = (productId: number) => {
         return dynamicInfo?.find(p => p.productId === productId)?.isFavorite as boolean
     }
-
 
     const combineToProductInfo = (basic: ProductBasic) => {
         //const variants =dynamicInfo?.find(p=>p.productId==basic.productId)?.variants   as ProductVariant[]
@@ -77,7 +76,6 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
     const comineToProductInfoFavroiate = (basic: ProductBasic) => {
 
-
         const prodoctInfo: ProductInfomationFavorite = {
             product: combineToProductInfo(basic),
             isFavorite: filterProductIsVariant(basic.productId)
@@ -86,8 +84,6 @@ export default function ProductsPage({ products }: ProductsPageProps) {
         return prodoctInfo
     }
 
-
-
     //計時器 
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -95,7 +91,6 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
         if (!userInfo) {
             setAlertMsg("請先登入")
-
 
             timeoutId = setTimeout(() => {
                 router.push(`/login?redirect=/products?tag=${query.tag}`)
@@ -122,40 +117,29 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                 const result = await getProductsDynamicInfoFromBackend(productIdList) as ApiResponse;
                 console.log("result=", result)
 
-
                 if (result.code != RespCode.SUCCESS) {
 
                     console.log("獲取數據失敗")
                     return;
                 }
 
-
                 if (result.data == null) {
                     console.log("獲取數據失敗")
                     return;
                 }
 
-
                 const data = result.data as ProductDynamic[]
 
                 setdynamicInfo(data);
-
-
-
 
             } catch (error) {
                 console.error('Error fetching data:', error)
             }
         }
 
-
         fetchData(productIdList)
 
-
-
-
     }, [products])
-
 
     //清除計時器
     useEffect(() => {
@@ -178,7 +162,6 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                     addToList(pro.product)
                 }
             })
-
 
         }
 
@@ -212,8 +195,6 @@ export default function ProductsPage({ products }: ProductsPageProps) {
         }
     }
 
-
-
     const [selectProduct, setSelectProduct] = useState<ProductInfomation>(initSelectProduct)
 
     const [modalOpen, setModalOpen] = useState<boolean>(false)
@@ -238,18 +219,13 @@ export default function ProductsPage({ products }: ProductsPageProps) {
         //const variants =dynamicInfo?.find(p=>p.productId==product.productId)?.variants   as ProductVariant[]
         const priceList = filterProductVariant(productId).map(v => v.price).sort((a, b) => a - b)
         return priceList[0]
-
-
     }
 
     const getHighstPrice = (productId: number) => {
         //const variants =dynamicInfo?.find(p=>p.productId==product.productId)?.variants   as ProductVariant[]
         const priceList = filterProductVariant(productId).map(v => v.price).sort((a, b) => a - b)
         return priceList[priceList.length - 1]
-
-
     }
-
 
     const getLowestDiscountPrice = (productId: number) => {
         //product: ProductInfomation
@@ -265,30 +241,130 @@ export default function ProductsPage({ products }: ProductsPageProps) {
 
     }
 
+    const hasDiscount = (productId: number) => {
+        return filterProductVariant(productId).some(v => v.discountPrice !== null)
+    }
+
+    const getDiscountPercentage = (productId: number) => {
+        const originalPrice = getHighstPrice(productId)
+        const discountPrice = getLowestDiscountPrice(productId)
+        if (originalPrice && discountPrice) {
+            return Math.round(((originalPrice - discountPrice) / originalPrice) * 100)
+        }
+        return 0
+    }
+
+    // 模擬評分 (實際應該從後端獲取)
+    const getProductRating = () => {
+        return 4.5 + Math.random() * 0.5; // 4.5-5.0 之間的隨機評分
+    }
 
     return (
-        <Box sx={{ p: 2 }}>
-            <h2>
-                {!router.query.query && router.query.tag && pageTitleMap.get(router.query.tag as string)}
-                {!router.query.query && router.query.kind && pageTitleMap.get(router.query.kind as string)}
-                {
-                    router.query.query && "搜尋結果"
-                }
-            </h2>
+        <Box sx={{ p: 3, backgroundColor: 'background.default' }}>
+            <Box sx={{ mb: 4 }}>
+                <Typography 
+                    variant="h4" 
+                    sx={{ 
+                        fontWeight: 700,
+                        mb: 1,
+                        background: 'linear-gradient(45deg, #2C3E50, #34495E)',
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        color: 'transparent'
+                    }}
+                >
+                    {!router.query.query && router.query.tag && pageTitleMap.get(router.query.tag as string)}
+                    {!router.query.query && router.query.kind && pageTitleMap.get(router.query.kind as string)}
+                    {router.query.query && "搜尋結果"}
+                </Typography>
+                <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+                    發現 {products.length} 件精選商品
+                </Typography>
+            </Box>
+            
             <Grid container columns={8} spacing={3}>
-
-
                 {products.map((product) => (
                     <Grid item lg={2} md={2} sm={4} xs={4} key={product.productId}>
-                        <Card sx={{ boxShadow: "none" }}>
-                            <CardMedia onClick={() => { goToProductDetail(product.productId) }} sx={{ '&:hover': { cursor: "pointer" } }}>
+                        <Card 
+                            sx={{ 
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                borderRadius: 3,
+                                overflow: 'hidden',
+                                position: 'relative',
+                                background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+                                border: '1px solid rgba(0,0,0,0.05)',
+                                transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                                '&:hover': {
+                                    transform: 'translateY(-12px) scale(1.02)',
+                                    boxShadow: '0 25px 50px rgba(0,0,0,0.15)',
+                                    border: '1px solid rgba(230, 126, 34, 0.3)'
+                                }
+                            }}
+                            onMouseEnter={() => setHoveredCard(product.productId)}
+                            onMouseLeave={() => setHoveredCard(null)}
+                        >
+                            {/* 折扣標籤 */}
+                            {dynamicInfo && hasDiscount(product.productId) && (
+                                <Chip
+                                    label={`-${getDiscountPercentage(product.productId)}%`}
+                                    size="small"
+                                    sx={{
+                                        position: 'absolute',
+                                        top: 12,
+                                        left: 12,
+                                        zIndex: 2,
+                                        backgroundColor: '#E67E22',
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        fontSize: '0.75rem'
+                                    }}
+                                />
+                            )}
+                            
+                            {/* 收藏按鈕 */}
+                            <IconButton
+                                sx={{
+                                    position: 'absolute',
+                                    top: 8,
+                                    right: 8,
+                                    zIndex: 2,
+                                    backgroundColor: alpha('#FFFFFF', 0.9),
+                                    backdropFilter: 'blur(10px)',
+                                    '&:hover': {
+                                        backgroundColor: alpha('#FFFFFF', 1),
+                                        transform: 'scale(1.1)'
+                                    }
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const fakeEvent = {
+                                        target: { checked: !subscribeIdList.includes(product.productId) }
+                                    } as ChangeEvent<HTMLInputElement>;
+                                    handeClickSubscribe(fakeEvent, product);
+                                }}
+                            >
+                                {subscribeIdList.includes(product.productId) ? 
+                                    <FavoriteIcon sx={{ color: '#E67E22', fontSize: '1.2rem' }} /> : 
+                                    <FavoriteBorderIcon sx={{ color: '#666', fontSize: '1.2rem' }} />
+                                }
+                            </IconButton>
 
+                            <CardMedia 
+                                onClick={() => { goToProductDetail(product.productId) }} 
+                                sx={{ 
+                                    '&:hover': { cursor: "pointer" },
+                                    position: 'relative',
+                                    overflow: 'hidden'
+                                }}
+                            >
                                 <Box
                                     sx={{
                                         position: 'relative',
                                         width: '100%',
                                         height: 0,
-                                        paddingBottom: '120%', // 这是根据宽高比计算的
+                                        paddingBottom: '120%',
                                         overflow: 'hidden',
                                     }}
                                 >
@@ -296,47 +372,159 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                         src={product.coverImg}
                                         alt="product information"
                                         fill
-                                        style={{ objectFit: "cover" }}
+                                        style={{ 
+                                            objectFit: "cover",
+                                            transition: 'transform 0.4s ease'
+                                        }}
                                         priority
                                     />
+                                    
+                                    {/* 懸停操作按鈕 */}
+                                    <Box
+                                        sx={{
+                                            position: 'absolute',
+                                            bottom: 0,
+                                            left: 0,
+                                            right: 0,
+                                            background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            gap: 1,
+                                            p: 2,
+                                            opacity: hoveredCard === product.productId ? 1 : 0,
+                                            transform: hoveredCard === product.productId ? 'translateY(0)' : 'translateY(20px)',
+                                            transition: 'all 0.3s ease'
+                                        }}
+                                    >
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            startIcon={<AddShoppingCartIcon />}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleSelectProduct(product);
+                                            }}
+                                            sx={{
+                                                backgroundColor: '#E67E22',
+                                                '&:hover': {
+                                                    backgroundColor: '#D35400'
+                                                }
+                                            }}
+                                        >
+                                            加入購物車
+                                        </Button>
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            startIcon={<VisibilityIcon />}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                goToProductDetail(product.productId);
+                                            }}
+                                            sx={{
+                                                borderColor: 'white',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    borderColor: '#E67E22',
+                                                    backgroundColor: alpha('#E67E22', 0.1)
+                                                }
+                                            }}
+                                        >
+                                            查看詳情
+                                        </Button>
+                                    </Box>
                                 </Box>
-
                             </CardMedia>
+                            
                             <CardContent sx={{
-                                maxHeight: "250px"
+                                flexGrow: 1,
+                                p: 2.5,
+                                '&:last-child': { pb: 2.5 }
                             }}>
-                                <Stack spacing={"15px"}>
-                                    <Typography sx={{ minHeight: { xs: "48px", sm: "unset" }, fontWeight: "bold", '&:hover': { cursor: "pointer" } }} onClick={() => { goToProductDetail(product.productId) }}>{product.title}</Typography>
-                                    {
-                                        dynamicInfo == undefined ? null
-                                            :
-                                            filterProductVariant(product.productId).filter(v => v.discountPrice) ?
-                                                <Stack direction={"row"} spacing={"15px"}>
-                                                    <Typography variant="subtitle2" sx={{ textDecoration: 'line-through' }}>定價NT${getHighstPrice(product.productId)}</Typography>
-                                                    <Typography sx={{ color: "#ef6060" }}>${getLowestDiscountPrice(product.productId)}</Typography>
-                                                </Stack>
-
-                                                :
-                                                <Stack direction={"row"} spacing={"15px"}>
-                                                    <Typography variant="subtitle2">定價NT${getLowestPrice(product.productId)}</Typography>
-                                                </Stack>
-
-                                    }
-
-
-
+                                <Stack spacing={1.5}>
+                                    <Typography 
+                                        variant="h6"
+                                        sx={{ 
+                                            minHeight: { xs: "48px", sm: "unset" }, 
+                                            fontWeight: 600, 
+                                            fontSize: '1rem',
+                                            lineHeight: 1.4,
+                                            color: '#2C3E50',
+                                            '&:hover': { 
+                                                cursor: "pointer",
+                                                color: '#E67E22'
+                                            },
+                                            transition: 'color 0.2s ease'
+                                        }} 
+                                        onClick={() => { goToProductDetail(product.productId) }}
+                                    >
+                                        {product.title}
+                                    </Typography>
+                                    
+                                    {/* 評分 */}
+                                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                            {[...Array(5)].map((_, index) => (
+                                                <StarIcon
+                                                    key={index}
+                                                    sx={{
+                                                        fontSize: '0.9rem',
+                                                        color: index < Math.floor(getProductRating()) ? '#FFD700' : '#E0E0E0'
+                                                    }}
+                                                />
+                                            ))}
+                                        </Box>
+                                        <Typography variant="caption" sx={{ color: 'text.secondary', ml: 0.5 }}>
+                                            ({getProductRating().toFixed(1)})
+                                        </Typography>
+                                    </Stack>
+                                    
+                                    {/* 價格區域 */}
+                                    {dynamicInfo == undefined ? (
+                                        <Box sx={{ height: 40, display: 'flex', alignItems: 'center' }}>
+                                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                載入中...
+                                            </Typography>
+                                        </Box>
+                                    ) : hasDiscount(product.productId) ? (
+                                        <Stack direction="row" alignItems="center" spacing={1.5}>
+                                            <Typography 
+                                                variant="h6" 
+                                                sx={{ 
+                                                    color: '#E67E22',
+                                                    fontWeight: 700,
+                                                    fontSize: '1.1rem'
+                                                }}
+                                            >
+                                                NT${getLowestDiscountPrice(product.productId)}
+                                            </Typography>
+                                            <Typography 
+                                                variant="body2" 
+                                                sx={{ 
+                                                    textDecoration: 'line-through',
+                                                    color: 'text.secondary'
+                                                }}
+                                            >
+                                                NT${getHighstPrice(product.productId)}
+                                            </Typography>
+                                        </Stack>
+                                    ) : (
+                                        <Typography 
+                                            variant="h6" 
+                                            sx={{ 
+                                                color: '#2C3E50',
+                                                fontWeight: 600,
+                                                fontSize: '1.1rem'
+                                            }}
+                                        >
+                                            NT${getLowestPrice(product.productId)}
+                                        </Typography>
+                                    )}
                                 </Stack>
                             </CardContent>
-                            <CardActions>
-
-                                <Button sx={{ flexGrow: 1 }} variant="outlined" onClick={() => { handleSelectProduct(product) }}>加入購物車</Button>
-
-                                <Checkbox checked={subscribeIdList.includes(product.productId)} icon={<FavoriteBorderIcon />} onChange={(e) => { handeClickSubscribe(e, product) }} checkedIcon={<FavoriteIcon sx={{ color: "red" }} />} />
-                            </CardActions>
                         </Card>
                     </Grid>
                 ))}
-
             </Grid>
 
             <PurchaseModal
@@ -345,9 +533,7 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                 handleModalClose={handleModalClose}
                 modalOpen={modalOpen}
             />
-
         </Box>
-
     )
 }
 

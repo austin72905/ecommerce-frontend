@@ -18,15 +18,78 @@ interface LayoutProps {
     children: ReactNode
 }
 
-
+// 現代化主題配色方案
 const customTheme = createTheme({
     palette: {
         primary: {
-            main: "#61D1BD",
+            main: "#2C3E50", // 深藍灰色主色調
             contrastText: "white"
         },
         secondary: {
-            main: orange[500]
+            main: "#E67E22", // 溫暖橙色強調色
+            contrastText: "white"
+        },
+        background: {
+            default: "#FAFAFA", // 清新白色背景
+            paper: "#FFFFFF"
+        }
+    },
+    typography: {
+        fontFamily: [
+            '"Noto Sans TC"',
+            '"PingFang TC"',
+            '"Microsoft JhengHei"',
+            'Arial',
+            'sans-serif'
+        ].join(','),
+        h1: {
+            fontWeight: 700,
+            letterSpacing: '0.02em'
+        },
+        h2: {
+            fontWeight: 600,
+            letterSpacing: '0.01em'
+        },
+        h3: {
+            fontWeight: 600
+        },
+        h4: {
+            fontWeight: 500
+        },
+        h5: {
+            fontWeight: 500
+        },
+        h6: {
+            fontWeight: 500
+        }
+    },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 12,
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    padding: '10px 24px',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                    }
+                }
+            }
+        },
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 16,
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                        transform: 'translateY(-8px)',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.12)'
+                    }
+                }
+            }
         }
     }
 })
@@ -50,29 +113,32 @@ export default function Layout({ children }: LayoutProps) {
 
     return (
         <ThemeProvider theme={customTheme}>
-            <MainHeader />
-            <Toolbar />
-            <Box sx={{ minHeight: "80vh" }}>
-                <Container sx={{
-                    px: {
-                        md: 5,
-                        sm: 0,
-                        xs: 0
-                    }
-                }}>
-                    {router.pathname==="/products" && <Banners />  }
-                    
-                    {children}
-                </Container>
-            </Box>
-            { !hasVisited  && <NotifyModal/>}
-            
-            <GoToTopButton handleScrollTop={handleScrollTop} />
-            
-            <AlertMsg />
-            <AlertErrorMsg />
+            <Box sx={{ backgroundColor: 'background.default', minHeight: '100vh' }}>
+                <MainHeader />
+                <Toolbar />
+                <Box sx={{ minHeight: "80vh" }}>
+                    <Container sx={{
+                        px: {
+                            md: 5,
+                            sm: 2,
+                            xs: 1
+                        },
+                        py: 3
+                    }}>
+                        {router.pathname==="/products" && <Banners />  }
+                        
+                        {children}
+                    </Container>
+                </Box>
+                { !hasVisited  && <NotifyModal/>}
+                
+                <GoToTopButton handleScrollTop={handleScrollTop} />
+                
+                <AlertMsg />
+                <AlertErrorMsg />
 
-            <Footer />
+                <Footer />
+            </Box>
         </ThemeProvider>
 
     )
