@@ -255,8 +255,10 @@ export default function ProductsPage({ products }: ProductsPageProps) {
     }
 
     // 模擬評分 (實際應該從後端獲取)
-    const getProductRating = () => {
-        return 4.5 + Math.random() * 0.5; // 4.5-5.0 之間的隨機評分
+    const getProductRating = (productId: number) => {
+        // 使用商品ID作為種子，確保評分在服務端和客戶端一致
+        const seed = productId % 100;
+        return 4.5 + (seed / 100) * 0.5; // 根據商品ID產生固定的 4.5-5.0 評分
     }
 
     return (
@@ -469,13 +471,13 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                                     key={index}
                                                     sx={{
                                                         fontSize: '0.9rem',
-                                                        color: index < Math.floor(getProductRating()) ? '#FFD700' : '#E0E0E0'
+                                                        color: index < Math.floor(getProductRating(product.productId)) ? '#FFD700' : '#E0E0E0'
                                                     }}
                                                 />
                                             ))}
                                         </Box>
                                         <Typography variant="caption" sx={{ color: 'text.secondary', ml: 0.5 }}>
-                                            ({getProductRating().toFixed(1)})
+                                            ({getProductRating(product.productId).toFixed(1)})
                                         </Typography>
                                     </Stack>
                                     
