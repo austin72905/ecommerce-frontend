@@ -40,8 +40,8 @@ export default function AboutPage() {
                     <Stack sx={{ m: "30px" }} spacing={2}>
                         <Typography variant={"h5"} sx={{ fontWeight: "bold" }}>中間件</Typography>
                         <Typography component={"p"} sx={{ lineHeight: "40px" }}>
-                            1. Redis : 處理用戶保持登陸狀態 <br />
-                            2. RabbitMQ : 用來模擬支付系統與物流系統服務間解耦
+                            1. Redis : 處理用戶保持登陸狀態，、api限流、檢查庫存避免超賣 <br />
+                            2. RabbitMQ : 用來模擬支付系統與物流系統服務間解耦、檢查訂單支付狀態，回補redis庫存
                         </Typography>
 
                     </Stack>
@@ -56,10 +56,11 @@ export default function AboutPage() {
                     <Stack sx={{ m: "30px" }} spacing={2}>
                         <Typography variant={"h5"} sx={{ fontWeight: "bold" }}>部屬</Typography>
                         <Typography component={"p"} sx={{ lineHeight: "40px" }}>
-                            1. GCP : 使用GCP上面的VM，作業環境使用Ubuntu，能夠使用基本的Linux指令，加上成本關係..<br />
-                            2. nginx : 當網站入口、簡易圖片服務器<br />
+                            1. AWS : 使用AWS上面的EC2，作業環境使用Ubuntu，S3 當作圖片服務器<br />
+                            2. nginx : 當網站入口<br />
                             3. Docker : 所有服務都是run 在docker 容器內，並使用docker-compose管理，能夠快速部屬<br />
-                            4. CI/CD  : 使用Github Action 實現CI/CD，後端通過單元測試後，才會部屬到遠端VM上
+                            4. CI/CD  : 使用Github Action 實現CI/CD，後端通過單元測試後，才會部屬到遠端VM上<br />
+                            5. Cloudflare : 使用Cloudflare 作為CDN，加速網站訪問速度，緩存圖片<br />
                         </Typography>
                     </Stack>
 
@@ -79,48 +80,7 @@ export default function AboutPage() {
                         </Typography>
                     </Stack>
 
-                    <Stack sx={{ m: "30px" }} spacing={2}>
-                        <Typography variant={"h5"} sx={{ fontWeight: "bold" }}>可優化方向</Typography>
-                        <List sx={{ gap: 2, display: "flex", flexDirection: "column" }}>
-
-                            <ListItem sx={{ px: 0 }}>
-                                <Stack spacing={2}>
-                                    <Typography component={"p"} >
-                                        1. 使用 rabbitMQ，模擬限時搶購功能，避免商品庫存不足引發的資源競爭
-                                    </Typography>
-
-                                    <Typography component={"p"} sx={{ textIndent: "3em" }} >
-                                        a. 搶購請求排入消息列隊，控制處理速度，也避免瞬間高流量對資料庫造成壓力
-                                    </Typography>
-                                    <Typography component={"p"} sx={{ textIndent: "3em" }}>
-                                        b. 在處理請求時，對商品庫存進行原子操作。確保多用戶併發環境下的庫存一致
-                                    </Typography>
-                                </Stack>
-
-                            </ListItem>
-                            
-                            <ListItem sx={{ px: 0 }}>
-                                2. 目前缺乏即時通知功能，可以通過websocket、SignalR 實現
-                            </ListItem>
-                            <ListItem sx={{ px: 0 }}>
-                                3. 使用Stored Procedure 寫一個腳本，處理每日未支付訂單的訂單狀態
-                            </ListItem>
-
-
-
-
-
-                        </List>
-                    </Stack>
-
-
-
-                    <Stack sx={{ m: "30px" }} spacing={2}>
-                        <Typography variant={"h5"} sx={{ fontWeight: "bold" }}>備註</Typography>
-                        <Typography component={"p"}>
-                            1. google Oath 登陸功能還在等待官方驗證，可能無法使用...
-                        </Typography>
-                    </Stack>
+                    
 
                 </Box>
 
