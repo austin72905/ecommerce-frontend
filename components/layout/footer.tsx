@@ -29,17 +29,28 @@ export default function Footer() {
         top: 0,
         left: 0,
         right: 0,
-        height: '1px',
-        background: 'linear-gradient(90deg, transparent 0%, #E67E22 50%, transparent 100%)'
+        height: '2px',
+        background: 'linear-gradient(90deg, transparent 0%, #E67E22 20%, #F39C12 50%, #E67E22 80%, transparent 100%)',
+        boxShadow: '0 2px 8px rgba(230, 126, 34, 0.3)'
+      },
+      '&::after': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'radial-gradient(circle at 30% 20%, rgba(230, 126, 34, 0.1) 0%, transparent 50%)',
+        pointerEvents: 'none'
       }
     }}>
-      <Container sx={{ py: 6 }}>
+      <Container sx={{ py: { xs: 4, sm: 6 }, position: 'relative', zIndex: 1 }}>
         <Container maxWidth='xl'>
           <footer>
             {/* 主要內容區域 */}
             <Box sx={{
               textAlign: 'center',
-              mb: 4
+              mb: { xs: 3, sm: 4 }
             }}>
               {/* 品牌標題 */}
               <Typography 
@@ -47,11 +58,22 @@ export default function Footer() {
                 sx={{
                   mb: 2,
                   fontWeight: 700,
-                  background: 'linear-gradient(45deg, #E67E22, #F39C12)',
+                  background: 'linear-gradient(45deg, #E67E22, #F39C12, #E67E22)',
+                  backgroundSize: '200% auto',
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   color: 'transparent',
-                  letterSpacing: 2
+                  letterSpacing: { xs: 1, sm: 2 },
+                  fontSize: { xs: '1.75rem', sm: '2.125rem' },
+                  animation: 'gradient 3s ease infinite',
+                  '@keyframes gradient': {
+                    '0%, 100%': {
+                      backgroundPosition: '0% center'
+                    },
+                    '50%': {
+                      backgroundPosition: '100% center'
+                    }
+                  }
                 }}
               >
                 DEMO 線上商店
@@ -61,12 +83,14 @@ export default function Footer() {
               <Typography 
                 variant="h6" 
                 sx={{
-                  color: 'rgba(255,255,255,0.8)',
+                  color: 'rgba(255,255,255,0.85)',
                   fontWeight: 400,
                   mb: 3,
                   maxWidth: 600,
                   mx: 'auto',
-                  lineHeight: 1.6
+                  lineHeight: 1.7,
+                  fontSize: { xs: '0.95rem', sm: '1.25rem' },
+                  px: 2
                 }}
               >
                 致力於為您提供最優質的服飾與最完美的購物體驗
@@ -75,10 +99,10 @@ export default function Footer() {
 
             {/* 社交媒體和聯繫方式 */}
             <Stack 
-              direction={{ xs: "column", sm: "row" }} 
+              direction="row" 
               alignItems="center" 
               justifyContent="center" 
-              spacing={3}
+              spacing={2}
               sx={{ mb: 4 }}
             >
               <Typography 
@@ -86,7 +110,7 @@ export default function Footer() {
                 sx={{ 
                   color: 'white',
                   fontWeight: 600,
-                  fontSize: '1.1rem'
+                  fontSize: { xs: '1rem', sm: '1.1rem' }
                 }}
               >
                 關於我們
@@ -96,10 +120,10 @@ export default function Footer() {
               <IconButton
                 sx={{ 
                   background: 'linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D, #F56040, #F77737, #FCAF45, #FFDC80)',
-                  width: 50,
-                  height: 50,
+                  width: { xs: 44, sm: 50 },
+                  height: { xs: 44, sm: 50 },
                   border: '2px solid transparent',
-                  borderRadius: '16px',
+                  borderRadius: { xs: '12px', sm: '16px' },
                   position: 'relative',
                   transition: 'all 0.3s ease',
                   '&:hover': {
@@ -142,8 +166,9 @@ export default function Footer() {
           {/* 裝飾性分隔線 */}
           <Box sx={{
             height: '1px',
-            background: 'linear-gradient(90deg, transparent 0%, rgba(230, 126, 34, 0.5) 20%, rgba(230, 126, 34, 0.8) 50%, rgba(230, 126, 34, 0.5) 80%, transparent 100%)',
-            mb: 3
+            background: 'linear-gradient(90deg, transparent 0%, rgba(230, 126, 34, 0.3) 20%, rgba(230, 126, 34, 0.6) 50%, rgba(230, 126, 34, 0.3) 80%, transparent 100%)',
+            mb: { xs: 2, sm: 3 },
+            boxShadow: '0 1px 3px rgba(230, 126, 34, 0.2)'
           }} />
           
           <footer>
@@ -152,15 +177,21 @@ export default function Footer() {
               direction={{ xs: "column", sm: "row" }} 
               justifyContent="center" 
               alignItems="center"
-              spacing={2}
-              sx={{ mb: 3 }}
+              spacing={{ xs: 1, sm: 2 }}
+              sx={{ mb: { xs: 2, sm: 3 } }}
             >
-              <Stack direction="row" alignItems="center" spacing={1}>
+              <Stack 
+                direction="row" 
+                alignItems="center" 
+                spacing={1}
+                flexWrap="wrap"
+                justifyContent="center"
+              >
                 <Typography 
                   sx={{ 
-                    color: "rgba(255,255,255,0.7)", 
+                    color: "rgba(255,255,255,0.75)", 
                     fontWeight: 500,
-                    fontSize: '0.9rem'
+                    fontSize: { xs: '0.85rem', sm: '0.9rem' }
                   }}
                 >
                   © 2023
@@ -169,16 +200,17 @@ export default function Footer() {
                   sx={{ 
                     color: "#E67E22", 
                     fontWeight: 700,
-                    fontSize: '0.9rem'
+                    fontSize: { xs: '0.85rem', sm: '0.9rem' },
+                    textShadow: '0 0 10px rgba(230, 126, 34, 0.3)'
                   }}
                 >
                   DEMO Shop
                 </Typography>
                 <Typography 
                   sx={{ 
-                    color: "rgba(255,255,255,0.7)", 
+                    color: "rgba(255,255,255,0.75)", 
                     fontWeight: 500,
-                    fontSize: '0.9rem'
+                    fontSize: { xs: '0.85rem', sm: '0.9rem' }
                   }}
                 >
                   All Rights Reserved.
@@ -190,20 +222,35 @@ export default function Footer() {
             <Stack 
               direction="row" 
               justifyContent="center" 
-              spacing={3}
+              spacing={{ xs: 2, sm: 3 }}
               sx={{ mb: 2 }}
             >
               <Link href={"/privacy-policy"}>
                 <Typography 
                   variant="body2"
                   sx={{
-                    color: 'rgba(255,255,255,0.7)',
+                    color: 'rgba(255,255,255,0.75)',
                     textDecoration: 'none',
-                    transition: 'color 0.3s ease',
-                    fontSize: '0.9rem',
+                    transition: 'all 0.3s ease',
+                    fontSize: { xs: '0.85rem', sm: '0.9rem' },
+                    position: 'relative',
                     '&:hover': {
                       color: '#E67E22',
-                      textDecoration: 'underline'
+                      textDecoration: 'underline',
+                      transform: 'translateY(-1px)'
+                    },
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: -2,
+                      left: 0,
+                      width: 0,
+                      height: '2px',
+                      background: '#E67E22',
+                      transition: 'width 0.3s ease'
+                    },
+                    '&:hover::after': {
+                      width: '100%'
                     }
                   }}
                 >
@@ -214,11 +261,22 @@ export default function Footer() {
 
             {/* 底部裝飾 */}
             <Box sx={{
-              height: 60,
-              background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.2) 100%)',
-              mx: -6,
+              height: { xs: 40, sm: 60 },
+              background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.3) 100%)',
+              mx: { xs: -2, sm: -6 },
               mt: 3,
-              borderTop: '1px solid rgba(255,255,255,0.1)'
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+              position: 'relative',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '60%',
+                height: '1px',
+                background: 'linear-gradient(90deg, transparent, rgba(230, 126, 34, 0.3), transparent)'
+              }
             }} />
           </footer>
         </Container>
