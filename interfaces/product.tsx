@@ -68,3 +68,16 @@ export interface ProductVariant{
     price:number;
     discountPrice?: number;
 }
+
+// 整合的商品資訊（包含基本資訊和動態資訊）
+export interface ProductComplete {
+    productId: number;
+    title: string;
+    material?: string[];
+    howToWash?: string;
+    features?: string;
+    images?: string[];
+    coverImg?: string;
+    variants: ProductVariant[];
+    isFavorite?: boolean;
+}

@@ -5,10 +5,9 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
 
-import { Box, Button, Checkbox, Stack, Typography, Chip, alpha, IconButton } from "@mui/material";
+import { Box, Button, Checkbox, Stack, Typography, Chip, alpha, IconButton, useTheme, useMediaQuery } from "@mui/material";
 import { ChangeEvent, useEffect, useReducer, useState } from "react";
 import Image from "next/image";
-import { GetServerSideProps } from "next";
 import { ProductBasic, ProductDynamic, ProductInfomation, ProductInfomationFavorite, ProductVariant } from "@/interfaces";
 import { useAlertMsgStore, useCartStore, useCsrfTokenStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 
@@ -22,11 +21,15 @@ import { ApiResponse } from "@/interfaces/api/response";
 import { RespCode } from "@/enums/resp-code";
 import { pageTitleMap } from "@/constant-value/page-title-map";
 
-export default function ProductsPage({ products }: ProductsPageProps) {
+export default function ProductsPage() {
     //console.log("products=",products)
     const router = useRouter()
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('md')) // md 以下視為手機版
 
     const { query, pathname } = router
+    const [products, setProducts] = useState<ProductBasic[]>([])
+    const [loading, setLoading] = useState<boolean>(true)
 
     const goToProductDetail = (productId: number) => {
         router.push(`/products/${productId}`)
@@ -107,8 +110,65 @@ export default function ProductsPage({ products }: ProductsPageProps) {
         }
     }
 
+    // CSR: 從後端獲取商品列表
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            try {
+                let kind = query?.kind as string;
+                let tag = query?.tag as string;
+                let keyword = query?.query as string;
+
+                // 當沒有tag 時，預設 返回新品
+                if (!tag || typeof tag != "string") {
+                    if (keyword) {
+                        tag = ""
+                    } else {
+                        tag = "new-arrival"
+                    }
+                }
+
+                if (!kind || typeof kind != "string") {
+                    if (keyword) {
+                        kind = ""
+                    } else {
+                        kind = "clothes"
+                    }
+                }
+
+                if (typeof keyword != "string") {
+                    keyword = ""
+                }
+
+                const response = await getProductsBasicInfoFromBackend(kind, tag, keyword) as ApiResponse<ProductBasic[]>
+
+                if (response.code != RespCode.SUCCESS) {
+                    console.log("獲取商品列表失敗")
+                    setProducts([])
+                    setLoading(false)
+                    return;
+                }
+
+                const productsData = response.data || []
+                setProducts(productsData)
+                setLoading(false)
+
+            } catch (error) {
+                console.error('Error fetching products:', error)
+                setProducts([])
+                setLoading(false)
+            }
+        }
+
+        if (router.isReady) {
+            fetchProducts()
+        }
+    }, [router.isReady, query.kind, query.tag, query.query])
+
     //請求後端獲取variant
     useEffect(() => {
+        if (products.length === 0) return;
+
         let productIdList = products.map(p => p.productId)
         console.log("productIdList=", productIdList)
 
@@ -261,6 +321,16 @@ export default function ProductsPage({ products }: ProductsPageProps) {
         return 4.5 + (seed / 100) * 0.5; // 根據商品ID產生固定的 4.5-5.0 評分
     }
 
+    if (loading) {
+        return (
+            <Box sx={{ p: 3, backgroundColor: 'background.default', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+                <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+                    載入中...
+                </Typography>
+            </Box>
+        )
+    }
+
     return (
         <Box sx={{ p: 3, backgroundColor: 'background.default' }}>
             <Box sx={{ mb: 4 }}>
@@ -284,10 +354,23 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                 </Typography>
             </Box>
             
-            <Grid container columns={8} spacing={3}>
-                {products.map((product) => (
+            {products.length === 0 ? (
+                <Box sx={{ textAlign: 'center', py: 8 }}>
+                    <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+                        沒有找到商品
+                    </Typography>
+                </Box>
+            ) : (
+                <Grid container columns={8} spacing={3}>
+                    {products.map((product) => (
                     <Grid item lg={2} md={2} sm={4} xs={4} key={product.productId}>
                         <Card 
+                            onClick={() => {
+                                // 手機版：點選整個卡片直接進入詳細頁面
+                                if (isMobile) {
+                                    goToProductDetail(product.productId);
+                                }
+                            }}
                             sx={{ 
                                 height: '100%',
                                 display: 'flex',
@@ -298,14 +381,26 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                 background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
                                 border: '1px solid rgba(0,0,0,0.05)',
                                 transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                                cursor: isMobile ? 'pointer' : 'default',
                                 '&:hover': {
-                                    transform: 'translateY(-12px) scale(1.02)',
-                                    boxShadow: '0 25px 50px rgba(0,0,0,0.15)',
-                                    border: '1px solid rgba(230, 126, 34, 0.3)'
+                                    transform: isMobile ? 'none' : 'translateY(-12px) scale(1.02)',
+                                    boxShadow: isMobile ? 'none' : '0 25px 50px rgba(0,0,0,0.15)',
+                                    border: isMobile ? '1px solid rgba(0,0,0,0.05)' : '1px solid rgba(230, 126, 34, 0.3)'
+                                },
+                                '&:active': {
+                                    transform: isMobile ? 'scale(0.98)' : 'none'
                                 }
                             }}
-                            onMouseEnter={() => setHoveredCard(product.productId)}
-                            onMouseLeave={() => setHoveredCard(null)}
+                            onMouseEnter={() => {
+                                if (!isMobile) {
+                                    setHoveredCard(product.productId);
+                                }
+                            }}
+                            onMouseLeave={() => {
+                                if (!isMobile) {
+                                    setHoveredCard(null);
+                                }
+                            }}
                         >
                             {/* 折扣標籤 */}
                             {dynamicInfo && hasDiscount(product.productId) && (
@@ -354,9 +449,16 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                             </IconButton>
 
                             <CardMedia 
-                                onClick={() => { goToProductDetail(product.productId) }} 
+                                onClick={(e) => {
+                                    // 桌面版：點選圖片進入詳細頁面
+                                    if (!isMobile) {
+                                        e.stopPropagation();
+                                        goToProductDetail(product.productId);
+                                    }
+                                    // 手機版：事件會冒泡到 Card，由 Card 的 onClick 處理
+                                }} 
                                 sx={{ 
-                                    '&:hover': { cursor: "pointer" },
+                                    '&:hover': { cursor: isMobile ? 'pointer' : "pointer" },
                                     position: 'relative',
                                     overflow: 'hidden'
                                 }}
@@ -381,23 +483,24 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                         priority
                                     />
                                     
-                                    {/* 懸停操作按鈕 */}
-                                    <Box
-                                        sx={{
-                                            position: 'absolute',
-                                            bottom: 0,
-                                            left: 0,
-                                            right: 0,
-                                            background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            gap: 1,
-                                            p: 2,
-                                            opacity: hoveredCard === product.productId ? 1 : 0,
-                                            transform: hoveredCard === product.productId ? 'translateY(0)' : 'translateY(20px)',
-                                            transition: 'all 0.3s ease'
-                                        }}
-                                    >
+                                    {/* 懸停操作按鈕 - 只在桌面版顯示 */}
+                                    {!isMobile && (
+                                        <Box
+                                            sx={{
+                                                position: 'absolute',
+                                                bottom: 0,
+                                                left: 0,
+                                                right: 0,
+                                                background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                gap: 1,
+                                                p: 2,
+                                                opacity: hoveredCard === product.productId ? 1 : 0,
+                                                transform: hoveredCard === product.productId ? 'translateY(0)' : 'translateY(20px)',
+                                                transition: 'all 0.3s ease'
+                                            }}
+                                        >
                                         <Button
                                             variant="contained"
                                             size="small"
@@ -434,7 +537,8 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                         >
                                             查看詳情
                                         </Button>
-                                    </Box>
+                                        </Box>
+                                    )}
                                 </Box>
                             </CardMedia>
                             
@@ -453,12 +557,19 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                                             lineHeight: 1.4,
                                             color: '#2C3E50',
                                             '&:hover': { 
-                                                cursor: "pointer",
-                                                color: '#E67E22'
+                                                cursor: isMobile ? 'pointer' : "pointer",
+                                                color: isMobile ? '#2C3E50' : '#E67E22'
                                             },
                                             transition: 'color 0.2s ease'
                                         }} 
-                                        onClick={() => { goToProductDetail(product.productId) }}
+                                        onClick={(e) => {
+                                            // 桌面版：點選標題進入詳細頁面
+                                            if (!isMobile) {
+                                                e.stopPropagation();
+                                                goToProductDetail(product.productId);
+                                            }
+                                            // 手機版：事件會冒泡到 Card，由 Card 的 onClick 處理
+                                        }}
                                     >
                                         {product.title}
                                     </Typography>
@@ -526,8 +637,9 @@ export default function ProductsPage({ products }: ProductsPageProps) {
                             </CardContent>
                         </Card>
                     </Grid>
-                ))}
-            </Grid>
+                    ))}
+                </Grid>
+            )}
 
             <PurchaseModal
                 product={selectProduct}
@@ -553,11 +665,6 @@ const initSelectProduct: ProductInfomation = {
     variants: []
 
 }
-
-interface ProductsPageProps {
-    products: ProductBasic[]
-}
-
 
 const addToFavoriteListToBackend = async (productId: number, token: string) => {
     console.log("productId:", productId)
@@ -621,77 +728,6 @@ const getProductsFromBackend = async (kind: string, tag: string, cookieHeader?: 
 
 
 
-export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (context) => {
-
-
-    const { req } = context
-    // querystring
-    const { query } = context
-    let kind = query?.kind;
-    let tag = query?.tag;
-    let keyword = query?.query;
-
-    console.log("tag =", tag)
-    console.log("kind =", kind)
-    console.log("keyword =", keyword)
-
-    // 當沒有tag 時，預設 返回新品
-    if (!tag || typeof tag != "string") {
-
-        if (keyword) {
-            tag = ""
-        } else {
-            tag = "new-arrival"
-        }
-
-
-    }
-
-    if (!kind || typeof kind != "string") {
-
-
-        if (keyword) {
-            kind = ""
-
-        } else {
-            kind = "clothes"
-        }
-    }
-
-    if (typeof keyword != "string") {
-        keyword = ""
-    }
-
-
-
-    // 將 cookies 從請求中提取並傳遞給後端請求
-    //const cookieHeader = req.headers.cookie || '';
-
-    const response = await getProductsBasicInfoFromBackend(kind, tag, keyword) as ApiResponse<ProductBasic[]>
-
-    console.log(response)
-
-    //網路錯誤
-    // 可能可以在自定義頁面之類的
-    if (response.code != RespCode.SUCCESS) {
-        return {
-            notFound: true
-        }
-    }
-    //console.log("data=",response.data)
-
-
-    const products = response.data
-
-    console.log("products=", products)
-
-    //const products = getProducts();
-    return {
-        props: {
-            products
-        }
-    }
-}
 
 
 const getProductsBasicInfoFromBackend = async (kind: string, tag: string, keyword?: string) => {

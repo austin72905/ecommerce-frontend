@@ -17,78 +17,83 @@ import Grid from '@mui/material/Grid';
 import { ChangeEvent, Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { GetServerSideProps } from "next";
-import { ProductBasic, ProductDynamic, ProductInfomation, ProductInfomationCount, ProductInfomationFavorite, ProductVariant } from "@/interfaces";
+import { ProductBasic, ProductComplete, ProductDynamic, ProductInfomation, ProductInfomationCount, ProductInfomationFavorite, ProductVariant } from "@/interfaces";
 import { useAlertMsgStore, useCartStore, userUserInfoStore, useSubscribeListStore } from "@/store/store";
 import { GridContainer } from "@/components/ui/grid-container";
 import { ApiResponse } from "@/interfaces/api/response";
 import { RespCode } from "@/enums/resp-code";
 
-export default function ProductDetailPage({ product }: ProductDetailPageProps) {
+export default function ProductDetailPage() {
+    const router = useRouter();
+    const { productid } = router.query;
 
+    const [product, setProduct] = useState<ProductComplete | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
     const [count, setCount] = useState(0);
     const [recommendProducts, setrecommendProducts] = useState<ProductInfomationFavorite[] | null>(null);
-    const [dynamicInfo, setdynamicInfo] = useState<ProductDynamic[]>()
 
-    // 請求商品動態數據、庫存、價格等
+    // CSR: 從後端獲取完整商品資訊（包含基本資訊和動態資訊）
     useEffect(() => {
-        
-        const fetchData = async (productId: number) => {
+        const fetchProduct = async () => {
+            if (!productid || typeof productid !== "string") {
+                setLoading(false);
+                return;
+            }
+
+            setLoading(true);
             try {
-                const result = await getProductDynamicInfoFromBackend(productId) as ApiResponse;
-                console.log("result=", result)
+                const response = await getProductCompleteInfoFromBackend(Number(productid)) as ApiResponse<ProductComplete>
 
-                if (result.code != RespCode.SUCCESS) {
-                    console.log("獲取數據失敗")
+                if (response.code != RespCode.SUCCESS) {
+                    console.log("獲取商品資訊失敗")
+                    setProduct(null);
+                    setLoading(false);
                     return;
                 }
 
-                if (result.data == null) {
-                    console.log("獲取數據失敗")
-                    return;
-                }
-
-                const data = result.data as ProductDynamic[]
-                setdynamicInfo(data);
+                const productData = response.data;
+                setProduct(productData || null);
+                setLoading(false);
 
             } catch (error) {
-                console.error('Error fetching data:', error)
+                console.error('Error fetching product:', error)
+                setProduct(null);
+                setLoading(false);
             }
         }
 
-        fetchData(product.productId)
+        if (router.isReady) {
+            fetchProduct();
+        }
+    }, [router.isReady, productid])
 
-    }, [product])
-
-    const filterProductVariant = (productId: number) => {
-        console.log("productId=", productId)
-        console.log("dynamicInfo=", dynamicInfo)
-        var variants =dynamicInfo?.find(p => p.productId === productId)?.variants
-        return variants || []
+    const filterProductVariant = () => {
+        return product?.variants || []
     }
 
-    const filterProductIsVariant = (productId: number) => {
-        return dynamicInfo?.find(p => p.productId === productId)?.isFavorite as boolean
+    const filterProductIsVariant = () => {
+        return product?.isFavorite || false
     }
 
-    const combineToProductInfo = (basic: ProductBasic) => {
+    const combineToProductInfo = (complete: ProductComplete) => {
         const productInfo: ProductInfomation = {
-            productId: basic.productId,
-            title: basic.title,
-            howToWash: basic.howToWash,
-            features: basic.features,
-            material: basic.material,
-            coverImg: basic.coverImg,
-            variants: filterProductVariant(basic.productId)
+            productId: complete.productId,
+            title: complete.title,
+            howToWash: complete.howToWash,
+            features: complete.features,
+            material: complete.material,
+            coverImg: complete.coverImg,
+            images: complete.images,
+            variants: complete.variants
         }
 
         return productInfo
     }
 
-    const comineToProductInfoFavroiate = (basic: ProductBasic) => {
+    const comineToProductInfoFavroiate = (complete: ProductComplete) => {
         const prodoctInfo: ProductInfomationFavorite = {
-            product: combineToProductInfo(basic),
-            isFavorite: filterProductIsVariant(basic.productId)
+            product: combineToProductInfo(complete),
+            isFavorite: complete.isFavorite || false
         }
 
         return prodoctInfo
@@ -98,6 +103,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     useEffect(() => {
 
         const fetchData = async () => {
+            if (!product) return;
+
             try {
                 const response = await getRecommendationFromBackend(product.productId.toString()) as ApiResponse<ProductInfomationFavorite[]>;
 
@@ -118,7 +125,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
             fetchData();
         }
 
-    }, [])
+    }, [product])
 
     //從store 取值
     const addToCart = useCartStore((state) => state.addToCart)
@@ -205,16 +212,34 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
     const handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, id: string) => {
         event.preventDefault()
-        const element = document.getElementById(id);
-        if (element) {
-            const offsetTop = element.getBoundingClientRect().top + window.scrollY;
-            const offset = 110
-
-            window.scrollTo({
-                top: offsetTop - offset,
-                behavior: 'smooth',
-            });
-        }
+        // 移除 # 符號來獲取實際的 ID
+        const elementId = id.replace('#', '');
+        
+        // 使用 setTimeout 確保 DOM 完全渲染後再計算位置
+        setTimeout(() => {
+            const element = document.getElementById(elementId);
+            
+            if (element) {
+                // 獲取主導航欄高度（固定 70px，根據 main-header.tsx）
+                const mainHeaderHeight = 70;
+                
+                // 獲取錨點導航欄高度（60px），如果顯示的話
+                const anchorNavbarHeight = showNavBar ? 60 : 0;
+                
+                // 計算總偏移量：主導航欄 + 錨點導航欄 + 額外間距（讓內容不被遮擋）
+                const totalOffset = mainHeaderHeight + anchorNavbarHeight + 20; // 20px 額外間距，確保內容不被遮擋
+                
+                // 獲取元素相對於文檔的位置
+                const elementRect = element.getBoundingClientRect();
+                const elementTop = elementRect.top + window.pageYOffset || window.scrollY;
+                
+                // 滾動到正確位置
+                window.scrollTo({
+                    top: Math.max(0, elementTop - totalOffset), // 確保不會滾動到負數位置
+                    behavior: 'smooth',
+                });
+            }
+        }, 100); // 100ms 延遲，確保 DOM 更新完成
     }
 
     // 需要定義在父組件，因為buttonbar也會用到
@@ -262,7 +287,6 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
         });
     }
 
-    const router = useRouter();
     const setAlertMsg = useAlertMsgStore((state) => state.setAlertMsg)
 
     const goToProductDetail = (productId: number) => {
@@ -310,7 +334,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     const rating = 4.5;
     const reviewCount = 127;
 
-    if (!product) {
+    if (loading) {
         return (
             <Box sx={{ 
                 display: 'flex', 
@@ -321,6 +345,22 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
             }}>
                 <Typography variant="h6" sx={{ color: 'text.secondary' }}>
                     載入商品資訊中...
+                </Typography>
+            </Box>
+        )
+    }
+
+    if (!product) {
+        return (
+            <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                minHeight: '50vh',
+                backgroundColor: 'background.default'
+            }}>
+                <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+                    找不到商品
                 </Typography>
             </Box>
         )
@@ -404,7 +444,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
                     {/* 商品詳情區域 */}
                     <Grid item lg={6} md={6} sm={12} xs={12}>
-                        {dynamicInfo && (
+                        {product && (
                             <ModernPurchaseDetail
                         productFavorite={comineToProductInfoFavroiate(product)}
                         itemCount={itemCount}
@@ -421,7 +461,13 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         </Grid>
 
                 {/* 商品大圖區 */}
-                <Box id="images" sx={{ mt: 8 }}>
+                <Box 
+                    id="images" 
+                    sx={{ 
+                        mt: 8,
+                        scrollMarginTop: { xs: '134px', sm: '140px' } // 主導航欄(70px) + 錨點導航欄(60px) + 間距(4-10px)
+                    }}
+                >
                     <ModernSectionTitle title="商品圖片" />
                     <Grid container spacing={2}>
                             {product.images?.map((img, index) => (
@@ -589,7 +635,15 @@ function ModernPrevArrow(props: any) {
 
 // 現代化區段標題組件
 const ModernSectionTitle = ({ title, id }: { title: string; id?: string }) => (
-    <Box id={id} sx={{ mb: 3 }}>
+    <Box 
+        id={id} 
+        sx={{ 
+            mb: 3,
+            ...(id && {
+                scrollMarginTop: { xs: '134px', sm: '140px' } // 主導航欄(70px) + 錨點導航欄(60px) + 間距(4-10px)
+            })
+        }}
+    >
         <Typography 
             variant="h4" 
             sx={{ 
@@ -665,37 +719,17 @@ const getProductInfoFromBackend = async (productId: string) => {
 }
 
 
-const getProductBasicInfoFromBackend = async (productId: number) => {
-
+// 整合 API：獲取完整的商品資訊（包含基本資訊和動態資訊）
+const getProductCompleteInfoFromBackend = async (productId: number) => {
     const query = new URLSearchParams({
         productId: productId.toString()
     }).toString()
 
-    console.log(query)
+    console.log("獲取完整商品資訊，productId:", productId)
     const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
-    const response = await fetch(`${apiUrl}/Product/GetProductBasicInfoById?${query}`, {
+    const response = await fetch(`${apiUrl}/Product/GetProductCompleteInfoById?${query}`, {
         method: 'GET',
-
-    })
-
-    return response.json();
-}
-
-const getProductDynamicInfoFromBackend = async (productId: number) => {
-
-    const postBody = {
-        productId: productId,
-    }
-
-
-    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
-    const response = await fetch(`${apiUrl}/Product/GetProductDynamicInfo`, {
-        method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',  // 設置 Content-Type 為 JSON
-        },
-        body: JSON.stringify(postBody)  // 將 postBody 轉換為 JSON 字串
     })
 
     return response.json();
@@ -709,44 +743,6 @@ interface ProductDetailData {
     product: ProductInfomationFavorite
 }
 
-interface ProductDetailPageProps {
-    product: ProductBasic
-}
-
-export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = async (context) => {
-
-    const { params } = context
-
-    const productId = params?.productid;
-
-    console.log("productId=", productId)
-
-    if (!productId || typeof productId !== "string") {
-        return {
-            notFound: true
-        }
-    }
-
-    // params   segement  看你目錄怎麼定義的
-
-    //const product = getProdcctById(Number(productId))
-
-    const response = await getProductBasicInfoFromBackend(Number(productId)) as ApiResponse<ProductBasic>
-
-    if (response.code != RespCode.SUCCESS) {
-        return {
-            notFound: true
-        }
-    }
-
-    const product = response.data
-
-    return {
-        props: {
-            product
-        }
-    }
-}
 
 
 interface SizeTableProps {
@@ -1519,7 +1515,7 @@ const ModernAnchorNavbar = ({ showNavBar, handleLinkClick }: AnchorNavbarProps) 
             position="fixed"
             sx={{
                 top: showNavBar ? { sm: "70px", xs: "64px" } : '-60px',
-                height: "60px",
+                height: { xs: "50px", sm: "60px" },
                 backgroundColor: alpha('#2C3E50', 0.95),
                 backdropFilter: 'blur(20px)',
                 transition: 'all 0.3s ease',
@@ -1527,18 +1523,47 @@ const ModernAnchorNavbar = ({ showNavBar, handleLinkClick }: AnchorNavbarProps) 
                 borderBottom: '1px solid rgba(230, 126, 34, 0.2)'
             }}
         >
-            <Container>
+            <Container 
+                maxWidth={false}
+                sx={{ 
+                    px: { xs: 0, sm: 2 },
+                    width: '100%'
+                }}
+            >
                 <Toolbar sx={{ 
-                    height: "60px", 
-                    minHeight: "60px !important", 
+                    height: { xs: "50px", sm: "60px" }, 
+                    minHeight: { xs: "50px !important", sm: "60px !important" }, 
                     display: 'flex', 
-                    justifyContent: 'center' 
+                    justifyContent: 'center',
+                    px: { xs: 1, sm: 2 },
+                    width: '100%',
+                    overflow: 'hidden'
                 }}>
-                    <nav>
+                    <Box 
+                        component="nav"
+                        sx={{
+                            width: { xs: '100%', sm: 'auto' },
+                            overflowX: { xs: 'auto', sm: 'visible' },
+                            overflowY: 'hidden',
+                            WebkitOverflowScrolling: 'touch',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            '&::-webkit-scrollbar': {
+                                display: 'none'
+                            },
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none'
+                        }}
+                    >
                         <List sx={{ 
                             display: "flex", 
                             flexDirection: "row",
-                            gap: 2
+                            gap: { xs: 0.5, sm: 2 },
+                            minWidth: 'fit-content',
+                            width: { xs: 'max-content', sm: 'auto' },
+                            py: 0,
+                            m: 0,
+                            justifyContent: 'center'
                         }}>
                             {[
                                 { label: "商品介紹", id: "#intro" },
@@ -1549,15 +1574,17 @@ const ModernAnchorNavbar = ({ showNavBar, handleLinkClick }: AnchorNavbarProps) 
                                 <Link 
                                     key={item.id}
                                     href="#" 
-                                    style={{ color: 'inherit', textDecoration: "none" }} 
+                                    style={{ color: 'inherit', textDecoration: "none", flexShrink: 0 }} 
                                     onClick={(e) => handleLinkClick(e, item.id)}
                                 >
                                     <ListItemButton 
                                         disableRipple
                                         sx={{
                                             borderRadius: 2,
-                                            px: 3,
+                                            px: { xs: 1.5, sm: 3 },
+                                            py: { xs: 0.5, sm: 1 },
                                             transition: 'all 0.3s ease',
+                                            whiteSpace: 'nowrap',
                                             '&:hover': {
                                                 backgroundColor: alpha('#E67E22', 0.1),
                                                 transform: 'translateY(-2px)'
@@ -1567,9 +1594,11 @@ const ModernAnchorNavbar = ({ showNavBar, handleLinkClick }: AnchorNavbarProps) 
                                         <ListItemText 
                                             sx={{ 
                                                 color: "white",
+                                                m: 0,
                                                 '& .MuiListItemText-primary': {
                                                     fontWeight: 500,
-                                                    fontSize: '0.9rem'
+                                                    fontSize: { xs: '0.75rem', sm: '0.9rem' },
+                                                    lineHeight: 1.2
                                                 }
                                             }} 
                                             primary={item.label} 
@@ -1578,7 +1607,7 @@ const ModernAnchorNavbar = ({ showNavBar, handleLinkClick }: AnchorNavbarProps) 
                                 </Link>
                             ))}
                         </List>
-                    </nav>
+                    </Box>
                 </Toolbar>
             </Container>
         </AppBar>
@@ -1703,7 +1732,14 @@ const ModernProductIntroduce = ({ productFavoritate, id }: ModernProductIntroduc
     ];
 
     return (
-        <Box id={id}>
+        <Box 
+            id={id}
+            sx={{
+                ...(id && {
+                    scrollMarginTop: { xs: '134px', sm: '140px' } // 主導航欄(70px) + 錨點導航欄(60px) + 間距(4-10px)
+                })
+            }}
+        >
             <ModernSectionTitle title="商品介紹" />
             <Box sx={{
                 backgroundColor: 'white',
@@ -1936,6 +1972,10 @@ const ModernPurchaseDetail = ({
     const addToList = useSubscribeListStore((state) => state.addToList);
     const removeFromList = useSubscribeListStore((state) => state.removeFromList);
 
+    // 顏色和尺寸選擇狀態
+    const [colorVal, setColorVal] = useState("");
+    const [sizeVal, setSizeVal] = useState("");
+
     // 處理收藏功能
     const handleFavoriteToggle = () => {
         if (!userInfo) {
@@ -1971,6 +2011,82 @@ const ModernPurchaseDetail = ({
         addToCart(product, selectVariant, itemCount);
         setAlertMsg("新增購物車成功");
     };
+
+    // 顏色與規格處理邏輯
+    const groupByColor = product.variants.reduce((acc: any, variant: ProductVariant) => {
+        if (!acc[variant.color]) {
+            acc[variant.color] = [];
+        }
+        acc[variant.color].push(variant);
+        return acc;
+    }, {});
+
+    const groupBySize = product.variants.reduce((acc: any, variant: ProductVariant) => {
+        if (!acc[variant.size]) {
+            acc[variant.size] = [];
+        }
+        acc[variant.size].push(variant);
+        return acc;
+    }, {});
+
+    const colors = product.variants.reduce((acc: string[], variant: ProductVariant) => {
+        if (!acc.includes(variant.color)) {
+            acc.push(variant.color);
+        }
+        return acc;
+    }, []);
+
+    const sizes = product.variants.reduce((acc: string[], variant: ProductVariant) => {
+        if (!acc.includes(variant.size)) {
+            acc.push(variant.size);
+        }
+        return acc;
+    }, []);
+
+    const setSizeDisabled = (size: string): boolean => {
+        const variantOfSelectColor: ProductVariant[] = groupByColor[colorVal];
+        if (!variantOfSelectColor) {
+            return false;
+        }
+        return !Boolean(variantOfSelectColor.find(v => v.size == size));
+    };
+
+    const setColorDisabled = (color: string): boolean => {
+        const variantOfSelectSize: ProductVariant[] = groupBySize[sizeVal];
+        if (!variantOfSelectSize) {
+            return false;
+        }
+        return !Boolean(variantOfSelectSize.find(v => v.color == color));
+    };
+
+    const handleColor = (event: any, newColor: string | null) => {
+        if (newColor !== null) {
+            setColorVal(newColor);
+        }
+    };
+
+    const handleSize = (event: any, newSize: string | null) => {
+        if (newSize !== null) {
+            setSizeVal(newSize);
+        }
+    };
+
+    // 監控選擇並組合成 variant
+    useEffect(() => {
+        if (colorVal && sizeVal) {
+            const selectv = product.variants.find(v => v.color === colorVal && v.size === sizeVal);
+            setselectVariant(selectv);
+        } else {
+            setselectVariant(undefined);
+        }
+    }, [colorVal, sizeVal, product.variants]);
+
+    // 當選擇的 variant 改變時，檢查庫存並調整數量
+    useEffect(() => {
+        if (selectVariant && itemCount > selectVariant.stock) {
+            setItemCount(1);
+        }
+    }, [selectVariant]);
 
     return (
         <Box sx={{
@@ -2080,7 +2196,46 @@ const ModernPurchaseDetail = ({
                 <Typography variant="body2" sx={{ mb: 2, fontWeight: 600 }}>
                     顏色
                 </Typography>
-                {/* 這裡需要實現顏色選擇邏輯 */}
+                <ToggleButtonGroup
+                    value={colorVal}
+                    onChange={handleColor}
+                    exclusive
+                    sx={{ border: "0px solid", width: "100%" }}
+                >
+                    <Grid container columns={8} spacing={1} alignItems="center">
+                        {product.variants && product.variants.length > 0 ? (
+                            colors.map((c) => (
+                                <Grid key={c} item xs={2} sm={2.5} md={2} lg={1.5}>
+                                    <ToggleButton 
+                                        color="primary" 
+                                        disabled={setColorDisabled(c)} 
+                                        fullWidth 
+                                        size="small" 
+                                        disableRipple 
+                                        value={c}
+                                        sx={{
+                                            '&.Mui-selected': {
+                                                backgroundColor: '#E67E22',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    backgroundColor: '#D35400',
+                                                }
+                                            }
+                                        }}
+                                    >
+                                        {c}
+                                    </ToggleButton>
+                                </Grid>
+                            ))
+                        ) : (
+                            <Grid item xs={2} sm={2.5} md={2} lg={1}>
+                                <Stack alignItems="center" sx={{ border: "1px solid #d9d9d9", p: 0.5, borderRadius: "4px" }}>
+                                    <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
+                                </Stack>
+                            </Grid>
+                        )}
+                    </Grid>
+                </ToggleButtonGroup>
             </Box>
 
             {/* 尺寸選擇 */}
@@ -2088,7 +2243,46 @@ const ModernPurchaseDetail = ({
                 <Typography variant="body2" sx={{ mb: 2, fontWeight: 600 }}>
                     尺寸
                 </Typography>
-                {/* 這裡需要實現尺寸選擇邏輯 */}
+                <ToggleButtonGroup
+                    value={sizeVal}
+                    onChange={handleSize}
+                    exclusive
+                    sx={{ border: "0px solid", width: "100%" }}
+                >
+                    <Grid container columns={8} spacing={1}>
+                        {product.variants && product.variants.length > 0 ? (
+                            sizes.map((s) => (
+                                <Grid key={s} item xs={2} sm={2.5} md={2} lg={1.5}>
+                                    <ToggleButton 
+                                        color="primary" 
+                                        disabled={setSizeDisabled(s)} 
+                                        fullWidth 
+                                        size="small" 
+                                        disableRipple 
+                                        value={s}
+                                        sx={{
+                                            '&.Mui-selected': {
+                                                backgroundColor: '#E67E22',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    backgroundColor: '#D35400',
+                                                }
+                                            }
+                                        }}
+                                    >
+                                        {s}
+                                    </ToggleButton>
+                                </Grid>
+                            ))
+                        ) : (
+                            <Grid item xs={2} sm={2.5} md={2} lg={1}>
+                                <Stack alignItems="center" sx={{ border: "1px solid #d9d9d9", p: 0.5, borderRadius: "4px" }}>
+                                    <Typography sx={{ color: "#AFAFAF" }} variant='caption'>標準</Typography>
+                                </Stack>
+                            </Grid>
+                        )}
+                    </Grid>
+                </ToggleButtonGroup>
             </Box>
 
             {/* 數量選擇 */}
@@ -2099,12 +2293,17 @@ const ModernPurchaseDetail = ({
                 <Stack direction="row" alignItems="center" spacing={2}>
                     <IconButton
                         onClick={handleCountMinus}
+                        disabled={itemCount <= 1}
                         sx={{
                             border: '1px solid #E0E0E0',
                             borderRadius: 2,
                             '&:hover': {
                                 backgroundColor: alpha('#E67E22', 0.1),
                                 borderColor: '#E67E22'
+                            },
+                            '&.Mui-disabled': {
+                                borderColor: '#E0E0E0',
+                                opacity: 0.5
                             }
                         }}
                     >
@@ -2122,18 +2321,28 @@ const ModernPurchaseDetail = ({
                     </Typography>
                     <IconButton
                         onClick={handleCountPlus}
+                        disabled={!selectVariant || itemCount >= selectVariant.stock || itemCount >= 10}
                         sx={{
                             border: '1px solid #E0E0E0',
                             borderRadius: 2,
                             '&:hover': {
                                 backgroundColor: alpha('#E67E22', 0.1),
                                 borderColor: '#E67E22'
+                            },
+                            '&.Mui-disabled': {
+                                borderColor: '#E0E0E0',
+                                opacity: 0.5
                             }
                         }}
                     >
                         <AddIcon />
                     </IconButton>
                 </Stack>
+                {selectVariant && (
+                    <Typography variant="caption" sx={{ color: 'text.secondary', mt: 1 }}>
+                        庫存：{selectVariant.stock} 件
+                    </Typography>
+                )}
             </Box>
 
             {/* 購買按鈕 */}
