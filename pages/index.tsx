@@ -1,6 +1,7 @@
 
 import { Inter } from "next/font/google";
-
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -10,6 +11,12 @@ import { Box, Typography } from "@mui/material";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const router = useRouter();
+
+  // CSR 重定向：首頁直接跳轉到新品上市
+  useEffect(() => {
+    router.replace('/products?tag=new-arrival');
+  }, [router]);
 
   return (
     <>
@@ -55,14 +62,4 @@ function SamplePrevArrow(props: any) {
       onClick={onClick}
     />
   );
-}
-
-// 首頁直接跳轉 新品上市
-export async function getServerSideProps() {
-  return {
-    redirect: {
-      destination: '/products?tag=new-arrival',
-      permanent: true,
-    },
-  };
 }

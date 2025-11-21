@@ -296,14 +296,36 @@ interface CsrfTokenStore {
     setCsrfToken: (token: string | null) => void
 }
 
-const useFirstVisitProductPageStore = create<FirstVisitProductPageStore>((set, get) => ({
-    hasVisited: false,
-    sethasVisited: () => set((state) => {
-        return {
-            hasVisited: true
+// 實現 PersistStorage 接口用於歡迎通知
+const welcomeNotificationStorage: PersistStorage<{ hasVisited: boolean }> = {
+    getItem: (name) => {
+        const item = localStorage.getItem(name);
+        return item ? (JSON.parse(item) as StorageValue<{ hasVisited: boolean }>) : null;
+    },
+    setItem: (name, value) => {
+        localStorage.setItem(name, JSON.stringify(value));
+    },
+    removeItem: (name) => {
+        localStorage.removeItem(name);
+    },
+}
+
+const useFirstVisitProductPageStore = create<FirstVisitProductPageStore, [['zustand/persist', { hasVisited: boolean }]]>(
+    persist(
+        (set, get) => ({
+            hasVisited: false,
+            sethasVisited: () => set((state) => {
+                return {
+                    hasVisited: true
+                }
+            })
+        }),
+        {
+            name: "welcome-notification-storage",
+            storage: welcomeNotificationStorage
         }
-    })
-}))
+    )
+)
 
 interface FirstVisitProductPageStore {
     hasVisited: boolean;

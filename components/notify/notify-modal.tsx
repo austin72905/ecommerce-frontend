@@ -26,12 +26,13 @@ export default function NotifyModal() {
     const isXSScreen: boolean = useMediaQuery(('(max-width:430px)'))
 
     useEffect(() => {
-        if(router.pathname==="/products" && !hasVisited){
+        // 只在路由準備好、訪問商品頁面且尚未看過歡迎通知時顯示
+        if(router.isReady && router.pathname==="/products" && !hasVisited){
             setopen(true);
         }else{
             setopen(false);
         }
-    }, [router])
+    }, [router.isReady, router.pathname, hasVisited])
 
     return (
         <Modal
