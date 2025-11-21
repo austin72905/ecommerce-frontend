@@ -5,7 +5,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { orange } from '@mui/material/colors';
 import Footer from "./footer";
-import { Box } from "@mui/material";
+import { Box, useTheme, useMediaQuery } from "@mui/material";
 import GoToTopButton from "./speed-dial-group";
 import AlertMsg from "../msg/alert-msg";
 import AlertErrorMsg from "../msg/alert-error-msg";
@@ -13,6 +13,7 @@ import Banners from "./banners";
 import { useRouter } from "next/router";
 import NotifyModal from "../notify/notify-modal";
 import { useFirstVisitProductPageStore } from "@/store/store";
+import BottomNav from "./bottom-nav";
 
 interface LayoutProps {
     children: ReactNode
@@ -95,7 +96,8 @@ const customTheme = createTheme({
 })
 
 export default function Layout({ children }: LayoutProps) {
-
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md')); // md 以下視為手機版
 
     const hasVisited=useFirstVisitProductPageStore((state) => state.hasVisited);
     const sethasVisited=useFirstVisitProductPageStore((state) => state.sethasVisited);
@@ -116,7 +118,10 @@ export default function Layout({ children }: LayoutProps) {
             <Box sx={{ backgroundColor: 'background.default', minHeight: '100vh' }}>
                 <MainHeader />
                 <Toolbar />
-                <Box sx={{ minHeight: "80vh" }}>
+                <Box sx={{ 
+                    minHeight: "80vh",
+                    paddingBottom: isMobile ? '80px' : 0 // 為底部導航欄留出空間
+                }}>
                     <Container sx={{
                         px: {
                             md: 5,
@@ -137,7 +142,14 @@ export default function Layout({ children }: LayoutProps) {
                 <AlertMsg />
                 <AlertErrorMsg />
 
-                <Footer />
+                {/* 底部導航欄 - 只在手機版顯示 */}
+                <BottomNav />
+
+                <Box sx={{ 
+                    paddingBottom: isMobile ? '80px' : 0 // 為底部導航欄留出空間
+                }}>
+                    <Footer />
+                </Box>
             </Box>
         </ThemeProvider>
 

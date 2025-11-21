@@ -14,13 +14,16 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Avatar, Badge, Button, FormControl, InputAdornment, InputBase, MenuItem, Paper, Select, SelectChangeEvent, TextField, alpha } from '@mui/material';
+import { Avatar, Badge, Button, FormControl, InputAdornment, InputBase, MenuItem, Paper, Select, SelectChangeEvent, TextField, alpha, useTheme, useMediaQuery } from '@mui/material';
 
 import SideNavBar, { useOpenState } from './sidebar';
 import { useCartStore, userUserInfoStore } from '@/store/store';
 import UserMenu from './user-menu';
 
 export default function MainHeader() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md')); // md 以下視為手機版
+    const isHomePage = useRouter().pathname === '/';
 
     const [isLogin, setIsLogin] = useState<boolean>(false)
     //const isLogin = false;
@@ -71,6 +74,13 @@ export default function MainHeader() {
     const [searchAreaShow, setsearchAreaShow] = useState(false)
 
     const [searchType, setsearchType] = useState("currentPage")
+
+    // 首頁在手機版時自動顯示搜尋欄
+    useEffect(() => {
+        if (isMobile && isHomePage) {
+            setsearchAreaShow(true);
+        }
+    }, [isMobile, isHomePage])
 
     const handleSearchType = (e: SelectChangeEvent<string>) => {
         setsearchType(e.target.value)
@@ -129,135 +139,128 @@ export default function MainHeader() {
                     <Container sx={{ px: 0 }}>
                         <Toolbar sx={{ 
                             display: "flex", 
-                            justifyContent: "space-between",
-                            minHeight: '70px !important'
+                            justifyContent: isMobile && isHomePage ? "center" : "space-between",
+                            minHeight: isMobile && isHomePage ? '60px !important' : '70px !important',
+                            py: isMobile && isHomePage ? 1 : 0
                         }}>
-                            <IconButton
-                                size="large"
-                                edge="start"
-                                color="inherit"
-                                aria-label="menu"
-                                sx={{ 
-                                    mr: {
-                                        xs: 0,
-                                        sm: 0,
-                                        md: 2,
-                                        lg: 8
-                                    },
-                                    borderRadius: 2,
-                                    transition: 'all 0.3s ease',
-                                    '&:hover': {
-                                        backgroundColor: alpha('#E67E22', 0.1),
-                                        transform: 'scale(1.05)'
-                                    }
-                                }}
-                                disableRipple
-                                onClick={() => setOpen(true)}
-                            >
-                                <MenuIcon />
-                            </IconButton>
+                            {/* 選單按鈕 - 手機版首頁隱藏 */}
+                            {!(isMobile && isHomePage) && (
+                                <IconButton
+                                    size="large"
+                                    edge="start"
+                                    color="inherit"
+                                    aria-label="menu"
+                                    sx={{ 
+                                        mr: {
+                                            xs: 0,
+                                            sm: 0,
+                                            md: 2,
+                                            lg: 8
+                                        },
+                                        borderRadius: 2,
+                                        transition: 'all 0.3s ease',
+                                        '&:hover': {
+                                            backgroundColor: alpha('#E67E22', 0.1),
+                                            transform: 'scale(1.05)'
+                                        }
+                                    }}
+                                    disableRipple
+                                    onClick={() => setOpen(true)}
+                                >
+                                    <MenuIcon />
+                                </IconButton>
+                            )}
 
-                            <Stack direction={"row"}>
-                                <Box sx={{ 
-                                    display: "flex", 
-                                    alignItems: "center", 
-                                    cursor: "pointer",
-                                    padding: '8px 16px',
-                                    borderRadius: 3,
-                                    transition: 'all 0.3s ease',
-                                    '&:hover': {
-                                        backgroundColor: alpha('#E67E22', 0.1),
-                                        transform: 'translateY(-1px)'
-                                    }
-                                }} onClick={backToHomePage}>
-                                    {/* 漸變色品牌標題 */}
-                                    <Typography 
-                                        variant="h5" 
-                                        sx={{
+                            {/* 品牌標題 - 手機版首頁隱藏 */}
+                            {!(isMobile && isHomePage) && (
+                                <Stack direction={"row"}>
+                                    <Box sx={{ 
+                                        display: "flex", 
+                                        alignItems: "center", 
+                                        cursor: "pointer",
+                                        padding: '8px 16px',
+                                        borderRadius: 3,
+                                        transition: 'all 0.3s ease',
+                                        '&:hover': {
+                                            backgroundColor: alpha('#E67E22', 0.1),
+                                            transform: 'translateY(-1px)'
+                                        }
+                                    }} onClick={backToHomePage}>
+                                        {/* 漸變色品牌標題 */}
+                                        <Typography 
+                                            variant="h5" 
+                                            sx={{
+                                                fontSize: {
+                                                    sm: "28px",
+                                                    xs: "18px"
+                                                },
+                                                letterSpacing: {
+                                                    sm: 10,
+                                                    xs: 3
+                                                }, 
+                                                fontWeight: 900,
+                                                background: 'linear-gradient(45deg, #E67E22, #F39C12)',
+                                                backgroundClip: 'text',
+                                                WebkitBackgroundClip: 'text',
+                                                color: 'transparent',
+                                                textShadow: 'none'
+                                            }}
+                                        >
+                                            DEMO
+                                        </Typography>
+                                        <Typography sx={{
                                             fontSize: {
-                                                sm: "28px",
-                                                xs: "18px"
+                                                sm: "20px",
+                                                xs: "14px"
                                             },
                                             letterSpacing: {
-                                                sm: 10,
-                                                xs: 3
+                                                sm: 8,
+                                                xs: 2
                                             }, 
-                                            fontWeight: 900,
-                                            background: 'linear-gradient(45deg, #E67E22, #F39C12)',
-                                            backgroundClip: 'text',
-                                            WebkitBackgroundClip: 'text',
-                                            color: 'transparent',
-                                            textShadow: 'none'
-                                        }}
-                                    >
-                                        DEMO
-                                    </Typography>
-                                    <Typography sx={{
-                                        fontSize: {
-                                            sm: "20px",
-                                            xs: "14px"
-                                        },
-                                        letterSpacing: {
-                                            sm: 8,
-                                            xs: 2
-                                        }, 
-                                        fontWeight: 700, 
-                                        color: "#FFFFFF",
-                                        ml: 1
-                                    }}>
-                                        線上商店
-                                    </Typography>
-                                </Box>
-                            </Stack>
+                                            fontWeight: 700, 
+                                            color: "#FFFFFF",
+                                            ml: 1
+                                        }}>
+                                            線上商店
+                                        </Typography>
+                                    </Box>
+                                </Stack>
+                            )}
 
-                            <Box sx={{ display: 'flex', alignItems: "center", gap: 1 }}>
-                                <IconButton 
-                                    disableRipple 
-                                    onClick={() => { setsearchAreaShow(u => !u) }}
-                                    sx={{
-                                        borderRadius: 2,
-                                        transition: 'all 0.3s ease',
-                                        '&:hover': {
-                                            backgroundColor: alpha('#E67E22', 0.1),
-                                            transform: 'scale(1.1)'
-                                        }
-                                    }}
-                                >
-                                    <SearchIcon />
-                                </IconButton>
-                                <IconButton 
-                                    disableRipple 
-                                    onClick={goToCart}
-                                    sx={{
-                                        borderRadius: 2,
-                                        transition: 'all 0.3s ease',
-                                        '&:hover': {
-                                            backgroundColor: alpha('#E67E22', 0.1),
-                                            transform: 'scale(1.1)'
-                                        }
-                                    }}
-                                >
-                                    <Badge 
-                                        badgeContent={cartContent.length} 
-                                        max={99} 
-                                        color='secondary'
+                            {/* 右側按鈕區域 */}
+                            <Box sx={{ 
+                                display: 'flex', 
+                                alignItems: "center", 
+                                gap: 1,
+                                ...(isMobile && isHomePage && {
+                                    width: '100%',
+                                    justifyContent: 'center'
+                                })
+                            }}>
+                                {/* 搜尋按鈕 - 手機版首頁隱藏（因為搜尋欄自動顯示） */}
+                                {!(isMobile && isHomePage) && (
+                                    <IconButton 
+                                        disableRipple 
+                                        onClick={() => { setsearchAreaShow(u => !u) }}
                                         sx={{
-                                            '& .MuiBadge-badge': {
-                                                backgroundColor: '#E67E22',
-                                                color: 'white',
-                                                fontWeight: 'bold'
+                                            borderRadius: 2,
+                                            transition: 'all 0.3s ease',
+                                            '&:hover': {
+                                                backgroundColor: alpha('#E67E22', 0.1),
+                                                transform: 'scale(1.1)'
                                             }
                                         }}
-                                        suppressHydrationWarning
                                     >
-                                        <ShoppingCartOutlinedIcon />
-                                    </Badge>
-                                </IconButton>
-                                {
-                                    isLogin ?
+                                        <SearchIcon />
+                                    </IconButton>
+                                )}
+                                
+                                {/* 購物車和個人設定 - 手機版隱藏（移到底部導航欄） */}
+                                {!isMobile && (
+                                    <>
                                         <IconButton 
                                             disableRipple 
-                                            onClick={isLogin ? handleSetAnchor : goToLogin}
+                                            onClick={goToCart}
                                             sx={{
                                                 borderRadius: 2,
                                                 transition: 'all 0.3s ease',
@@ -267,55 +270,91 @@ export default function MainHeader() {
                                                 }
                                             }}
                                         >
-                                            {
-                                                userInfo && userInfo.picture ?
-                                                    <Avatar 
-                                                        src={userInfo?.picture} 
-                                                        alt='user picture' 
-                                                        sx={{ 
-                                                            width: "32px", 
-                                                            height: "32px",
-                                                            border: '2px solid #E67E22'
-                                                        }} 
-                                                    />
-                                                    :
+                                            <Badge 
+                                                badgeContent={cartContent.length} 
+                                                max={99} 
+                                                color='secondary'
+                                                sx={{
+                                                    '& .MuiBadge-badge': {
+                                                        backgroundColor: '#E67E22',
+                                                        color: 'white',
+                                                        fontWeight: 'bold'
+                                                    }
+                                                }}
+                                                suppressHydrationWarning
+                                            >
+                                                <ShoppingCartOutlinedIcon />
+                                            </Badge>
+                                        </IconButton>
+                                        {
+                                            isLogin ?
+                                                <IconButton 
+                                                    disableRipple 
+                                                    onClick={isLogin ? handleSetAnchor : goToLogin}
+                                                    sx={{
+                                                        borderRadius: 2,
+                                                        transition: 'all 0.3s ease',
+                                                        '&:hover': {
+                                                            backgroundColor: alpha('#E67E22', 0.1),
+                                                            transform: 'scale(1.1)'
+                                                        }
+                                                    }}
+                                                >
+                                                    {
+                                                        userInfo && userInfo.picture ?
+                                                            <Avatar 
+                                                                src={userInfo?.picture} 
+                                                                alt='user picture' 
+                                                                sx={{ 
+                                                                    width: "32px", 
+                                                                    height: "32px",
+                                                                    border: '2px solid #E67E22'
+                                                                }} 
+                                                            />
+                                                            :
+                                                            <AccountCircleOutlinedIcon />
+                                                    }
+                                                </IconButton>
+                                                :
+                                                <IconButton 
+                                                    disableRipple 
+                                                    onClick={isLogin ? handleSetAnchor : goToLogin}
+                                                    sx={{
+                                                        borderRadius: 2,
+                                                        transition: 'all 0.3s ease',
+                                                        '&:hover': {
+                                                            backgroundColor: alpha('#E67E22', 0.1),
+                                                            transform: 'scale(1.1)'
+                                                        }
+                                                    }}
+                                                >
                                                     <AccountCircleOutlinedIcon />
-                                            }
-                                        </IconButton>
-                                        :
-                                        <IconButton 
-                                            disableRipple 
-                                            onClick={isLogin ? handleSetAnchor : goToLogin}
-                                            sx={{
-                                                borderRadius: 2,
-                                                transition: 'all 0.3s ease',
-                                                '&:hover': {
-                                                    backgroundColor: alpha('#E67E22', 0.1),
-                                                    transform: 'scale(1.1)'
-                                                }
-                                            }}
-                                        >
-                                            <AccountCircleOutlinedIcon />
-                                        </IconButton>
-                                }
-                                {
-                                    isLogin && 
-                                    <Typography 
-                                        variant="caption"
-                                        sx={{
-                                            ml: 1,
-                                            fontWeight: 500,
-                                            color: '#FFFFFF'
-                                        }}
-                                    >
-                                        {userInfo?.name}，您好
-                                    </Typography>
-                                }
+                                                </IconButton>
+                                        }
+                                        {
+                                            isLogin && 
+                                            <Typography 
+                                                variant="caption"
+                                                sx={{
+                                                    ml: 1,
+                                                    fontWeight: 500,
+                                                    color: '#FFFFFF',
+                                                    display: { xs: 'none', sm: 'block' }
+                                                }}
+                                            >
+                                                {userInfo?.name}，您好
+                                            </Typography>
+                                        }
+                                    </>
+                                )}
                             </Box>
                         </Toolbar>
                         {
                             searchAreaShow &&
-                            <Toolbar sx={{ pb: 2 }}>
+                            <Toolbar sx={{ 
+                                pb: 2,
+                                display: { xs: isHomePage ? 'flex' : 'flex', sm: 'flex' }
+                            }}>
                                 <Box sx={{ 
                                     display: 'flex', 
                                     justifyContent: 'center', 
