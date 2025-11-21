@@ -88,43 +88,46 @@ const useCartStore = create<CartState, [['zustand/persist', ProductInfomationCou
                     cartContent: cartcontent
                 }
             }),
-            minusProductCount: (productId) => set((state) => {
+            minusProductCount: (productId, variantID) => set((state) => {
                 let cartcontent = [...state.cartContent];
 
-                // count = 1 刪除  count > 1 減 1
-                const item = cartcontent.find(item => item.product.productId === productId);
+                // 根據 productId 和 variantID 找到對應的商品
+                const item = cartcontent.find(item => 
+                    item.product.productId === productId && 
+                    item.selectedVariant?.variantID === variantID
+                );
 
-                if (item?.count === 1) {
-                    //cartcontent = cartcontent.filter(item => item.product.productId !== productId);
-                    return {
-                        cartContent: cartcontent
+                if (item) {
+                    // count = 1 時不刪除，保持為 1（或可以選擇刪除）
+                    if (item.count > 1) {
+                        item.count -= 1;
                     }
-                } else {
-                    cartcontent.forEach(item => {
-                        if (item.product.productId === productId)
-                            item.count -= 1;
-                    })
                 }
 
                 return {
                     cartContent: cartcontent
                 }
             }),
-            plusProductCount: (productId) => set((state) => {
+            plusProductCount: (productId, variantID) => set((state) => {
                 let cartcontent = [...state.cartContent];
 
-                cartcontent.forEach(item => {
-                    if (item.product.productId === productId && item.count < 10) {
-                        if (item.selectedVariant) {
-                            //如果比選擇的variant 庫存少就可以+1
-                            if (item.count < item.selectedVariant.stock) {
-                                item.count += 1;
-                            }
+                // 根據 productId 和 variantID 找到對應的商品
+                const item = cartcontent.find(item => 
+                    item.product.productId === productId && 
+                    item.selectedVariant?.variantID === variantID
+                );
+
+                if (item && item.count < 10) {
+                    if (item.selectedVariant) {
+                        // 如果比選擇的 variant 庫存少就可以+1
+                        if (item.count < item.selectedVariant.stock) {
+                            item.count += 1;
                         }
-
+                    } else {
+                        // 沒有 variant 的情況
+                        item.count += 1;
                     }
-
-                })
+                }
 
                 return {
                     cartContent: cartcontent
@@ -165,8 +168,8 @@ interface CartState {
     cartContent: ProductInfomationCount[]; //可能是空數組
     addToCart: (product: ProductInfomation, selectedVariant: ProductVariant | undefined, count: number) => void;
     removeFromCart: (productId: number, variantID: number | undefined) => void;
-    plusProductCount: (productId: number) => void;
-    minusProductCount: (productId: number) => void;
+    plusProductCount: (productId: number, variantID: number | undefined) => void;
+    minusProductCount: (productId: number, variantID: number | undefined) => void;
     countTotalPrice: () => number;
     initializeCart: (initialCart: ProductInfomationCount[]) => void;
 }

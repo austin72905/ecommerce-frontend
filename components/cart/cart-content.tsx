@@ -9,8 +9,8 @@ import { useRouter } from "next/router";
 
 interface TableViewCartContentProps {
     cartContent: ProductInfomationCount[] | never[];
-    plusProductCount: (productId: number) => void;
-    minusProductCount: (productId: number) => void;
+    plusProductCount: (productId: number, variantID: number | undefined) => void;
+    minusProductCount: (productId: number, variantID: number | undefined) => void;
     removeFromCart: (productId: number, variantID: number | undefined) => void;
 }
 
@@ -101,9 +101,9 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
                                 <TableCell align='center'>
                                     {/*數量框 */}
                                     <Box sx={{ display: "flex", border: "0px solid", justifyContent: "center" }}>
-                                        <RemoveIcon onClick={() => { minusProductCount(item.product.productId) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }} />
+                                        <RemoveIcon onClick={() => { minusProductCount(item.product.productId, item.selectedVariant?.variantID) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }} />
                                         <TextFieldWrapper value={item.count} size='small' inputProps={{ style: { textAlign: "center", height: "15px" } }} ></TextFieldWrapper>
-                                        <AddIcon onClick={() => { plusProductCount(item.product.productId) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }} />
+                                        <AddIcon onClick={() => { plusProductCount(item.product.productId, item.selectedVariant?.variantID) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "30px", width: "30px", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }} />
                                     </Box>
                                 </TableCell>
                                 <TableCell align='center'>${showItemTotalPrice(item)}</TableCell>
@@ -128,8 +128,8 @@ const DefaultScreenCartContent = ({ cartContent, plusProductCount, minusProductC
 
 interface SmallScreenViewCartContentProps {
     cartContent: ProductInfomationCount[] | never[];
-    plusProductCount: (productId: number) => void;
-    minusProductCount: (productId: number) => void;
+    plusProductCount: (productId: number, variantID: number | undefined) => void;
+    minusProductCount: (productId: number, variantID: number | undefined) => void;
     removeFromCart: (productId: number, variantID: number | undefined) => void;
 }
 
@@ -228,9 +228,9 @@ const SmallScreenViewCartContent = ({ cartContent, plusProductCount, minusProduc
 
                                     {/*數量框 */}
                                     <Box sx={{ display: "flex", border: "0px solid", alignItems: "center" }}>
-                                        <RemoveIcon onClick={() => { minusProductCount(item.product.productId) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "25px", width: "25px", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }} />
+                                        <RemoveIcon onClick={() => { minusProductCount(item.product.productId, item.selectedVariant?.variantID) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "25px", width: "25px", borderTopLeftRadius: "4px", borderBottomLeftRadius: "4px" }} />
                                         <TextFieldWrapper value={item.count} size='small' inputProps={{ style: { textAlign: "center" } }} ></TextFieldWrapper>
-                                        <AddIcon onClick={() => { plusProductCount(item.product.productId) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "25px", width: "25px", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }} />
+                                        <AddIcon onClick={() => { plusProductCount(item.product.productId, item.selectedVariant?.variantID) }} sx={{ ":hover": { cursor: "pointer" }, color: "#AFAFAF", border: "solid 1px", height: "25px", width: "25px", borderTopRightRadius: "4px", borderBottomRightRadius: "4px" }} />
                                     </Box>
 
                                     <IconButton onClick={() => { removeFromCart(item.product.productId, item.selectedVariant?.variantID) }}>
