@@ -1,9 +1,10 @@
 import { useCartStore, useCsrfTokenStore, useSubscribeListStore } from "@/store/store"
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Grid, IconButton, Stack, Typography } from "@mui/material"
+import { Box, Button, Card, CardActions, CardContent, CardMedia, Grid, IconButton, Stack, Typography, Container } from "@mui/material"
 import Image from "next/image"
 import { useRouter } from "next/router"
 
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import { ChangeEvent, useEffect, useState } from "react";
 import { ProductInfomation, ProductInfomationFavorite } from "@/interfaces";
 import WithAuth from "@/components/auth/with-auth";
@@ -144,16 +145,56 @@ const SubscribeListPage = () => {
     }
 
 
-    if (subscribeList.length === 0) {
-        return <p style={{ textAlign: "center" }}>目前沒有收藏的商品....</p>
-    }
-
     return (
-        <Box sx={{ p: 2 }}>
-            <h1>
-                {router.query.tag && router.query.tag}
-                {router.query.kind && router.query.kind}
-            </h1>
+        <Box sx={{ 
+            backgroundColor: 'background.default',
+            minHeight: '100vh',
+            py: 4
+        }}>
+            <Container maxWidth="xl">
+                {/* 標題區域 */}
+                <Box sx={{ mb: 4 }}>
+                    <Typography 
+                        variant="h4" 
+                        sx={{ 
+                            fontWeight: 700,
+                            mb: 1,
+                            background: 'linear-gradient(45deg, #2C3E50, #34495E)',
+                            backgroundClip: 'text',
+                            WebkitBackgroundClip: 'text',
+                            color: 'transparent'
+                        }}
+                    >
+                        我的收藏
+                    </Typography>
+                    <Box sx={{
+                        height: '3px',
+                        width: '60px',
+                        background: 'linear-gradient(90deg, #E67E22, #F39C12)',
+                        borderRadius: 2,
+                        mb: 2
+                    }} />
+                    <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+                        查看您收藏的商品
+                    </Typography>
+                </Box>
+
+                {subscribeList.length === 0 ? (
+                    <Box sx={{
+                        textAlign: 'center',
+                        py: 8,
+                        color: 'text.secondary'
+                    }}>
+                        <FavoriteIcon sx={{ fontSize: 64, mb: 2, opacity: 0.3 }} />
+                        <Typography variant="h6" sx={{ mb: 1 }}>
+                            目前沒有收藏的商品
+                        </Typography>
+                        <Typography variant="body2">
+                            開始收藏您喜歡的商品吧
+                        </Typography>
+                    </Box>
+                ) : (
+                    <Box sx={{ p: { xs: 1, sm: 2 } }}>
             <Grid container columns={8} spacing={3}>
 
 
@@ -210,14 +251,17 @@ const SubscribeListPage = () => {
                     </Grid>
                 ))}
 
-            </Grid>
+                    </Grid>
 
-            <PurchaseModal
-                product={selectProduct}
-                handleModalOpen={handleModalOpen}
-                handleModalClose={handleModalClose}
-                modalOpen={modalOpen}
-            />
+                    <PurchaseModal
+                        product={selectProduct}
+                        handleModalOpen={handleModalOpen}
+                        handleModalClose={handleModalClose}
+                        modalOpen={modalOpen}
+                    />
+                    </Box>
+                )}
+            </Container>
         </Box>
 
     )
