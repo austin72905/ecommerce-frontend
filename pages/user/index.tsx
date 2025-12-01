@@ -57,7 +57,13 @@ const UserDashboardPage = () => {
             try {
                 const result = await getOrders() as ApiResponse<OrderInfomation[]>;
                 if (result.code === RespCode.SUCCESS && result.data) {
-                    setOrderList(result.data);
+                    // 按更新時間降序排序（最新的在上面）
+                    const sortedOrders = result.data.sort((a, b) => {
+                        const timeA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+                        const timeB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+                        return timeB - timeA; // 降序排序
+                    });
+                    setOrderList(sortedOrders);
                 }
             } catch (error) {
                 console.error('Error fetching orders:', error);

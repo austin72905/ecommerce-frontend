@@ -31,6 +31,7 @@ export interface OrderInfomation {
     payWay: number;
     shipInfomation: CargoInfomation[];
     orderStepInfomation: OrderStepInfo[];
+    updatedAt?: string; // 訂單更新時間
 
 }
 

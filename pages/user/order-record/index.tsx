@@ -262,8 +262,15 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
             }
 
             const ordersData = result.data as OrderInfomation[]
+            
+            // 按更新時間降序排序（最新的在上面）
+            const sortedOrders = ordersData.sort((a, b) => {
+                const timeA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+                const timeB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+                return timeB - timeA; // 降序排序
+            });
 
-            setorderList(ordersData)
+            setorderList(sortedOrders)
 
         } catch (error) {
             console.error('Error fetching data:', error)
@@ -308,8 +315,15 @@ const PurchaseRecord = ({ }: PurchaseRecordProps) => {
                 }
 
                 const ordersData = result.data as OrderInfomation[]
+                
+                // 按更新時間降序排序（最新的在上面）
+                const sortedOrders = ordersData.sort((a, b) => {
+                    const timeA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+                    const timeB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+                    return timeB - timeA; // 降序排序
+                });
 
-                setorderList(ordersData)
+                setorderList(sortedOrders)
 
             } catch (error) {
                 console.error('Error fetching data:', error)
