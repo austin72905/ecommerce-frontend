@@ -442,9 +442,28 @@ const CheckOut = () => {
     }
 
     //前往支付頁面
-    const goToPayment = (paymentData: PaymentRequestData) => {
-        const url = `${paymentData.paymentUrl}?RecordNo=${paymentData.recordNo}&Amount=${paymentData.amount}&PayType=${paymentData.payType}`
-        window.location.href = url
+    const goToPayment = async (paymentData: PaymentRequestData) => {
+        const url = `${paymentData.paymentUrl}?RecordNo=${paymentData.recordNo}&Amount=${paymentData.amount}&PayType=${paymentData.payType}`;
+        
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            const result = await response.json() as ApiResponse<any>;
+            
+            if (result.code === RespCode.SUCCESS) {
+                // 支付請求成功，跳轉到訂單頁面
+                router.push('/user/order-record');
+            } else {
+                // 支付請求失敗，顯示錯誤訊息
+                setAlertMsg(result.message || '支付請求失敗，請稍後再試');
+            }
+        } catch (error) {
+            console.error('支付請求錯誤:', error);
+            setAlertMsg('支付請求失敗，請稍後再試');
+        }
     }
 
 
